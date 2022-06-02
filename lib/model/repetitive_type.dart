@@ -1,0 +1,4 @@
+enum RepetitiveType{
+  Daily,
+  Weekly
+}

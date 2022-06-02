@@ -1,0 +1,4 @@
+enum GoalType{
+  Public,
+  Private
+}
