@@ -32,6 +32,7 @@ dependencies:
   flutter_svg: ^0.21.0
   intl: ^0.17.0
   grouped_list: ^5.1.1
+  enum_to_string: ^2.0.1
 
 
   # The following adds the Cupertino Icons font to your application.

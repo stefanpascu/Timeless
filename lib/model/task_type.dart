@@ -1,5 +1,6 @@
 enum TaskType{
   Repetitive,
   DueTo,
-  Appointment
+  Appointment,
 }
+

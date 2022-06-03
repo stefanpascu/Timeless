@@ -24,8 +24,8 @@ class LoginStatefulWidgetState extends State<Login> {
                 colors: [
                   MyColors.primaryNormal.withOpacity(0.2),
                   MyColors.primaryNormal.withOpacity(0.5),
-                  const Color(0xffE39152).withOpacity(0.5),
-                  const Color(0xffE39152).withOpacity(0.2),
+                  MyColors.accentNormal.withOpacity(0.5),
+                  MyColors.accentNormal.withOpacity(0.2),
                 ],
               ),
             ),
@@ -39,12 +39,9 @@ class LoginStatefulWidgetState extends State<Login> {
                   child: DecoratedBox(
                     decoration:
                     BoxDecoration(
-                      color: const Color(0xffFAFCFC).withOpacity(0.5),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(7),
-                        topRight: Radius.circular(7),
-                        bottomLeft: Radius.circular(7),
-                        bottomRight: Radius.circular(7),
+                      color: MyColors.white.withOpacity(0.5),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(7),
                       ),
                       border: Border(
                         top: BorderSide(width: 3.0, color: MyColors.primaryNormal.withOpacity(0.7)),
@@ -75,7 +72,7 @@ class LoginStatefulWidgetState extends State<Login> {
                             ),
                           ),
 
-                          Container(
+                          Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                             child: TextField(
                               decoration: InputDecoration(
@@ -111,7 +108,7 @@ class LoginStatefulWidgetState extends State<Login> {
                                 ),
                               ),
 
-                              backgroundColor: const Color(0xffE39152),
+                              backgroundColor: MyColors.accentNormal,
 
                               onPressed: () => {
                                 print('login'),
@@ -149,7 +146,7 @@ class LoginStatefulWidgetState extends State<Login> {
                               radius: 50,
                               child: CircleAvatar(
                                 radius: 48.0,
-                                backgroundColor: const Color(0xffF89D7D),
+                                backgroundColor: MyColors.accentNormal,
                                 child: ClipRect(
                                   child: SvgPicture.asset('assets/profile_icon.svg'),
                                 ),

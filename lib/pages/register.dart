@@ -17,6 +17,7 @@ class RegisterStatefulWidgetState extends State<Register> with RestorationMixin 
   @override
   String? get restorationId => widget.restorationId;
 
+  String dropdownValue = 'Male';
   final RestorableDateTime _selectedDate =
   RestorableDateTime(DateTime(2021, 12, 12));
   late final RestorableRouteFuture<DateTime?> _restorableDatePickerRouteFuture =
@@ -66,8 +67,6 @@ class RegisterStatefulWidgetState extends State<Register> with RestorationMixin 
       });
     }
   }
-
-  String dropdownValue = 'Male';
 
   @override
   Widget build(BuildContext context) {

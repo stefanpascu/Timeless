@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timeless/pages/daily_page.dart';
 import 'package:timeless/pages/goals_page.dart';
 import 'package:timeless/pages/profile.dart';
@@ -7,6 +6,7 @@ import 'package:timeless/pages/register.dart';
 import 'package:timeless/pages/settings.dart';
 
 import '../styles/styles.dart';
+import 'add_new_task_page.dart';
 import 'friends_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,13 +17,8 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  int selectedIndex = 0;
 
-  set selectedIndex(int value) {
-    _selectedIndex = value;
-  }
-
-  int _selectedNewIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
@@ -31,13 +26,7 @@ class HomePageState extends State<HomePage> {
       'DAILY TASKS',
       style: TextStyle(
           color:  MyColors.primaryDarkest,
-          fontSize: 25.0,
-          fontWeight: FontWeight.w900),
-    ),
-    Text(
-      'NEW TASK',
-      style: TextStyle(
-          color:  MyColors.primaryDarkest,
+          fontFamily: 'OpenSans',
           fontSize: 25.0,
           fontWeight: FontWeight.w900),
     ),
@@ -45,28 +34,15 @@ class HomePageState extends State<HomePage> {
       'GOALS',
       style: TextStyle(
           color:  MyColors.primaryDarkest,
+          fontFamily: 'OpenSans',
           fontSize: 25.0,
           fontWeight: FontWeight.w900),
     ),
   ];
 
-  int getSelectedIndex() {
-    return _selectedIndex;
-  }
-
-  int getSelectedNewIndex() {
-    return _selectedNewIndex;
-  }
-
-  void _onNewItemTapped(int index) {
+  _onItemTapped(int index) {
     setState(() {
-      _selectedNewIndex = index;
-    });
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
+      selectedIndex = index;
     });
   }
 
@@ -90,9 +66,9 @@ class HomePageState extends State<HomePage> {
         // Colors.transparent,
 
         title:
-          _widgetOptions.elementAt(_selectedIndex),
+          _widgetOptions.elementAt(selectedIndex),
 
-        actions: const [
+        actions: [
           Icon(
             Icons.widgets,
             color:  MyColors.taintedWhite,
@@ -133,6 +109,7 @@ class HomePageState extends State<HomePage> {
                       'Your Name Here',
                       textAlign: TextAlign.center,
                       style: TextStyle(
+                        fontFamily: 'OpenSans',
                         fontSize: 20.0,
                       ),
                     ),
@@ -144,6 +121,9 @@ class HomePageState extends State<HomePage> {
               title: const Text(
                 'Home',
                 textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'OpenSans',
+                ),
               ),
               onTap: () {
                 // Navigator.pop(context);
@@ -160,6 +140,9 @@ class HomePageState extends State<HomePage> {
               title: const Text(
                 'Friends',
                 textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'OpenSans',
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -179,6 +162,9 @@ class HomePageState extends State<HomePage> {
               title: const Text(
                 'Settings',
                 textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'OpenSans',
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -198,9 +184,12 @@ class HomePageState extends State<HomePage> {
               title: const Text(
                 'Logout',
                 textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'OpenSans',
+                ),
               ),
               onTap: () {
-                Navigator.pop(context);
+                // Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const Register()),
@@ -212,254 +201,10 @@ class HomePageState extends State<HomePage> {
       ),
       body: Container(
         child:
-          ////////////////////////////////////////////////GOALS FRAGMENT//////////////////////////////////////////////////
-          getSelectedIndex() == 2 ?
-          Column(children: [
-            if (getSelectedNewIndex() == 0) ...[
-              Wrap(
-                children: <Widget>[
-                  Container(
-                    width: 103,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor: MyColors.primaryNormal,
-                      onPressed: () => {
-                        _onNewItemTapped(0),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_blue.svg'),
-                          const Text(
-                            'Repetitive',
-                            style: TextStyle(
-                              color: Color(0xffEEF0F0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 76,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor: const Color(0xffEEF0F0),
-                      onPressed: () => {
-                        _onNewItemTapped(1),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_red.svg'),
-                          const Text(
-                            'Due to',
-                            style: TextStyle(
-                              color: MyColors.primaryNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 123,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor:  MyColors.taintedWhite,
-                      onPressed: () => {
-                        _onNewItemTapped(2),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_green.svg'),
-                          const Text(
-                            'Appointment',
-                            style: TextStyle(
-                              color:  MyColors.textNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const Icon(Icons.wysiwyg), // TODO continut
-            ] else if (getSelectedNewIndex() == 1) ...[
-              Wrap(
-                children: <Widget>[
-                  Container(
-                    width: 103,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor: const Color(0xffEEF0F0),
-                      onPressed: () => {
-                        _onNewItemTapped(0),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_blue.svg'),
-                          const Text(
-                            'Repetitive',
-                            style: TextStyle(
-                              color: MyColors.primaryNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 76,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor: MyColors.primaryNormal,
-                      onPressed: () => {
-                        _onNewItemTapped(1),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_red.svg'),
-                          const Text(
-                            'Due to',
-                            style: TextStyle(
-                              color:  MyColors.taintedWhite,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 123,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor:  MyColors.taintedWhite,
-                      onPressed: () => {
-                        _onNewItemTapped(2),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_green.svg'),
-                          const Text(
-                            'Appointment',
-                            style: TextStyle(
-                              color: MyColors.primaryNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const Icon(Icons.account_balance), // TODO continut
-            ] else if (getSelectedNewIndex() == 2) ...[
-              Wrap(
-                children: <Widget>[
-                  Container(
-                    width: 103,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor:  MyColors.taintedWhite,
-                      onPressed: () => {
-                        _onNewItemTapped(0),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_blue.svg'),
-                          const Text(
-                            'Repetitive',
-                            style: TextStyle(
-                              color:  MyColors.textNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 76,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor:  MyColors.taintedWhite,
-                      onPressed: () => {
-                        _onNewItemTapped(1),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_red.svg'),
-                          const Text(
-                            'Due to',
-                            style: TextStyle(
-                              color:  MyColors.textNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 123,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor: MyColors.primaryNormal,
-                      onPressed: () => {
-                        _onNewItemTapped(2),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_green.svg'),
-                          const Text(
-                            'Appointment',
-                            style: TextStyle(
-                              color:  MyColors.taintedWhite,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const Icon(Icons.star), // TODO continut
-            ]
-          ]) :
-          ////////////////////////////////////////////////NEW TASK//////////////////////////////////////////////////
-          getSelectedIndex() == 1 ?
-            // TODO open new page
-          GoalsPage() :
-            ////////////////////////////////////////////////DAILY TASKS//////////////////////////////////////////////////
-            DailyPage()
+          // selectedIndex == 2 ?
+          // Column(children: [])
+          //     :
+          selectedIndex == 1 ? GoalsPage() : DailyPage()
       ),
       floatingActionButton: SizedBox(
         width: 70.0,
@@ -468,7 +213,8 @@ class HomePageState extends State<HomePage> {
           mini: false,
           backgroundColor:  MyColors.accentNormal,
           onPressed: () => {
-            _onItemTapped(1),
+            Navigator.pop(context),
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const NewTaskPage()),),
           },
           hoverElevation: 1.5,
           shape: const StadiumBorder(
@@ -499,21 +245,16 @@ class HomePageState extends State<HomePage> {
                 MyColors.primaryNormal,
               ],
             ),
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(15.0),
-                topLeft: Radius.circular(15.0),
-                bottomLeft: Radius.circular(15.0),
-                bottomRight: Radius.circular(15.0)),
+            borderRadius: BorderRadius.all(
+                Radius.circular(15.0),
+            ),
             boxShadow: [
               BoxShadow(color: Colors.black38, spreadRadius: 0, blurRadius: 10),
             ],
           ),
           child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(15.0),
-              topRight: Radius.circular(15.0),
-              bottomLeft: Radius.circular(15.0),
-              bottomRight: Radius.circular(15.0),
+            borderRadius: BorderRadius.all(
+              Radius.circular(15.0),
             ),
             child: BottomNavigationBar(
               items: const <BottomNavigationBarItem>[
@@ -523,7 +264,7 @@ class HomePageState extends State<HomePage> {
                     icon: Icon(Icons.account_balance), label: 'GOALS'),
               ],
               backgroundColor: MyColors.primaryNormal.withOpacity(0),
-              currentIndex: _selectedIndex,
+              currentIndex: selectedIndex,
               selectedItemColor: const Color(0xffffffff),
               // 0xffEEF0F0
               unselectedItemColor: const Color(0xffC2C6D5),

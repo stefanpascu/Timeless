@@ -12,6 +12,10 @@ class Task{
   DateTime time;
   Color color;
 
+  DateTime getDateTime() {
+    return this.time;
+  }
+
   Task.repetitive(this.name, this.repetitiveType, this.time) : type = TaskType.Repetitive, color =  MyColors.repetitiveBlue;
 
   Task.dueTo(this.name, this.time) : type = TaskType.DueTo, color =  MyColors.dueToRed;
