@@ -201,9 +201,6 @@ class HomePageState extends State<HomePage> {
       ),
       body: Container(
         child:
-          // selectedIndex == 2 ?
-          // Column(children: [])
-          //     :
           selectedIndex == 1 ? GoalsPage() : DailyPage()
       ),
       floatingActionButton: SizedBox(
@@ -213,8 +210,7 @@ class HomePageState extends State<HomePage> {
           mini: false,
           backgroundColor:  MyColors.accentNormal,
           onPressed: () => {
-            Navigator.pop(context),
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const NewTaskPage()),),
+            Navigator.push(context, MaterialPageRoute(builder: (context) => NewTaskPage()),),
           },
           hoverElevation: 1.5,
           shape: const StadiumBorder(

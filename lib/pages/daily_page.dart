@@ -7,6 +7,7 @@ import 'package:enum_to_string/enum_to_string.dart';
 
 import '../model/task.dart';
 import '../styles/styles.dart';
+import 'add_new_task_page.dart';
 
 class DailyPage extends StatefulWidget {
   const DailyPage({Key? key}) : super(key: key);
@@ -43,25 +44,28 @@ class _DailyPageState extends State<DailyPage> {
       child: Column(children: [
         Container(
           height: 60.0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              _filterWidget(title: 'All', index: 0, hasCircle: false),
-              _filterWidget(
-                  title: 'Repetitive',
-                  index: 1,
-                  color: MyColors.repetitiveBlue),
-              _filterWidget(
-                  title: 'Due to', index: 2, color: MyColors.dueToRed),
-              _filterWidget(
-                  title: 'Appointment',
-                  index: 3,
-                  color: MyColors.appointmentGreen),
-            ],
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                _filterWidget(title: 'All', index: 0, hasCircle: false),
+                _filterWidget(
+                    title: 'Repetitive',
+                    index: 1,
+                    color: MyColors.repetitiveBlue),
+                _filterWidget(
+                    title: 'Due to', index: 2, color: MyColors.dueToRed),
+                _filterWidget(
+                    title: 'Appointment',
+                    index: 3,
+                    color: MyColors.appointmentGreen),
+              ],
+            ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          padding: EdgeInsets.symmetric(horizontal: 15.0),
           child: Expanded(
             child: GroupedListView<Task, String>(
               elements: sortTaskList(filteredTasks),
@@ -131,75 +135,6 @@ class _DailyPageState extends State<DailyPage> {
             fontWeight: FontWeight.w600,
             fontSize: 30.0),
       ),
-      content: Column(
-        children: [
-          if (task.type == TaskType.Repetitive) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    // width: 0.0 produces a thin "hairline" border
-                    borderSide: BorderSide(
-                        color: MyColors.primaryNormal.withOpacity(0.7),
-                        width: 1.5),
-                  ),
-                  border: const OutlineInputBorder(),
-                  labelStyle: const TextStyle(
-                    color: MyColors.primaryNormal,
-                  ),
-                  hintText: 'Task Name',
-                ),
-              ),
-            ),
-            StatefulBuilder(
-              builder: (BuildContext context, StateSetter dropDownState) {
-                return DropdownButton<String>(
-                  value: repetitiveDropdownValue,
-                  icon: Icon(Icons.arrow_downward),
-                  elevation: 0,
-                  style: TextStyle(color: MyColors.textNormal.withOpacity(1.0)),
-                  underline: Container(
-                    height: 2,
-                    color: MyColors.primaryNormal.withOpacity(0.7),
-                  ),
-                  onChanged: (String? newRepetitiveValue) {
-                    dropDownState(() {
-                      repetitiveDropdownValue = newRepetitiveValue!;
-                    });
-                  },
-                  items: <String>['Daily', 'Weekly']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
-            StatefulBuilder(
-                builder: (BuildContext context, StateSetter timePickState) {
-              return OutlinedButton(
-                onPressed: () async {
-                  await _show();
-                  timePickState(() {});
-                },
-                child: Text(_selectedTime != null ? _selectedTime! : 'No time selected!'),
-              );
-            }),
-          ] else if (task.type == TaskType.DueTo)
-            ...[]
-          else if (task.type == TaskType.Appointment)
-            ...[]
-          else ...[
-            Text(
-              'Something went wrong. Please try again later...',
-              style: TextStyle(color: Colors.red),
-            )
-          ]
-        ],
-      ),
       actions: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -233,27 +168,6 @@ class _DailyPageState extends State<DailyPage> {
     return "$time";
   }
 
-  Future<void> _show() async {
-    final TimeOfDay? result = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-        builder: (context, childWidget) {
-          return MediaQuery(
-              data:
-                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-              child: childWidget!);
-        });
-    if (result != null) {
-      setState(() {
-        String string = '';
-        for(int index = 10; index <= 14; index ++) {
-           string += to24hours(result)[index];// result.format(context);
-        }
-        _selectedTime = string;
-      });
-    }
-  }
-
   List<Task> sortTaskList(List<Task> filteredTasks) {
     List<Task> filteredTasksAux = filteredTasks;
     filteredTasksAux.sort((a, b) => a.getDateTime().compareTo(b.getDateTime()));
@@ -276,72 +190,77 @@ class _DailyPageState extends State<DailyPage> {
   Widget _taskWidget(Task task) {
     return GestureDetector(
       onLongPress: () {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                title: Text(
-                  task.name,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: 'OpenSans',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 30.0),
-                ),
-                content: Text(
-                  'Choose an action to perform on the selected task',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: 'OpenSans',
-                      fontWeight: FontWeight.w300,
-                      fontSize: 15.0),
-                ),
-                actions: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                                fontSize: 20.0, fontFamily: 'OpenSans'),
-                          )),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return _editTasks(task);
-                                });
-                          },
-                          child: Text(
-                            'Edit',
-                            style: TextStyle(
-                                fontSize: 20.0, fontFamily: 'OpenSans'),
-                          )),
-                      TextButton(
-                        onPressed: () {
-                          deleteTask(task);
-                          Navigator.pop(context);
-                          setState(() {});
-                        },
-                        child: Text(
-                          'Delete',
-                          style:
-                              TextStyle(fontSize: 20.0, fontFamily: 'OpenSans'),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              );
-            });
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NewTaskPage(id: 1)),
+        );
+
+        // showDialog(
+        //     context: context,
+        //     builder: (context) {
+        //       return AlertDialog(
+        //         shape: RoundedRectangleBorder(
+        //             borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        //         title: Text(
+        //           task.name,
+        //           textAlign: TextAlign.center,
+        //           style: TextStyle(
+        //               fontFamily: 'OpenSans',
+        //               fontWeight: FontWeight.w600,
+        //               fontSize: 30.0),
+        //         ),
+        //         content: Text(
+        //           'Choose an action to perform on the selected task',
+        //           textAlign: TextAlign.center,
+        //           style: TextStyle(
+        //               fontFamily: 'OpenSans',
+        //               fontWeight: FontWeight.w300,
+        //               fontSize: 15.0),
+        //         ),
+        //         actions: [
+        //           Row(
+        //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //             children: <Widget>[
+        //               TextButton(
+        //                   onPressed: () {
+        //                     Navigator.pop(context);
+        //                   },
+        //                   child: Text(
+        //                     'Cancel',
+        //                     style: TextStyle(
+        //                         fontSize: 20.0, fontFamily: 'OpenSans'),
+        //                   )),
+        //               TextButton(
+        //                   onPressed: () {
+        //                     Navigator.pop(context);
+        //                     showDialog(
+        //                         context: context,
+        //                         builder: (context) {
+        //                           return _editTasks(task);
+        //                         });
+        //                   },
+        //                   child: Text(
+        //                     'Edit',
+        //                     style: TextStyle(
+        //                         fontSize: 20.0, fontFamily: 'OpenSans'),
+        //                   )),
+        //               TextButton(
+        //                 onPressed: () {
+        //                   deleteTask(task);
+        //                   Navigator.pop(context);
+        //                   setState(() {});
+        //                 },
+        //                 child: Text(
+        //                   'Delete',
+        //                   style:
+        //                   TextStyle(fontSize: 20.0, fontFamily: 'OpenSans'),
+        //                 ),
+        //               )
+        //             ],
+        //           ),
+        //         ],
+        //       );
+        //     });
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
@@ -432,48 +351,53 @@ class _DailyPageState extends State<DailyPage> {
           _filterTasks();
         });
       },
-      child: Container(
-        alignment: Alignment.center,
-        constraints: BoxConstraints(minWidth: 35),
-        height: 35,
-        padding: EdgeInsets.symmetric(horizontal: 10.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(7)),
-          border: Border.all(color: MyColors.lightGray, width: 0.2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 1.0,
-              spreadRadius: 0.2,
-              offset: Offset(1.0, 1.0), // changes position of shadow
-            ),
-          ],
-          color: isSelected ? MyColors.primaryNormal : MyColors.white,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (hasCircle) ...[
-              Container(
-                width: 13,
-                height: 13,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Container(
+          alignment: Alignment.center,
+          constraints: BoxConstraints(minWidth: 35),
+          height: 35,
+          padding: EdgeInsets.symmetric(horizontal: 10.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(7)),
+            border: Border.all(color: MyColors.lightGray, width: 0.2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey,
+                blurRadius: 1.0,
+                spreadRadius: 0.2,
+                offset: Offset(1.0, 1.0), // changes position of shadow
+              ),
+            ],
+            color: isSelected ? MyColors.primaryNormal : MyColors.white,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (hasCircle) ...[
+                Container(
+                  width: 13,
+                  height: 13,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                )
+              ],
+              Text(
+                title,
+                style: TextStyle(
+                  color:
+                      isSelected ? MyColors.taintedWhite : MyColors.textNormal,
+                  fontSize: 13.0,
+                  fontFamily: 'OpenSans',
                 ),
               ),
-              SizedBox(
-                width: 10,
-              )
             ],
-            Text(
-              title,
-              style: TextStyle(
-                color: isSelected ? MyColors.taintedWhite : MyColors.textNormal,
-                fontFamily: 'OpenSans',
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

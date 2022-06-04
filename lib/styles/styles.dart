@@ -9,7 +9,6 @@ abstract class MyColors {
         taintedWhite = Color(0xffF6F7F7),
         white = Color(0xffFAFCFC),
         accentNormal = Color(0xffE18851),
-        // accentDarker = Color(0xffE18851),
         repetitiveBlue = Color(0xff667ACC),
         dueToRed = Color(0xffCC6E66),
         appointmentGreen = Color(0xff66CC8F),

@@ -6,6 +6,7 @@ import 'package:timeless/model/task_type.dart';
 import '../styles/styles.dart';
 
 class Task{
+  int? id;
   String name;
   TaskType type;
   RepetitiveType? repetitiveType;
