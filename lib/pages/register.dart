@@ -175,7 +175,7 @@ class RegisterStatefulWidgetState extends State<Register> with RestorationMixin 
                         ),
 
                         Padding(
-                          padding: const EdgeInsets.only(top: 8,),
+                          padding: const EdgeInsets.only(top: 8.0,),
                           child:
                               OutlinedButton(
                                 onPressed: () {

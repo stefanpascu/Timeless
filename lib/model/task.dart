@@ -19,8 +19,8 @@ class Task{
 
   Task.repetitive(this.name, this.repetitiveType, this.time) : type = TaskType.Repetitive, color =  MyColors.repetitiveBlue;
 
-  Task.dueTo(this.name, this.time) : type = TaskType.DueTo, color =  MyColors.dueToRed;
+  Task.dueTo(this.name, this.time) : type = TaskType.DueTo, color = MyColors.dueToRed;
 
-  Task.appointment(this.name, this.time) : type = TaskType.Appointment, color =  MyColors.appointmentGreen;
+  Task.appointment(this.name, this.time) : type = TaskType.Appointment, color = MyColors.appointmentGreen;
 
 }

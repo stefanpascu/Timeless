@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../styles/styles.dart';
+import 'drawer_page.dart';
 import 'home_page.dart';
 
 
@@ -82,51 +83,9 @@ class FriendsStatefulWidgetState extends State<FriendsPage> {
         elevation: 0,
       ),
 
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text('Drawer Header', textAlign: TextAlign.center,),
-            ),
-            ListTile(
-              title: Text('Home', textAlign: TextAlign.center,),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()),);
-              },
-            ),
-            ListTile(
-              title: Text('Friends', textAlign: TextAlign.center,),
-              onTap: () {
-                // Navigator.pop(context);
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const Friends()),);
-              },
-            ),
-            ListTile(
-              title: Text('Settings', textAlign: TextAlign.center,),
-              onTap: () {
-                // Navigator.pop(context);
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()),);
-              },
-            ),
-            ListTile(
-              title: Text('Logout', textAlign: TextAlign.center,),
-              onTap: () {
-                // Navigator.pop(context);
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()),);
-              },
-            ),
-          ],
-        ),
-      ),
-
+      drawer: MainDrawer(pageId: 2),
 
       body:
-
       ////////////////////////////////////////////SEARCH BAR AND CONTENTS////////////////////////////////////////////
       Column(
         mainAxisSize: MainAxisSize.max,

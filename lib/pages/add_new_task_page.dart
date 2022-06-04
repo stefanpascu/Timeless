@@ -10,45 +10,77 @@ import 'new_repetitive_page.dart';
 
 class NewTaskPage extends StatefulWidget {
   final int? id;
+  final String? restorationId;
 
-  NewTaskPage({Key? key, this.id}) : super(key: key);
+  NewTaskPage({Key? key, this.id, this.restorationId}) : super(key: key);
 
   @override
   State<NewTaskPage> createState() => NewTaskPageState();
 }
 
-class NewTaskPageState extends State<NewTaskPage> {
+class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
+  @override
+  String? get restorationId => widget.restorationId;
+
   late bool editMode;
   late Task task;
   late bool isSwitched = false;
-  late String formattedTime = 'Set Time';
-  late TextEditingController _controller;
+  late String formattedTime = 'hh:mm';
+  late String formattedDate = 'dd/mm/yyyy';
+  late TextEditingController _controller = TextEditingController(text: '');
   int selectedDailyIndex = 0;
   String repetitiveDropdownValue = 'Daily';
+  final RestorableDateTime _selectedDate =
+      RestorableDateTime(DateTime(2021, 12, 12));
+
+  late final RestorableRouteFuture<DateTime?> _restorableDatePickerRouteFuture =
+      RestorableRouteFuture<DateTime?>(
+    onComplete: _selectDate,
+    onPresent: (NavigatorState navigator, Object? arguments) {
+      return navigator.restorablePush(
+        _datePickerRoute,
+        arguments: _selectedDate.value.millisecondsSinceEpoch,
+      );
+    },
+  );
 
   @override
   void initState() {
     editMode = widget.id != null;
-    if(editMode) {
+    if (editMode) {
       task = findTaskById(widget.id);
+      if (task.type == TaskType.Repetitive)
+        selectedDailyIndex = 0;
+      else if (task.type == TaskType.DueTo)
+        selectedDailyIndex = 1;
+      else if (task.type == TaskType.Appointment)
+        selectedDailyIndex = 2;
 
-      if (task.repetitiveType == null)
-        isSwitched = false;
-      else
-        isSwitched = true;
+      if(selectedDailyIndex == 0) {
 
-      repetitiveDropdownValue = task.repetitiveType.toString().split('.')[1];
-      String formattedTimeAux = '';
-      for (int i = 0; i <= 4; i++) {
-        formattedTimeAux += DateFormat.Hms().format(task.time)[i];
+        if (task.type == TaskType.Repetitive) {
+          if (task.repetitiveType == null)
+            isSwitched = false;
+          else
+            isSwitched = true;
+          repetitiveDropdownValue =
+          task.repetitiveType.toString().split('.')[1];
+        }
+
+        String formattedTimeAux = '';
+        for (int i = 0; i <= 4; i++) {
+          formattedTimeAux += DateFormat.Hms().format(task.time)[i];
+        }
+        formattedTime = formattedTimeAux;
+        _controller = TextEditingController(text: task.name);
+      } else if(selectedDailyIndex == 1) {
+
       }
-      formattedTime = formattedTimeAux;
-      _controller = TextEditingController(text: task.name);
     } else {
-      task = Task.repetitive("hello1", RepetitiveType.Weekly,
-          DateTime.now().add(Duration(minutes: 10)));
+      if (selectedDailyIndex == 0)
+        task = Task.repetitive("", null, DateTime.now());
+      super.initState();
     }
-    super.initState();
   }
 
   @override
@@ -73,33 +105,47 @@ class NewTaskPageState extends State<NewTaskPage> {
             fontWeight: FontWeight.w900,
           ),
         ),
-        elevation: 0,
-      ),
-      body: Column(children: [
-        Container(
-          height: 60.0,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: <Widget>[
-                _filterWidget(
-                    title: 'Repetitive',
-                    index: 0,
-                    color: MyColors.repetitiveBlue),
-                SizedBox(width: 10),
-                _filterWidget(
-                    title: 'Due to', index: 1, color: MyColors.dueToRed),
-                SizedBox(width: 10),
-                _filterWidget(
-                    title: 'Appointment',
-                    index: 2,
-                    color: MyColors.appointmentGreen),
-              ],
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10.0),
+            child: IconButton(
+              icon: Icon(
+                Icons.delete,
+                color: MyColors.primaryDarkest,
+                size: 35.0,
+              ),
+              onPressed: () {
+                print('delete task');
+              },
             ),
           ),
-        ),
-        Expanded(
-          child: Container(
+        ],
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Column(children: [
+          Container(
+            height: 60.0,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  _filterWidget(
+                      title: 'Repetitive',
+                      index: 0,
+                      color: MyColors.repetitiveBlue),
+                  _filterWidget(
+                      title: 'Due to', index: 1, color: MyColors.dueToRed),
+                  _filterWidget(
+                      title: 'Appointment',
+                      index: 2,
+                      color: MyColors.appointmentGreen),
+                ],
+              ),
+            ),
+          ),
+          Container(
               child: selectedDailyIndex == 0
                   ? Column(
                       children: [
@@ -127,7 +173,7 @@ class NewTaskPageState extends State<NewTaskPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text('Set Time'),
+                            Text('Pick a Time'),
                             StatefulBuilder(builder: (BuildContext context,
                                 StateSetter timePickState) {
                               return OutlinedButton(
@@ -193,14 +239,386 @@ class NewTaskPageState extends State<NewTaskPage> {
                             },
                           ),
                         ),
+                        Row(
+                          // mainAxisAlignment: MainAxisAlignment.center,
+                          // crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            SizedBox(
+                              width: 150.0,
+                              height: 45.0,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: MyColors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  shadowColor: Colors.grey,
+                                  elevation: 2.5,
+                                  side: BorderSide(
+                                    width: 0.8,
+                                    color: MyColors.lightGray,
+                                  ),
+                                ),
+                                onPressed: () => {
+                                  Navigator.pop(context)
+                                },
+                                child: const Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                      fontSize: 20.0,
+                                      color: MyColors.textNormal),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 150.0,
+                              height: 45.0,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: MyColors.accentNormal,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  shadowColor: Colors.grey,
+                                  elevation: 2.5,
+                                  side: BorderSide(
+                                    width: 0.8,
+                                    color: MyColors.lightGray,
+                                  ),
+                                ),
+                                onPressed: () => {
+                                  print('Save'),
+                                  Navigator.pop(context)
+                                },
+                                child: const Text(
+                                  'Save',
+                                  style: TextStyle(
+                                      fontSize: 20.0,
+                                      color: MyColors.taintedWhite),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     )
                   : selectedDailyIndex == 1
-                      ? NewDueToPage()
-                      : NewRepetitivePage()),
-        ),
-      ]),
+                      ? Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 40, vertical: 16),
+                              child: TextField(
+                                controller:
+                                    widget.id == null ? null : _controller,
+                                decoration: InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: MyColors.primaryNormal
+                                            .withOpacity(0.7),
+                                        width: 1.5),
+                                  ),
+                                  border: OutlineInputBorder(),
+                                  labelStyle: TextStyle(
+                                    color: MyColors.primaryNormal,
+                                  ),
+                                  hintText: 'Task Name',
+                                ),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text('Pick a Time'),
+                                StatefulBuilder(builder: (BuildContext context,
+                                    StateSetter timePickState) {
+                                  return OutlinedButton(
+                                    onPressed: () async {
+                                      await _show();
+                                      timePickState(() {});
+                                    },
+                                    child: Text(formattedTime != null
+                                        ? formattedTime
+                                        : 'No time selected!'),
+                                  );
+                                }),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text('Pick a Date'),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 8,
+                                  ),
+                                  child: OutlinedButton(
+                                    onPressed: () {
+                                      _restorableDatePickerRouteFuture
+                                          .present();
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      side: const BorderSide(
+                                          color: MyColors.primaryNormal,
+                                          width: 1.0),
+                                    ),
+                                    child: Text(
+                                      formattedDate,
+                                      style: TextStyle(
+                                        color: MyColors.textNormal
+                                            .withOpacity(0.7),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              // mainAxisAlignment: MainAxisAlignment.center,
+                              // crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                SizedBox(
+                                  width: 150.0,
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: MyColors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      shadowColor: Colors.grey,
+                                      elevation: 2.5,
+                                      side: BorderSide(
+                                        width: 0.8,
+                                        color: MyColors.lightGray,
+                                      ),
+                                    ),
+                                    onPressed: () => {
+                                      Navigator.pop(context)
+                                    },
+                                    child: const Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                          fontSize: 20.0,
+                                          color: MyColors.textNormal),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 150.0,
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: MyColors.accentNormal,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      shadowColor: Colors.grey,
+                                      elevation: 2.5,
+                                      side: BorderSide(
+                                        width: 0.8,
+                                        color: MyColors.lightGray,
+                                      ),
+                                    ),
+                                    onPressed: () => {
+                                      print('Save'),
+                                      Navigator.pop(context)
+                                    },
+                                    child: const Text(
+                                      'Save',
+                                      style: TextStyle(
+                                          fontSize: 20.0,
+                                          color: MyColors.taintedWhite),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 40, vertical: 16),
+                              child: TextField(
+                                controller:
+                                    widget.id == null ? null : _controller,
+                                decoration: InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: MyColors.primaryNormal
+                                            .withOpacity(0.7),
+                                        width: 1.5),
+                                  ),
+                                  border: OutlineInputBorder(),
+                                  labelStyle: TextStyle(
+                                    color: MyColors.primaryNormal,
+                                  ),
+                                  hintText: 'Task Name',
+                                ),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text('Pick a Time'),
+                                StatefulBuilder(builder: (BuildContext context,
+                                    StateSetter timePickState) {
+                                  return OutlinedButton(
+                                    onPressed: () async {
+                                      await _show();
+                                      timePickState(() {});
+                                    },
+                                    child: Text(formattedTime != null
+                                        ? formattedTime
+                                        : 'No time selected!'),
+                                  );
+                                }),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text('Pick a Date'),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 8.0,
+                                  ),
+                                  child: OutlinedButton(
+                                    onPressed: () {
+                                      _restorableDatePickerRouteFuture
+                                          .present();
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      side: const BorderSide(
+                                          color: MyColors.primaryNormal,
+                                          width: 1.0),
+                                    ),
+                                    child: Text(
+                                      formattedDate,
+                                      style: TextStyle(
+                                        color: MyColors.textNormal
+                                            .withOpacity(0.7),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                SizedBox(
+                                  width: 150.0,
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: MyColors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      shadowColor: Colors.grey,
+                                      elevation: 2.5,
+                                      side: BorderSide(
+                                        width: 0.8,
+                                        color: MyColors.lightGray,
+                                      ),
+                                    ),
+                                    onPressed: () => {
+                                      Navigator.pop(context)
+                                    },
+                                    child: const Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                          fontSize: 20.0,
+                                          color: MyColors.textNormal),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 150.0,
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: MyColors.accentNormal,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      shadowColor: Colors.grey,
+                                      elevation: 2.5,
+                                      side: BorderSide(
+                                        width: 0.8,
+                                        color: MyColors.lightGray,
+                                      ),
+                                    ),
+                                    onPressed: () => {
+                                      print('Save'),
+                                      Navigator.pop(context)
+                                    },
+                                    child: const Text(
+                                      'Save',
+                                      style: TextStyle(
+                                          fontSize: 20.0,
+                                          color: MyColors.taintedWhite),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )),
+        ]),
+      ),
     );
+  }
+
+  static Route<DateTime> _datePickerRoute(
+    BuildContext context,
+    Object? arguments,
+  ) {
+    return DialogRoute<DateTime>(
+      context: context,
+      builder: (BuildContext context) {
+        return DatePickerDialog(
+          restorationId: 'date_picker_dialog',
+          initialEntryMode: DatePickerEntryMode.calendarOnly,
+          initialDate: DateTime.fromMillisecondsSinceEpoch(arguments! as int),
+          firstDate: DateTime(1900),
+          lastDate: DateTime(2022),
+        );
+      },
+    );
+  }
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_selectedDate, 'selected_date');
+    registerForRestoration(
+        _restorableDatePickerRouteFuture, 'date_picker_route_future');
+  }
+
+  void _selectDate(DateTime? newSelectedDate) {
+    if (newSelectedDate != null) {
+      setState(() {
+        _selectedDate.value = newSelectedDate;
+        formattedDate = '${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}';
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content: Text(
+        //       'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}'),
+        // ));
+      });
+    }
   }
 
   Future<void> _show() async {
@@ -230,7 +648,11 @@ class NewTaskPageState extends State<NewTaskPage> {
   }
 
   Task findTaskById(int? id) {
-    Task task = Task.repetitive("hello1", RepetitiveType.Weekly,
+    // Task task = Task.repetitive("hello1", RepetitiveType.Weekly,
+    //     DateTime.now().add(Duration(minutes: 10)));
+    // Task task = Task.dueTo("hello1",
+    //     DateTime.now().add(Duration(minutes: 10)));
+    Task task = Task.appointment("hello1",
         DateTime.now().add(Duration(minutes: 10)));
     // TODO search database for task
     return task;
@@ -246,6 +668,21 @@ class NewTaskPageState extends State<NewTaskPage> {
       onTap: () {
         setState(() {
           selectedDailyIndex = index;
+          if(editMode == false) {
+            if (selectedDailyIndex == 0)
+              task = Task.repetitive("", null, DateTime.now());
+            else if (selectedDailyIndex == 1)
+              task = Task.dueTo("", DateTime.now());
+            else if (selectedDailyIndex == 2)
+              task = Task.appointment("", DateTime.now());
+          } else {
+            if (selectedDailyIndex == 0)
+              task = Task.repetitive(task.name, task.repetitiveType, task.time);
+            else if (selectedDailyIndex == 1)
+              task = Task.dueTo("", DateTime.now());
+            else if (selectedDailyIndex == 2)
+              task = Task.appointment("", DateTime.now());
+          }
         });
       },
       child: Padding(

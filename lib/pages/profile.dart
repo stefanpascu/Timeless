@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../styles/styles.dart';
+import 'drawer_page.dart';
 import 'friends_page.dart';
 import 'home_page.dart';
 
@@ -56,68 +57,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
 
         elevation: 0,
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: MyColors.primaryNormal,
-              ),
-              child: Text(
-                'Drawer Header',
-                textAlign: TextAlign.center,
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                'Home',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomePage()),
-                );
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'Friends',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const FriendsPage()),
-                );
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'Settings',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                // Navigator.pop(context);
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()),);
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'Logout',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                // Navigator.pop(context);
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()),);
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: MainDrawer(pageId: 0),
       body: SingleChildScrollView(
         child: Column(
           children: [

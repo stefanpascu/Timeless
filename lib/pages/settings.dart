@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:timeless/pages/profile.dart';
 
 import '../styles/styles.dart';
+import 'drawer_page.dart';
 import 'friends_page.dart';
 import 'home_page.dart';
 
@@ -54,65 +55,7 @@ class SettingsStatefulWidgetState extends State<Settings> {
         elevation: 0,
       ),
 
-      drawer: Drawer(
-        backgroundColor:  MyColors.taintedWhite,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(60),
-              height: 220,
-              decoration: const BoxDecoration(
-                color: MyColors.taintedWhite, // F89D7D
-              ),
-              child: Column(
-                children: [
-                  FloatingActionButton(onPressed: () => {
-                    Navigator.pop(context),
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const Profile()),),
-                  },),
-                  Container(
-                    margin: const EdgeInsets.only(top: 5.0,),
-                    child: const Text('Your Name Here', textAlign: TextAlign.center, style: TextStyle(
-                      fontSize: 20.0,
-                    ),),
-                  ),
-                ],
-              ),
-            ),
-
-            ListTile(
-              title: const Text('Home', textAlign: TextAlign.center,),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()),);
-              },
-            ),
-            ListTile(
-              title: const Text('Friends', textAlign: TextAlign.center,),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const FriendsPage()),);
-              },
-            ),
-            ListTile(
-              title: const Text('Settings', textAlign: TextAlign.center,),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()),);
-              },
-            ),
-            ListTile(
-              title: const Text('Logout', textAlign: TextAlign.center,),
-              onTap: () {
-                // Navigator.pop(context);
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()),);
-              },
-            ),
-          ],
-        ),
-      ),
-
+      drawer: MainDrawer(pageId: 3),
 
     );
   }

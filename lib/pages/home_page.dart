@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:timeless/pages/daily_page.dart';
+import 'package:timeless/pages/drawer_page.dart';
 import 'package:timeless/pages/goals_page.dart';
 import 'package:timeless/pages/profile.dart';
 import 'package:timeless/pages/register.dart';
@@ -78,127 +79,7 @@ class HomePageState extends State<HomePage> {
 
         elevation: 0,
       ),
-      drawer: Drawer(
-        backgroundColor:  MyColors.taintedWhite,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(60),
-              height: 220,
-              decoration: const BoxDecoration(
-                color: Color(0xffCCCED0), // F89D7D
-              ),
-              child: Column(
-                children: [
-                  FloatingActionButton(
-                    onPressed: () => {
-                      Navigator.pop(context),
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Profile()),
-                      ),
-                    },
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(
-                      top: 5.0,
-                    ),
-                    child: const Text(
-                      'Your Name Here',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 20.0,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                'Home',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'OpenSans',
-                ),
-              ),
-              onTap: () {
-                // Navigator.pop(context);
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()),);
-              },
-            ),
-            Divider(
-              thickness: 1,
-              indent: 40,
-              endIndent: 40,
-              color: const Color(0xff4B5052).withOpacity(0.5),
-            ),
-            ListTile(
-              title: const Text(
-                'Friends',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'OpenSans',
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const FriendsPage()),
-                );
-              },
-            ),
-            Divider(
-              thickness: 2,
-              indent: 40,
-              endIndent: 40,
-              color: const Color(0xff4B5052).withOpacity(0.2),
-            ),
-            ListTile(
-              title: const Text(
-                'Settings',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'OpenSans',
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Settings()),
-                );
-              },
-            ),
-            Divider(
-              thickness: 1,
-              indent: 40,
-              endIndent: 40,
-              color: const Color(0xff4B5052).withOpacity(0.5),
-            ),
-            ListTile(
-              title: const Text(
-                'Logout',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'OpenSans',
-                ),
-              ),
-              onTap: () {
-                // Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Register()),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: MainDrawer(pageId: 1),
       body: Container(
         child:
           selectedIndex == 1 ? GoalsPage() : DailyPage()
