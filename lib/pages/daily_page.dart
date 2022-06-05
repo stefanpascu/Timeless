@@ -21,17 +21,17 @@ class _DailyPageState extends State<DailyPage> {
 
   static List<Task> tasks = [
     Task.repetitive("hello1", RepetitiveType.Daily,
-        DateTime.now().add(Duration(minutes: 10))),
-    Task.repetitive("hello1", RepetitiveType.Daily,
-        DateTime.now().add(Duration(minutes: 10))),
+        DateTime.now().add(Duration(minutes: 10)), 1),
+    Task.repetitive("Nameless Task", RepetitiveType.Daily,
+        DateTime.now().add(Duration(minutes: 10)), 2),
     Task.repetitive("hello4", RepetitiveType.Daily,
-        DateTime.now().add(Duration(minutes: 20))),
-    Task.appointment("hello6", DateTime.now().add(Duration(minutes: 10))),
+        DateTime.now().add(Duration(minutes: 20)), 3),
+    Task.appointment("hello6", DateTime.now().add(Duration(minutes: 10)), 4),
     Task.repetitive("hello2", RepetitiveType.Daily,
-        DateTime.now().add(Duration(minutes: 30, days: 1))),
+        DateTime.now().add(Duration(minutes: 30, days: 1)), 5),
     Task.repetitive("hello3", RepetitiveType.Daily,
-        DateTime.now().add(Duration(minutes: 5, days: 3))),
-    Task.dueTo("hello5", DateTime.now().add(Duration(minutes: 10, days: 3))),
+        DateTime.now().add(Duration(minutes: 5, days: 3)), 6),
+    Task.dueTo("hello5", DateTime.now().add(Duration(minutes: 10, days: 3)), 7),
   ];
   List<Task> filteredTasks = tasks;
   String repetitiveDropdownValue = 'Daily';
@@ -194,73 +194,6 @@ class _DailyPageState extends State<DailyPage> {
           context,
           MaterialPageRoute(builder: (context) => NewTaskPage(id: 1)),
         );
-
-        // showDialog(
-        //     context: context,
-        //     builder: (context) {
-        //       return AlertDialog(
-        //         shape: RoundedRectangleBorder(
-        //             borderRadius: BorderRadius.all(Radius.circular(10.0))),
-        //         title: Text(
-        //           task.name,
-        //           textAlign: TextAlign.center,
-        //           style: TextStyle(
-        //               fontFamily: 'OpenSans',
-        //               fontWeight: FontWeight.w600,
-        //               fontSize: 30.0),
-        //         ),
-        //         content: Text(
-        //           'Choose an action to perform on the selected task',
-        //           textAlign: TextAlign.center,
-        //           style: TextStyle(
-        //               fontFamily: 'OpenSans',
-        //               fontWeight: FontWeight.w300,
-        //               fontSize: 15.0),
-        //         ),
-        //         actions: [
-        //           Row(
-        //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //             children: <Widget>[
-        //               TextButton(
-        //                   onPressed: () {
-        //                     Navigator.pop(context);
-        //                   },
-        //                   child: Text(
-        //                     'Cancel',
-        //                     style: TextStyle(
-        //                         fontSize: 20.0, fontFamily: 'OpenSans'),
-        //                   )),
-        //               TextButton(
-        //                   onPressed: () {
-        //                     Navigator.pop(context);
-        //                     showDialog(
-        //                         context: context,
-        //                         builder: (context) {
-        //                           return _editTasks(task);
-        //                         });
-        //                   },
-        //                   child: Text(
-        //                     'Edit',
-        //                     style: TextStyle(
-        //                         fontSize: 20.0, fontFamily: 'OpenSans'),
-        //                   )),
-        //               TextButton(
-        //                 onPressed: () {
-        //                   deleteTask(task);
-        //                   Navigator.pop(context);
-        //                   setState(() {});
-        //                 },
-        //                 child: Text(
-        //                   'Delete',
-        //                   style:
-        //                   TextStyle(fontSize: 20.0, fontFamily: 'OpenSans'),
-        //                 ),
-        //               )
-        //             ],
-        //           ),
-        //         ],
-        //       );
-        //     });
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 8.0),

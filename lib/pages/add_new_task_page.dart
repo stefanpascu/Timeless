@@ -5,8 +5,6 @@ import '../model/repetitive_type.dart';
 import '../model/task.dart';
 import '../model/task_type.dart';
 import '../styles/styles.dart';
-import 'new_due_to_page.dart';
-import 'new_repetitive_page.dart';
 
 class NewTaskPage extends StatefulWidget {
   final int? id;
@@ -25,13 +23,17 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
   late bool editMode;
   late Task task;
   late bool isSwitched = false;
-  late String formattedTime = 'hh:mm';
-  late String formattedDate = 'dd/mm/yyyy';
+  late RepetitiveType? repetitiveType = null;
+  late String formattedTime = task.time.toString().split(" ")[1].split(":")[0] +
+      ":" +
+      task.time.toString().split(" ")[1].split(":")[1];
+  late String formattedDate = task.time.toString().split(" ")[0];
   late TextEditingController _controller = TextEditingController(text: '');
+  final RestorableDateTime _selectedDate =
+  RestorableDateTime(DateTime.now());
   int selectedDailyIndex = 0;
   String repetitiveDropdownValue = 'Daily';
-  final RestorableDateTime _selectedDate =
-      RestorableDateTime(DateTime(2021, 12, 12));
+  bool timeError = false;
 
   late final RestorableRouteFuture<DateTime?> _restorableDatePickerRouteFuture =
       RestorableRouteFuture<DateTime?>(
@@ -49,36 +51,42 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
     editMode = widget.id != null;
     if (editMode) {
       task = findTaskById(widget.id);
+
+      _controller = TextEditingController(text: task.name);
+
       if (task.type == TaskType.Repetitive)
         selectedDailyIndex = 0;
       else if (task.type == TaskType.DueTo)
         selectedDailyIndex = 1;
-      else if (task.type == TaskType.Appointment)
-        selectedDailyIndex = 2;
+      else if (task.type == TaskType.Appointment) selectedDailyIndex = 2;
 
-      if(selectedDailyIndex == 0) {
+      task.id = widget.id;
+
+      formattedTime = task.time.toString().split(" ")[1].split(":")[0] +
+          ":" +
+          task.time.toString().split(" ")[1].split(":")[1];
+      _controller = TextEditingController(text: task.name);
+
+      if (selectedDailyIndex == 0) {
+        repetitiveType = task.repetitiveType;
 
         if (task.type == TaskType.Repetitive) {
           if (task.repetitiveType == null)
             isSwitched = false;
           else
             isSwitched = true;
-          repetitiveDropdownValue =
-          task.repetitiveType.toString().split('.')[1];
-        }
 
-        String formattedTimeAux = '';
-        for (int i = 0; i <= 4; i++) {
-          formattedTimeAux += DateFormat.Hms().format(task.time)[i];
+          if (repetitiveType != null) {
+            repetitiveDropdownValue =
+                task.repetitiveType.toString().split('.')[1];
+          }
         }
-        formattedTime = formattedTimeAux;
-        _controller = TextEditingController(text: task.name);
-      } else if(selectedDailyIndex == 1) {
-
+      } else if (selectedDailyIndex == 1 || selectedDailyIndex == 2) {
+        formattedDate = task.time.toString().split(" ")[0];
       }
     } else {
       if (selectedDailyIndex == 0)
-        task = Task.repetitive("", null, DateTime.now());
+        task = Task.repetitive("", null, DateTime.now(), null);
       super.initState();
     }
   }
@@ -106,19 +114,20 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: IconButton(
-              icon: Icon(
-                Icons.delete,
-                color: MyColors.primaryDarkest,
-                size: 35.0,
+          if (editMode == true)
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: IconButton(
+                icon: Icon(
+                  Icons.delete,
+                  color: MyColors.primaryDarkest,
+                  size: 35.0,
+                ),
+                onPressed: () {
+                  print('delete task');
+                },
               ),
-              onPressed: () {
-                print('delete task');
-              },
             ),
-          ),
         ],
         elevation: 0,
       ),
@@ -177,13 +186,20 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                             StatefulBuilder(builder: (BuildContext context,
                                 StateSetter timePickState) {
                               return OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  primary: MyColors.white,
+                                  side: const BorderSide(
+                                      color: MyColors.primaryNormal,
+                                      width: 1.0),
+                                ),
                                 onPressed: () async {
                                   await _show();
                                   timePickState(() {});
                                 },
-                                child: Text(formattedTime != null
-                                    ? formattedTime
-                                    : 'No time selected!'),
+                                child: Text(
+                                  formattedTime,
+                                  style: TextStyle(color: MyColors.textNormal),
+                                ),
                               );
                             }),
                           ],
@@ -198,6 +214,12 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                               onChanged: (value) {
                                 setState(() {
                                   isSwitched = value;
+                                  if (isSwitched == false)
+                                    task.repetitiveType = null;
+                                  else
+                                    task.repetitiveType = repetitiveType != null
+                                        ? repetitiveType
+                                        : RepetitiveType.Daily;
                                 });
                               },
                             ),
@@ -224,6 +246,16 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   dropDownState(() {
                                     repetitiveDropdownValue =
                                         newRepetitiveValue!;
+                                    if (repetitiveDropdownValue == 'Daily') {
+                                      repetitiveType = RepetitiveType.Daily;
+                                      task.repetitiveType =
+                                          RepetitiveType.Daily;
+                                    } else if (repetitiveDropdownValue ==
+                                        'Weekly') {
+                                      repetitiveType = RepetitiveType.Weekly;
+                                      task.repetitiveType =
+                                          RepetitiveType.Weekly;
+                                    }
                                   });
                                 },
                                 items: <String>[
@@ -239,67 +271,37 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                             },
                           ),
                         ),
-                        Row(
-                          // mainAxisAlignment: MainAxisAlignment.center,
-                          // crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            SizedBox(
-                              width: 150.0,
-                              height: 45.0,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: MyColors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  shadowColor: Colors.grey,
-                                  elevation: 2.5,
-                                  side: BorderSide(
-                                    width: 0.8,
-                                    color: MyColors.lightGray,
-                                  ),
-                                ),
-                                onPressed: () => {
-                                  Navigator.pop(context)
-                                },
-                                child: const Text(
-                                  'Cancel',
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: MyColors.textNormal),
-                                ),
+                        SizedBox(
+                          width: 150.0,
+                          height: 45.0,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: MyColors.accentNormal,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              shadowColor: Colors.grey,
+                              elevation: 2.5,
+                              side: BorderSide(
+                                width: 0.8,
+                                color: MyColors.lightGray,
                               ),
                             ),
-                            SizedBox(
-                              width: 150.0,
-                              height: 45.0,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: MyColors.accentNormal,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  shadowColor: Colors.grey,
-                                  elevation: 2.5,
-                                  side: BorderSide(
-                                    width: 0.8,
-                                    color: MyColors.lightGray,
-                                  ),
-                                ),
-                                onPressed: () => {
-                                  print('Save'),
-                                  Navigator.pop(context)
-                                },
-                                child: const Text(
-                                  'Save',
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: MyColors.taintedWhite),
-                                ),
-                              ),
+                            onPressed: () => {
+                              print('Save'),
+                              if (_controller.text == "")
+                                task.name = "Nameless Task"
+                              else
+                                task.name = _controller.text,
+                              printTask(task),
+                              Navigator.pop(context)
+                            },
+                            child: const Text(
+                              'Save',
+                              style: TextStyle(
+                                  fontSize: 20.0, color: MyColors.taintedWhite),
                             ),
-                          ],
+                          ),
                         ),
                       ],
                     )
@@ -339,9 +341,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                       await _show();
                                       timePickState(() {});
                                     },
-                                    child: Text(formattedTime != null
-                                        ? formattedTime
-                                        : 'No time selected!'),
+                                    child: Text(formattedTime),
                                   );
                                 }),
                               ],
@@ -376,69 +376,56 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 ),
                               ],
                             ),
-                            Row(
-                              // mainAxisAlignment: MainAxisAlignment.center,
-                              // crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                SizedBox(
-                                  width: 150.0,
-                                  height: 45.0,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: MyColors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      shadowColor: Colors.grey,
-                                      elevation: 2.5,
-                                      side: BorderSide(
-                                        width: 0.8,
-                                        color: MyColors.lightGray,
-                                      ),
-                                    ),
-                                    onPressed: () => {
-                                      Navigator.pop(context)
-                                    },
-                                    child: const Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                          fontSize: 20.0,
-                                          color: MyColors.textNormal),
-                                    ),
+                            Visibility(
+                              visible: timeError,
+                              child: StatefulBuilder(
+                                builder: (BuildContext context,
+                                    StateSetter dropDownState) {
+                                  return Text(
+                                    'Selected Date and Time combination is invalid',
+                                    style: TextStyle(color: Colors.red),
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              width: 150.0,
+                              height: 45.0,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: MyColors.accentNormal,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  shadowColor: Colors.grey,
+                                  elevation: 2.5,
+                                  side: BorderSide(
+                                    width: 0.8,
+                                    color: MyColors.lightGray,
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 150.0,
-                                  height: 45.0,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: MyColors.accentNormal,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      shadowColor: Colors.grey,
-                                      elevation: 2.5,
-                                      side: BorderSide(
-                                        width: 0.8,
-                                        color: MyColors.lightGray,
-                                      ),
-                                    ),
-                                    onPressed: () => {
-                                      print('Save'),
-                                      Navigator.pop(context)
+                                onPressed: () => {
+                                  print('Save'),
+                                  if (_controller.text == "")
+                                    task.name = "Nameless Task"
+                                  else
+                                    task.name = _controller.text,
+                                  if (compareDates(task.time, DateTime.now()))
+                                    {printTask(task), Navigator.pop(context)}
+                                  else {
+                                      timeError = true
                                     },
-                                    child: const Text(
-                                      'Save',
-                                      style: TextStyle(
-                                          fontSize: 20.0,
-                                          color: MyColors.taintedWhite),
-                                    ),
-                                  ),
+                                  setState(() {
+
+                                  })
+                                },
+                                child: const Text(
+                                  'Save',
+                                  style: TextStyle(
+                                      fontSize: 20.0,
+                                      color: MyColors.taintedWhite),
                                 ),
-                              ],
+                              ),
                             ),
                           ],
                         )
@@ -477,9 +464,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                       await _show();
                                       timePickState(() {});
                                     },
-                                    child: Text(formattedTime != null
-                                        ? formattedTime
-                                        : 'No time selected!'),
+                                    child: Text(formattedTime),
                                   );
                                 }),
                               ],
@@ -514,73 +499,90 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 ),
                               ],
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                SizedBox(
-                                  width: 150.0,
-                                  height: 45.0,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: MyColors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      shadowColor: Colors.grey,
-                                      elevation: 2.5,
-                                      side: BorderSide(
-                                        width: 0.8,
-                                        color: MyColors.lightGray,
-                                      ),
-                                    ),
-                                    onPressed: () => {
-                                      Navigator.pop(context)
-                                    },
-                                    child: const Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                          fontSize: 20.0,
-                                          color: MyColors.textNormal),
-                                    ),
+                            Visibility(
+                              visible: timeError,
+                              child: StatefulBuilder(
+                                builder: (BuildContext context,
+                                    StateSetter dropDownState) {
+                                  return Text(
+                                    'Selected Date and Time combination is invalid',
+                                    style: TextStyle(color: Colors.red),
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              width: 150.0,
+                              height: 45.0,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: MyColors.accentNormal,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  shadowColor: Colors.grey,
+                                  elevation: 2.5,
+                                  side: BorderSide(
+                                    width: 0.8,
+                                    color: MyColors.lightGray,
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 150.0,
-                                  height: 45.0,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: MyColors.accentNormal,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      shadowColor: Colors.grey,
-                                      elevation: 2.5,
-                                      side: BorderSide(
-                                        width: 0.8,
-                                        color: MyColors.lightGray,
-                                      ),
-                                    ),
-                                    onPressed: () => {
-                                      print('Save'),
-                                      Navigator.pop(context)
-                                    },
-                                    child: const Text(
-                                      'Save',
-                                      style: TextStyle(
-                                          fontSize: 20.0,
-                                          color: MyColors.taintedWhite),
-                                    ),
-                                  ),
+                                onPressed: () => {
+                                  print('Save'),
+                                  if (_controller.text == "")
+                                    task.name = "Nameless Task"
+                                  else
+                                    task.name = _controller.text,
+                                  if (compareDates(task.time, DateTime.now()))
+                                    {printTask(task), Navigator.pop(context)}
+                                  else {
+                                    timeError = true
+                                  },
+                                  setState(() {
+
+                                  })
+                                },
+                                child: const Text(
+                                  'Save',
+                                  style: TextStyle(
+                                      fontSize: 20.0,
+                                      color: MyColors.taintedWhite),
                                 ),
-                              ],
+                              ),
                             ),
                           ],
                         )),
         ]),
       ),
     );
+  }
+
+  bool compareDates(DateTime a, DateTime b) {
+    if (int.parse(a.toString().split(" ")[0].split("-")[0]) >
+        int.parse(b.toString().split(" ")[0].split("-")[0]))
+      return true;
+    else if (int.parse(a.toString().split(" ")[0].split("-")[0]) == int.parse(b.toString().split(" ")[0].split("-")[0]))
+      if (int.parse(a.toString().split(" ")[0].split("-")[1]) > int.parse(b.toString().split(" ")[0].split("-")[1]))
+        return true;
+      else if (int.parse(a.toString().split(" ")[0].split("-")[1]) == int.parse(b.toString().split(" ")[0].split("-")[1]))
+        if (int.parse(a.toString().split(" ")[0].split("-")[2]) > int.parse(b.toString().split(" ")[0].split("-")[2]))
+          return true;
+        else if (int.parse(a.toString().split(" ")[0].split("-")[2]) == int.parse(b.toString().split(" ")[0].split("-")[2]))
+            if (int.parse(a.toString().split(" ")[1].split(":")[0]) > int.parse(b.toString().split(" ")[1].split(":")[0]))
+              return true;
+            else if(int.parse(a.toString().split(" ")[1].split(":")[0]) == int.parse(b.toString().split(" ")[1].split(":")[0]))
+              if (int.parse(a.toString().split(" ")[1].split(":")[1]) > int.parse(b.toString().split(" ")[1].split(":")[1]))
+                return true;
+    return false;
+  }
+
+  void printTask(Task task) {
+    print("name: " + task.name);
+    print("type: " + task.type.toString().split('.')[1]);
+    print("repetitive type: " + task.repetitiveType.toString());
+    print("time: " + task.time.toString());
+    print("id: " + task.id.toString());
+    print('///////////////////////////////');
   }
 
   static Route<DateTime> _datePickerRoute(
@@ -594,8 +596,8 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           restorationId: 'date_picker_dialog',
           initialEntryMode: DatePickerEntryMode.calendarOnly,
           initialDate: DateTime.fromMillisecondsSinceEpoch(arguments! as int),
-          firstDate: DateTime(1900),
-          lastDate: DateTime(2022),
+          firstDate: DateTime(int.parse(DateTime.now().toString().split(" ")[0].split("-")[0])),
+          lastDate: DateTime(2200),
         );
       },
     );
@@ -612,11 +614,22 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
     if (newSelectedDate != null) {
       setState(() {
         _selectedDate.value = newSelectedDate;
-        formattedDate = '${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}';
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //   content: Text(
-        //       'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}'),
-        // ));
+        if (_selectedDate.value.month >= 10)
+          if (_selectedDate.value.day >= 10)
+            formattedDate =
+                '${_selectedDate.value.year}-${_selectedDate.value.month}-${_selectedDate.value.day}';
+          else formattedDate =
+                    '${_selectedDate.value.year}-${_selectedDate.value.month}-0${_selectedDate.value.day}';
+        else if (_selectedDate.value.day >= 10)
+          formattedDate =
+          '${_selectedDate.value.year}-0${_selectedDate.value.month}-${_selectedDate.value.day}';
+        else formattedDate =
+          '${_selectedDate.value.year}-0${_selectedDate.value.month}-0${_selectedDate.value.day}';
+
+        task.time =
+            DateTime.parse(formattedDate + " " + task.time.toString().split(" ")[1]);
+
+        timeError = false;
       });
     }
   }
@@ -638,6 +651,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           string += to24hours(result)[index]; // result.format(context);
         }
         formattedTime = string;
+        DateTime time = task.time;
+        task.time =
+            DateTime.parse(time.toString().split(" ")[0] + " " + formattedTime);
       });
     }
   }
@@ -648,14 +664,13 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
   }
 
   Task findTaskById(int? id) {
-    // Task task = Task.repetitive("hello1", RepetitiveType.Weekly,
-    //     DateTime.now().add(Duration(minutes: 10)));
-    // Task task = Task.dueTo("hello1",
-    //     DateTime.now().add(Duration(minutes: 10)));
-    Task task = Task.appointment("hello1",
-        DateTime.now().add(Duration(minutes: 10)));
+    // Task taskAux = Task.repetitive("", null,
+    //     DateTime.now(), id);
+    Task taskAux = Task.dueTo("hello1", DateTime.now(), id);
+    // Task taskAux = Task.appointment("hello1",
+    //     DateTime.now(), id);
     // TODO search database for task
-    return task;
+    return taskAux;
   }
 
   Widget _filterWidget(
@@ -668,20 +683,25 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
       onTap: () {
         setState(() {
           selectedDailyIndex = index;
-          if(editMode == false) {
+          if (editMode == false) {
             if (selectedDailyIndex == 0)
-              task = Task.repetitive("", null, DateTime.now());
+              task = Task.repetitive("", null, DateTime.now(), null);
             else if (selectedDailyIndex == 1)
-              task = Task.dueTo("", DateTime.now());
+              task = Task.dueTo("", DateTime.now(), null);
             else if (selectedDailyIndex == 2)
-              task = Task.appointment("", DateTime.now());
+              task = Task.appointment("", DateTime.now(), null);
           } else {
-            if (selectedDailyIndex == 0)
-              task = Task.repetitive(task.name, task.repetitiveType, task.time);
+            String name = task.name;
+            DateTime dateTime = task.time;
+            int? id = task.id;
+            if (selectedDailyIndex == 0) if (isSwitched == false)
+              task = Task.repetitive(name, null, dateTime, id);
+            else
+              task = Task.repetitive(name, repetitiveType, dateTime, id);
             else if (selectedDailyIndex == 1)
-              task = Task.dueTo("", DateTime.now());
+              task = Task.dueTo(name, dateTime, id);
             else if (selectedDailyIndex == 2)
-              task = Task.appointment("", DateTime.now());
+              task = Task.appointment(name, dateTime, id);
           }
         });
       },
