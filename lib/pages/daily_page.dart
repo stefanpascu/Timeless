@@ -42,7 +42,7 @@ class _DailyPageState extends State<DailyPage> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(children: [
-        Container(
+        SizedBox(
           height: 60.0,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -71,16 +71,13 @@ class _DailyPageState extends State<DailyPage> {
               elements: sortTaskList(filteredTasks),
               groupBy: (element) => _buildGroupByString(element),
               groupSeparatorBuilder: (String groupByValue) => Padding(
-                padding: const EdgeInsets.only(top: 30.0),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    groupByValue,
-                    style: TextStyle(
-                        fontSize: 15.0,
-                        fontFamily: 'OpenSans',
-                        fontWeight: FontWeight.w500),
-                  ),
+                padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
+                child: Text(
+                  groupByValue,
+                  style: TextStyle(
+                      fontSize: 15.0,
+                      fontFamily: 'OpenSans',
+                      fontWeight: FontWeight.w500),
                 ),
               ),
               itemBuilder: (context, Task task) => _taskWidget(task),
@@ -89,77 +86,6 @@ class _DailyPageState extends State<DailyPage> {
           ),
         ),
       ]),
-    );
-  }
-
-  void deleteTask(Task task) {
-    int index = 0;
-    while (true) {
-      if (task.type == tasks[index].type) {
-        if (task.type == TaskType.Repetitive) {
-          if (task.repetitiveType == tasks[index].repetitiveType) {
-            if (task.color == tasks[index].color) {
-              if (task.name == tasks[index].name) {
-                if (task.time == tasks[index].time) {
-                  tasks.removeAt(index);
-                  filteredTasks = tasks;
-                  return;
-                }
-              }
-            }
-          }
-        }
-        if (task.color == tasks[index].color) {
-          if (task.name == tasks[index].name) {
-            if (task.time == tasks[index].time) {
-              tasks.removeAt(index);
-              filteredTasks = tasks;
-              return;
-            }
-          }
-        }
-      }
-      index++;
-    }
-  }
-
-  Widget _editTasks(Task task) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10.0))),
-      title: Text(
-        'Edit task',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            fontFamily: 'OpenSans',
-            fontWeight: FontWeight.w600,
-            fontSize: 30.0),
-      ),
-      actions: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(fontSize: 20.0, fontFamily: 'OpenSans'),
-                )),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                setState(() {});
-              },
-              child: Text(
-                'Save',
-                style: TextStyle(fontSize: 20.0, fontFamily: 'OpenSans'),
-              ),
-            )
-          ],
-        ),
-      ],
     );
   }
 

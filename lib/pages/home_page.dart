@@ -7,6 +7,7 @@ import 'package:timeless/pages/register.dart';
 import 'package:timeless/pages/settings.dart';
 
 import '../styles/styles.dart';
+import 'add_new_goal_page.dart';
 import 'add_new_task_page.dart';
 import 'friends_page.dart';
 
@@ -67,13 +68,17 @@ class HomePageState extends State<HomePage> {
         // Colors.transparent,
 
         title:
-          _widgetOptions.elementAt(selectedIndex),
+            Align(
+              alignment: Alignment.center,
+              child: _widgetOptions.elementAt(selectedIndex),
+            ),
+
 
         actions: [
           Icon(
             Icons.widgets,
             color:  MyColors.taintedWhite,
-            size: 50.0,
+            size: 60.0,
           ),
         ],
 
@@ -91,7 +96,7 @@ class HomePageState extends State<HomePage> {
           mini: false,
           backgroundColor:  MyColors.accentNormal,
           onPressed: () => {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => NewTaskPage()),),
+            selectedIndex == 0 ? Navigator.push(context, MaterialPageRoute(builder: (context) => NewTaskPage()),) : Navigator.push(context, MaterialPageRoute(builder: (context) => NewGoalPage()),)
           },
           hoverElevation: 1.5,
           shape: const StadiumBorder(

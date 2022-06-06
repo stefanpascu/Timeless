@@ -29,8 +29,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
       task.time.toString().split(" ")[1].split(":")[1];
   late String formattedDate = task.time.toString().split(" ")[0];
   late TextEditingController _controller = TextEditingController(text: '');
-  final RestorableDateTime _selectedDate =
-  RestorableDateTime(DateTime.now());
+  final RestorableDateTime _selectedDate = RestorableDateTime(DateTime.now());
   int selectedDailyIndex = 0;
   String repetitiveDropdownValue = 'Daily';
   bool timeError = false;
@@ -65,7 +64,6 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
       formattedTime = task.time.toString().split(" ")[1].split(":")[0] +
           ":" +
           task.time.toString().split(" ")[1].split(":")[1];
-      _controller = TextEditingController(text: task.name);
 
       if (selectedDailyIndex == 0) {
         repetitiveType = task.repetitiveType;
@@ -84,11 +82,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
       } else if (selectedDailyIndex == 1 || selectedDailyIndex == 2) {
         formattedDate = task.time.toString().split(" ")[0];
       }
-    } else {
-      if (selectedDailyIndex == 0)
-        task = Task.repetitive("", null, DateTime.now(), null);
-      super.initState();
-    }
+    } else if (selectedDailyIndex == 0)
+      task = Task.repetitive("", null, DateTime.now(), null);
+    super.initState();
   }
 
   @override
@@ -158,31 +154,40 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
               child: selectedDailyIndex == 0
                   ? Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 16),
-                          child: TextField(
-                            controller: widget.id == null ? null : _controller,
-                            decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        MyColors.primaryNormal.withOpacity(0.7),
-                                    width: 1.5),
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 40, vertical: 16),
+                              child: TextField(
+                                controller: _controller,
+                                decoration: InputDecoration(
+                                  labelText: 'Name',
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: MyColors.primaryNormal
+                                            .withOpacity(0.7),
+                                        width: 1.5),
+                                  ),
+                                  border: OutlineInputBorder(),
+                                  labelStyle: TextStyle(
+                                    color: MyColors.primaryNormal,
+                                  ),
+                                ),
                               ),
-                              border: OutlineInputBorder(),
-                              labelStyle: TextStyle(
-                                color: MyColors.primaryNormal,
-                              ),
-                              hintText: 'Task Name',
                             ),
-                          ),
+                          ],
                         ),
-                        Row(
+                        SizedBox(height: 30.0),
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text('Pick a Time'),
+                            Text(
+                              'Pick a Time',
+                              style: TextStyle(
+                                  color: MyColors.textNormal, fontSize: 20),
+                            ),
                             StatefulBuilder(builder: (BuildContext context,
                                 StateSetter timePickState) {
                               return OutlinedButton(
@@ -229,7 +234,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                           visible: isSwitched,
                           child: StatefulBuilder(
                             builder: (BuildContext context,
-                                StateSetter dropDownState) {
+                                StateSetter NewTaskPageState) {
                               return DropdownButton<String>(
                                 value: repetitiveDropdownValue,
                                 icon: Icon(Icons.arrow_downward),
@@ -243,7 +248,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                       MyColors.primaryNormal.withOpacity(0.7),
                                 ),
                                 onChanged: (String? newRepetitiveValue) {
-                                  dropDownState(() {
+                                  NewTaskPageState(() {
                                     repetitiveDropdownValue =
                                         newRepetitiveValue!;
                                     if (repetitiveDropdownValue == 'Daily') {
@@ -312,9 +317,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                               padding: EdgeInsets.symmetric(
                                   horizontal: 40, vertical: 16),
                               child: TextField(
-                                controller:
-                                    widget.id == null ? null : _controller,
+                                controller: _controller,
                                 decoration: InputDecoration(
+                                  labelText: 'Name',
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                         color: MyColors.primaryNormal
@@ -325,7 +330,6 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   labelStyle: TextStyle(
                                     color: MyColors.primaryNormal,
                                   ),
-                                  hintText: 'Task Name',
                                 ),
                               ),
                             ),
@@ -350,7 +354,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text('Pick a Date'),
+                                Text('Pick a Date '),
                                 Padding(
                                   padding: const EdgeInsets.only(
                                     top: 8,
@@ -380,7 +384,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                               visible: timeError,
                               child: StatefulBuilder(
                                 builder: (BuildContext context,
-                                    StateSetter dropDownState) {
+                                    StateSetter NewTaskPageState) {
                                   return Text(
                                     'Selected Date and Time combination is invalid',
                                     style: TextStyle(color: Colors.red),
@@ -412,12 +416,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                     task.name = _controller.text,
                                   if (compareDates(task.time, DateTime.now()))
                                     {printTask(task), Navigator.pop(context)}
-                                  else {
-                                      timeError = true
-                                    },
-                                  setState(() {
-
-                                  })
+                                  else
+                                    {timeError = true},
+                                  setState(() {})
                                 },
                                 child: const Text(
                                   'Save',
@@ -435,9 +436,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 40, vertical: 16),
                               child: TextField(
-                                controller:
-                                    widget.id == null ? null : _controller,
+                                controller: _controller,
                                 decoration: InputDecoration(
+                                  labelText: 'Name',
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                         color: MyColors.primaryNormal
@@ -448,7 +449,6 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   labelStyle: TextStyle(
                                     color: MyColors.primaryNormal,
                                   ),
-                                  hintText: 'Task Name',
                                 ),
                               ),
                             ),
@@ -503,7 +503,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                               visible: timeError,
                               child: StatefulBuilder(
                                 builder: (BuildContext context,
-                                    StateSetter dropDownState) {
+                                    StateSetter NewTaskPageState) {
                                   return Text(
                                     'Selected Date and Time combination is invalid',
                                     style: TextStyle(color: Colors.red),
@@ -535,12 +535,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                     task.name = _controller.text,
                                   if (compareDates(task.time, DateTime.now()))
                                     {printTask(task), Navigator.pop(context)}
-                                  else {
-                                    timeError = true
-                                  },
-                                  setState(() {
-
-                                  })
+                                  else
+                                    {timeError = true},
+                                  setState(() {})
                                 },
                                 child: const Text(
                                   'Save',
@@ -561,18 +558,25 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
     if (int.parse(a.toString().split(" ")[0].split("-")[0]) >
         int.parse(b.toString().split(" ")[0].split("-")[0]))
       return true;
-    else if (int.parse(a.toString().split(" ")[0].split("-")[0]) == int.parse(b.toString().split(" ")[0].split("-")[0]))
-      if (int.parse(a.toString().split(" ")[0].split("-")[1]) > int.parse(b.toString().split(" ")[0].split("-")[1]))
-        return true;
-      else if (int.parse(a.toString().split(" ")[0].split("-")[1]) == int.parse(b.toString().split(" ")[0].split("-")[1]))
-        if (int.parse(a.toString().split(" ")[0].split("-")[2]) > int.parse(b.toString().split(" ")[0].split("-")[2]))
-          return true;
-        else if (int.parse(a.toString().split(" ")[0].split("-")[2]) == int.parse(b.toString().split(" ")[0].split("-")[2]))
-            if (int.parse(a.toString().split(" ")[1].split(":")[0]) > int.parse(b.toString().split(" ")[1].split(":")[0]))
-              return true;
-            else if(int.parse(a.toString().split(" ")[1].split(":")[0]) == int.parse(b.toString().split(" ")[1].split(":")[0]))
-              if (int.parse(a.toString().split(" ")[1].split(":")[1]) > int.parse(b.toString().split(" ")[1].split(":")[1]))
-                return true;
+    else if (int.parse(a.toString().split(" ")[0].split("-")[0]) ==
+        int.parse(b.toString().split(" ")[0].split("-")[0])) if (int.parse(
+            a.toString().split(" ")[0].split("-")[1]) >
+        int.parse(b.toString().split(" ")[0].split("-")[1]))
+      return true;
+    else if (int.parse(a.toString().split(" ")[0].split("-")[1]) ==
+        int.parse(b.toString().split(" ")[0].split("-")[1])) if (int.parse(
+            a.toString().split(" ")[0].split("-")[2]) >
+        int.parse(b.toString().split(" ")[0].split("-")[2]))
+      return true;
+    else if (int.parse(a.toString().split(" ")[0].split("-")[2]) ==
+        int.parse(b.toString().split(" ")[0].split("-")[2])) if (int.parse(
+            a.toString().split(" ")[1].split(":")[0]) >
+        int.parse(b.toString().split(" ")[1].split(":")[0]))
+      return true;
+    else if (int.parse(a.toString().split(" ")[1].split(":")[0]) ==
+        int.parse(b.toString().split(" ")[1].split(":")[0])) if (int.parse(
+            a.toString().split(" ")[1].split(":")[1]) >
+        int.parse(b.toString().split(" ")[1].split(":")[1])) return true;
     return false;
   }
 
@@ -596,7 +600,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           restorationId: 'date_picker_dialog',
           initialEntryMode: DatePickerEntryMode.calendarOnly,
           initialDate: DateTime.fromMillisecondsSinceEpoch(arguments! as int),
-          firstDate: DateTime(int.parse(DateTime.now().toString().split(" ")[0].split("-")[0])),
+          firstDate: DateTime.now(),
           lastDate: DateTime(2200),
         );
       },
@@ -614,20 +618,21 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
     if (newSelectedDate != null) {
       setState(() {
         _selectedDate.value = newSelectedDate;
-        if (_selectedDate.value.month >= 10)
-          if (_selectedDate.value.day >= 10)
-            formattedDate =
-                '${_selectedDate.value.year}-${_selectedDate.value.month}-${_selectedDate.value.day}';
-          else formattedDate =
-                    '${_selectedDate.value.year}-${_selectedDate.value.month}-0${_selectedDate.value.day}';
+        if (_selectedDate.value.month >= 10) if (_selectedDate.value.day >= 10)
+          formattedDate =
+              '${_selectedDate.value.year}-${_selectedDate.value.month}-${_selectedDate.value.day}';
+        else
+          formattedDate =
+              '${_selectedDate.value.year}-${_selectedDate.value.month}-0${_selectedDate.value.day}';
         else if (_selectedDate.value.day >= 10)
           formattedDate =
-          '${_selectedDate.value.year}-0${_selectedDate.value.month}-${_selectedDate.value.day}';
-        else formattedDate =
-          '${_selectedDate.value.year}-0${_selectedDate.value.month}-0${_selectedDate.value.day}';
+              '${_selectedDate.value.year}-0${_selectedDate.value.month}-${_selectedDate.value.day}';
+        else
+          formattedDate =
+              '${_selectedDate.value.year}-0${_selectedDate.value.month}-0${_selectedDate.value.day}';
 
-        task.time =
-            DateTime.parse(formattedDate + " " + task.time.toString().split(" ")[1]);
+        task.time = DateTime.parse(
+            formattedDate + " " + task.time.toString().split(" ")[1]);
 
         timeError = false;
       });
