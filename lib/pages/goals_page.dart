@@ -17,6 +17,7 @@ class GoalsPage extends StatefulWidget {
 class _GoalsPageState extends State<GoalsPage> {
   int selectedGoalsIndex = 0;
 
+
   static List<Goal> goals = [
     Goal.public("hello1", 1),
     Goal.private("hello2", 2),

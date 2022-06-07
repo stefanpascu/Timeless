@@ -15,9 +15,11 @@ class NewGoalPage extends StatefulWidget {
 }
 
 class NewGoalPageState extends State<NewGoalPage> {
+  bool _submitted = false;
   late bool editMode;
   late Goal goal;
-  late TextEditingController _controller = TextEditingController(text: '');
+  TextEditingController _controller = TextEditingController();
+  var _textName = '';
   int selectedDailyIndex = 0;
 
   @override
@@ -104,8 +106,10 @@ class NewGoalPageState extends State<NewGoalPage> {
                     const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                 child: TextField(
                   controller: _controller,
+                  onChanged: (text) => setState(() => _textName),
                   decoration: InputDecoration(
                     labelText: 'Name',
+                    errorText: _submitted ? _errorNameText : null,
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                           color: MyColors.primaryNormal.withOpacity(0.7),
@@ -117,6 +121,9 @@ class NewGoalPageState extends State<NewGoalPage> {
                     ),
                   ),
                 ),
+              ),
+              SizedBox(
+                height: 20,
               ),
               SizedBox(
                 width: 150.0,
@@ -135,13 +142,10 @@ class NewGoalPageState extends State<NewGoalPage> {
                     ),
                   ),
                   onPressed: () => {
-                    print('Save'),
-                    if (_controller.text == "")
-                      goal.name = "Nameless Goal"
-                    else
-                      goal.name = _controller.text,
-                    printGoal(goal),
-                    Navigator.pop(context)
+                    setState(() {
+                      _submitted = true;
+                    }),
+                    if (_controller.value.text.isNotEmpty) {_submit()}
                   },
                   child: const Text(
                     'Save',
@@ -155,6 +159,23 @@ class NewGoalPageState extends State<NewGoalPage> {
         ]),
       ),
     );
+  }
+
+  void _submit() {
+    // if there is no error text
+    if (_errorNameText == null) {
+      goal.name = _controller.text;
+      printGoal(goal);
+      Navigator.pop(context);
+    }
+  }
+
+  String? get _errorNameText {
+    final text = _controller.value.text;
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    return null;
   }
 
   void printGoal(Goal goal) {

@@ -2,14 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:timeless/pages/daily_page.dart';
 import 'package:timeless/pages/drawer_page.dart';
 import 'package:timeless/pages/goals_page.dart';
-import 'package:timeless/pages/profile.dart';
-import 'package:timeless/pages/register.dart';
-import 'package:timeless/pages/settings.dart';
 
 import '../styles/styles.dart';
 import 'add_new_goal_page.dart';
 import 'add_new_task_page.dart';
-import 'friends_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

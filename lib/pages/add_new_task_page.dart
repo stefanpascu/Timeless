@@ -28,8 +28,10 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
       ":" +
       task.time.toString().split(" ")[1].split(":")[1];
   late String formattedDate = task.time.toString().split(" ")[0];
-  late TextEditingController _controller = TextEditingController(text: '');
   final RestorableDateTime _selectedDate = RestorableDateTime(DateTime.now());
+  TextEditingController _controller = TextEditingController();
+  var _textName = '';
+  bool _submitted = false;
   int selectedDailyIndex = 0;
   String repetitiveDropdownValue = 'Daily';
   bool timeError = false;
@@ -157,12 +159,13 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                         Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 16),
+                              padding: const EdgeInsets.all(40),
                               child: TextField(
                                 controller: _controller,
+                                onChanged: (text) => setState(() => _textName),
                                 decoration: InputDecoration(
                                   labelText: 'Name',
+                                  errorText: _submitted ? _errorNameText : null,
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                         color: MyColors.primaryNormal
@@ -184,18 +187,18 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              'Pick a Time',
+                              'Pick a Time:',
                               style: TextStyle(
-                                  color: MyColors.textNormal, fontSize: 20),
+                                  color: MyColors.textNormal, fontSize: 30),
                             ),
                             StatefulBuilder(builder: (BuildContext context,
                                 StateSetter timePickState) {
                               return OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   primary: MyColors.white,
-                                  side: const BorderSide(
+                                  side: BorderSide(
                                       color: MyColors.primaryNormal,
-                                      width: 1.0),
+                                      width: 1.2),
                                 ),
                                 onPressed: () async {
                                   await _show();
@@ -203,32 +206,54 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 },
                                 child: Text(
                                   formattedTime,
-                                  style: TextStyle(color: MyColors.textNormal),
+                                  style: TextStyle(
+                                      color: MyColors.textNormal,
+                                      fontSize: 50.0),
                                 ),
                               );
                             }),
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text('Repetitive task'),
-                            Switch(
-                              value: isSwitched,
-                              onChanged: (value) {
-                                setState(() {
-                                  isSwitched = value;
-                                  if (isSwitched == false)
-                                    task.repetitiveType = null;
-                                  else
-                                    task.repetitiveType = repetitiveType != null
-                                        ? repetitiveType
-                                        : RepetitiveType.Daily;
-                                });
-                              },
-                            ),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.only(top: 40.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Repetitive task?',
+                                style: TextStyle(fontSize: 30.0),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'No',
+                                    style: TextStyle(fontSize: 20.0),
+                                  ),
+                                  Switch(
+                                    value: isSwitched,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isSwitched = value;
+                                        if (isSwitched == false)
+                                          task.repetitiveType = null;
+                                        else
+                                          task.repetitiveType =
+                                              repetitiveType != null
+                                                  ? repetitiveType
+                                                  : RepetitiveType.Daily;
+                                      });
+                                    },
+                                  ),
+                                  Text(
+                                    'Yes',
+                                    style: TextStyle(fontSize: 20.0),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                         Visibility(
                           visible: isSwitched,
@@ -276,6 +301,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                             },
                           ),
                         ),
+                        SizedBox(height: 30.0),
                         SizedBox(
                           width: 150.0,
                           height: 45.0,
@@ -293,13 +319,10 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                               ),
                             ),
                             onPressed: () => {
-                              print('Save'),
-                              if (_controller.text == "")
-                                task.name = "Nameless Task"
-                              else
-                                task.name = _controller.text,
-                              printTask(task),
-                              Navigator.pop(context)
+                              setState(() {
+                                _submitted = true;
+                              }),
+                              if (_controller.value.text.isNotEmpty) {_submit()}
                             },
                             child: const Text(
                               'Save',
@@ -314,11 +337,12 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                       ? Column(
                           children: [
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 16),
+                              padding: const EdgeInsets.all(40),
                               child: TextField(
                                 controller: _controller,
+                                onChanged: (text) => setState(() => _textName),
                                 decoration: InputDecoration(
+                                  errorText: _submitted ? _errorNameText : null,
                                   labelText: 'Name',
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
@@ -333,52 +357,69 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 ),
                               ),
                             ),
-                            Row(
+                            SizedBox(height: 30.0),
+                            Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text('Pick a Time'),
+                                Text(
+                                  'Pick a Time:',
+                                  style: TextStyle(
+                                      color: MyColors.textNormal, fontSize: 30),
+                                ),
                                 StatefulBuilder(builder: (BuildContext context,
                                     StateSetter timePickState) {
                                   return OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      primary: MyColors.white,
+                                      side: BorderSide(
+                                          color: MyColors.primaryNormal,
+                                          width: 1.2),
+                                    ),
                                     onPressed: () async {
                                       await _show();
                                       timePickState(() {});
                                     },
-                                    child: Text(formattedTime),
+                                    child: Text(formattedTime,
+                                      style: TextStyle(
+                                          color: MyColors.textNormal,
+                                          fontSize: 50.0),),
                                   );
                                 }),
                               ],
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text('Pick a Date '),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 8,
-                                  ),
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      _restorableDatePickerRouteFuture
-                                          .present();
-                                    },
-                                    style: OutlinedButton.styleFrom(
-                                      side: const BorderSide(
-                                          color: MyColors.primaryNormal,
-                                          width: 1.0),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 40.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text('Pick a Date:', style: TextStyle(fontSize: 30.0),),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 8,
                                     ),
-                                    child: Text(
-                                      formattedDate,
-                                      style: TextStyle(
-                                        color: MyColors.textNormal
-                                            .withOpacity(0.7),
+                                    child: OutlinedButton(
+                                      onPressed: () {
+                                        _restorableDatePickerRouteFuture
+                                            .present();
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                            color: MyColors.primaryNormal,
+                                            width: 1.0),
+                                      ),
+                                      child: Text(
+                                        formattedDate,
+                                        style: TextStyle(
+                                            color: MyColors.textNormal,
+                                            fontSize: 25.0
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             Visibility(
                               visible: timeError,
@@ -392,6 +433,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 },
                               ),
                             ),
+                            SizedBox(height: 30.0),
                             SizedBox(
                               width: 150.0,
                               height: 45.0,
@@ -409,16 +451,15 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   ),
                                 ),
                                 onPressed: () => {
-                                  print('Save'),
-                                  if (_controller.text == "")
-                                    task.name = "Nameless Task"
-                                  else
-                                    task.name = _controller.text,
-                                  if (compareDates(task.time, DateTime.now()))
-                                    {printTask(task), Navigator.pop(context)}
-                                  else
-                                    {timeError = true},
-                                  setState(() {})
+                                  setState(() {
+                                    _submitted = true;
+                                  }),
+                                  if (_controller.value.text.isNotEmpty &&
+                                      compareDates(task.time, DateTime.now()))
+                                    {_submit()}
+                                  else if (!compareDates(
+                                      task.time, DateTime.now()))
+                                    {timeError = true}
                                 },
                                 child: const Text(
                                   'Save',
@@ -433,11 +474,12 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                       : Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 16),
+                              padding: const EdgeInsets.all(40),
                               child: TextField(
                                 controller: _controller,
+                                onChanged: (text) => setState(() => _textName),
                                 decoration: InputDecoration(
+                                  errorText: _submitted ? _errorNameText : null,
                                   labelText: 'Name',
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
@@ -452,52 +494,68 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 ),
                               ),
                             ),
-                            Row(
+                            SizedBox(height: 30.0),
+                            Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text('Pick a Time'),
+                                Text(
+                                  'Pick a Time:',
+                                  style: TextStyle(
+                                      color: MyColors.textNormal, fontSize: 30),
+                                ),
                                 StatefulBuilder(builder: (BuildContext context,
                                     StateSetter timePickState) {
                                   return OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      primary: MyColors.white,
+                                      side: BorderSide(
+                                          color: MyColors.primaryNormal,
+                                          width: 1.2),
+                                    ),
                                     onPressed: () async {
                                       await _show();
                                       timePickState(() {});
                                     },
-                                    child: Text(formattedTime),
+                                    child: Text(formattedTime,
+                                      style: TextStyle(
+                                          color: MyColors.textNormal,
+                                          fontSize: 50.0),),
                                   );
                                 }),
                               ],
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text('Pick a Date'),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 8.0,
-                                  ),
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      _restorableDatePickerRouteFuture
-                                          .present();
-                                    },
-                                    style: OutlinedButton.styleFrom(
-                                      side: const BorderSide(
-                                          color: MyColors.primaryNormal,
-                                          width: 1.0),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 40.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text('Pick a Date:', style: TextStyle(fontSize: 30.0),),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 8.0,
                                     ),
-                                    child: Text(
-                                      formattedDate,
-                                      style: TextStyle(
-                                        color: MyColors.textNormal
-                                            .withOpacity(0.7),
+                                    child: OutlinedButton(
+                                      onPressed: () {
+                                        _restorableDatePickerRouteFuture
+                                            .present();
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(
+                                            color: MyColors.primaryNormal,
+                                            width: 1.0),
+                                      ),
+                                      child: Text(
+                                        formattedDate,
+                                        style: TextStyle(
+                                            color: MyColors.textNormal,
+                                            fontSize: 25.0),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             Visibility(
                               visible: timeError,
@@ -511,6 +569,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 },
                               ),
                             ),
+                            SizedBox(height: 30.0),
                             SizedBox(
                               width: 150.0,
                               height: 45.0,
@@ -528,16 +587,15 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   ),
                                 ),
                                 onPressed: () => {
-                                  print('Save'),
-                                  if (_controller.text == "")
-                                    task.name = "Nameless Task"
-                                  else
-                                    task.name = _controller.text,
-                                  if (compareDates(task.time, DateTime.now()))
-                                    {printTask(task), Navigator.pop(context)}
-                                  else
-                                    {timeError = true},
-                                  setState(() {})
+                                  setState(() {
+                                    _submitted = true;
+                                  }),
+                                  if (_controller.value.text.isNotEmpty &&
+                                      compareDates(task.time, DateTime.now()))
+                                    {_submit()}
+                                  else if (!compareDates(
+                                      task.time, DateTime.now()))
+                                    {timeError = true}
                                 },
                                 child: const Text(
                                   'Save',
@@ -552,6 +610,23 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
         ]),
       ),
     );
+  }
+
+  void _submit() {
+    // if there is no error text
+    if (_errorNameText == null) {
+      task.name = _controller.text;
+      printTask(task);
+      Navigator.pop(context);
+    }
+  }
+
+  String? get _errorNameText {
+    final text = _controller.value.text;
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    return null;
   }
 
   bool compareDates(DateTime a, DateTime b) {
