@@ -22,22 +22,22 @@ class FriendProfileStatefulWidgetState extends State<FriendProfile> {
           builder: (context) =>
               Center(
                 child: RaisedButton(
-                    color:  MyColors.taintedWhite.withOpacity(0),
+                    color:  MyColors().backgroundNormal.withOpacity(0),
                     elevation: 0,
                     onPressed: () => Scaffold.of(context).openDrawer(),
                     child: Icon(
                       Icons.widgets,
                       size: 30.0,
-                      color:  MyColors.primaryDarkest,
+                      color:  MyColors().primaryTitle,
                     )
                 ),
               ),
         ),
 
-        backgroundColor:  MyColors.taintedWhite.withOpacity(0), // Colors.transparent,
+        backgroundColor:  MyColors().backgroundNormal.withOpacity(0), // Colors.transparent,
 
         title: Center(
-          child: Text('Friend', style: TextStyle(color:  MyColors.primaryDarkest, fontSize: 25.0, fontWeight: FontWeight.w900),),
+          child: Text('Friend', style: TextStyle(color:  MyColors().primaryTitle, fontSize: 25.0, fontWeight: FontWeight.w900),),
         ),
 
         actions: [
@@ -45,7 +45,7 @@ class FriendProfileStatefulWidgetState extends State<FriendProfile> {
             margin: EdgeInsets.only(right: 10.0,),
           child: IconButton(
             icon: Icon(
-              Icons.person_remove, color:  MyColors.primaryDarkest, size: 40.0,
+              Icons.person_remove, color:  MyColors().primaryTitle, size: 40.0,
             ),
             onPressed: () => {
               print("Unfriend")
@@ -108,7 +108,7 @@ class FriendProfileStatefulWidgetState extends State<FriendProfile> {
               DecoratedBox(
                 decoration:
                 BoxDecoration(
-                  color:  MyColors.taintedWhite,
+                  color:  MyColors().backgroundNormal,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(70.0),
                     topRight: Radius.circular(70.0),

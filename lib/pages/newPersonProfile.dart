@@ -13,6 +13,7 @@ class NewPersonProfile extends StatefulWidget {
 }
 
 class NewPersonProfileStatefulWidgetState extends State<NewPersonProfile> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,30 +23,30 @@ class NewPersonProfileStatefulWidgetState extends State<NewPersonProfile> {
           builder: (context) =>
               Center(
                 child: RaisedButton(
-                    color: MyColors.taintedWhite.withOpacity(0),
+                    color: MyColors().backgroundNormal.withOpacity(0),
                     elevation: 0,
                     onPressed: () => Scaffold.of(context).openDrawer(),
-                    child: const Icon(
+                    child: Icon(
                       Icons.widgets,
                       size: 30.0,
-                      color:  MyColors.primaryDarkest,
+                      color:  MyColors().primaryTitle,
                     )
                 ),
               ),
         ),
 
-        backgroundColor:  MyColors.taintedWhite.withOpacity(0), // Colors.transparent,
+        backgroundColor:  MyColors().backgroundNormal.withOpacity(0), // Colors.transparent,
 
-        title: const Center(
-          child: Text('Stranger', style: TextStyle(color:  MyColors.primaryDarkest, fontSize: 25.0, fontWeight: FontWeight.w900),),
+        title: Center(
+          child: Text('Stranger', style: TextStyle(color:  MyColors().primaryTitle, fontSize: 25.0, fontWeight: FontWeight.w900),),
         ),
 
         actions: [
           Container(
-            margin: const EdgeInsets.only(right: 10.0,),
+            margin: EdgeInsets.only(right: 10.0,),
             child: IconButton(
-              icon: const Icon(
-                Icons.person_add_alt_1, color:  MyColors.primaryDarkest, size: 40.0,
+              icon: Icon(
+                Icons.person_add_alt_1, color:  MyColors().primaryTitle, size: 40.0,
               ),
               onPressed: () => {
                 print("Add Friend")
@@ -107,8 +108,8 @@ class NewPersonProfileStatefulWidgetState extends State<NewPersonProfile> {
             children: [
               DecoratedBox(
                 decoration:
-                const BoxDecoration(
-                  color:  MyColors.taintedWhite,
+                BoxDecoration(
+                  color:  MyColors().backgroundNormal,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(70.0),
                     topRight: Radius.circular(70.0),

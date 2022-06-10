@@ -42,40 +42,54 @@ class NewGoalPageState extends State<NewGoalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors().backgroundNormal,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: MyColors.primaryDarkest,
+            color: MyColors().primaryTitle,
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: MyColors.taintedWhite.withOpacity(0),
-        title: Text(
-          editMode ? 'EDIT GOAL' : 'NEW GOAL',
-          style: TextStyle(
-            color: MyColors.primaryDarkest,
-            fontSize: 25.0,
-            fontWeight: FontWeight.w900,
+        backgroundColor: MyColors().backgroundNormal.withOpacity(0),
+        title: Align(
+          alignment: Alignment.center,
+          child: Text(
+            editMode ? 'EDIT GOAL' : 'NEW GOAL',
+            style: TextStyle(
+              color: MyColors().primaryTitle,
+              fontSize: 25.0,
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ),
         actions: [
-          if (editMode == true)
+          if (editMode == true)...[
             Padding(
               padding: const EdgeInsets.only(right: 10.0),
               child: IconButton(
                 icon: Icon(
                   Icons.delete,
-                  color: MyColors.primaryDarkest,
-                  size: 35.0,
+                  color: MyColors().primaryTitle,
+                  size: 50.0,
                 ),
                 onPressed: () {
                   print('delete goal');
                 },
               ),
             ),
+          ] else... [
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: Icon(
+                  Icons.delete,
+                  color: MyColors().backgroundNormal,
+                  size: 50.0,
+                ),
+            ),
+          ]
         ],
         elevation: 0,
       ),
@@ -91,9 +105,9 @@ class NewGoalPageState extends State<NewGoalPage> {
                   _filterWidget(
                       title: 'Private',
                       index: 0,
-                      color: MyColors.privatePurple),
+                      color: MyColors().privatePurple),
                   _filterWidget(
-                      title: 'Public', index: 1, color: MyColors.publicYellow),
+                      title: 'Public', index: 1, color: MyColors().publicYellow),
                 ],
               ),
             ),
@@ -103,21 +117,25 @@ class NewGoalPageState extends State<NewGoalPage> {
             children: [
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                    EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                 child: TextField(
                   controller: _controller,
+                  cursorColor: MyColors().textNormal,
+                  style: TextStyle(
+                      color: MyColors().textNormal
+                  ),
                   onChanged: (text) => setState(() => _textName),
                   decoration: InputDecoration(
                     labelText: 'Name',
                     errorText: _submitted ? _errorNameText : null,
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: MyColors.primaryNormal.withOpacity(0.7),
+                          color: MyColors().primaryNormal.withOpacity(0.7),
                           width: 1.5),
                     ),
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(
-                      color: MyColors.primaryNormal,
+                      color: MyColors().primaryNormal,
                     ),
                   ),
                 ),
@@ -130,7 +148,7 @@ class NewGoalPageState extends State<NewGoalPage> {
                 height: 45.0,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: MyColors.accentNormal,
+                    primary: MyColors().accentNormal,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -138,7 +156,7 @@ class NewGoalPageState extends State<NewGoalPage> {
                     elevation: 2.5,
                     side: BorderSide(
                       width: 0.8,
-                      color: MyColors.lightGray,
+                      color: MyColors().lightGray,
                     ),
                   ),
                   onPressed: () => {
@@ -147,10 +165,10 @@ class NewGoalPageState extends State<NewGoalPage> {
                     }),
                     if (_controller.value.text.isNotEmpty) {_submit()}
                   },
-                  child: const Text(
+                  child: Text(
                     'Save',
-                    style:
-                        TextStyle(fontSize: 20.0, color: MyColors.taintedWhite),
+                    style: TextStyle(
+                        fontSize: 20.0, color: MyColors().highlightedFilterText),
                   ),
                 ),
               ),
@@ -225,7 +243,7 @@ class NewGoalPageState extends State<NewGoalPage> {
           padding: EdgeInsets.symmetric(horizontal: 10.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(7)),
-            border: Border.all(color: MyColors.lightGray, width: 0.2),
+            border: Border.all(color: MyColors().lightGray, width: 0.2),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
@@ -234,7 +252,8 @@ class NewGoalPageState extends State<NewGoalPage> {
                 offset: Offset(1.0, 1.0), // changes position of shadow
               ),
             ],
-            color: isSelected ? MyColors.primaryNormal : MyColors.white,
+            color:
+                isSelected ? MyColors().primaryNormal : MyColors().overBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -255,8 +274,9 @@ class NewGoalPageState extends State<NewGoalPage> {
               Text(
                 title,
                 style: TextStyle(
-                  color:
-                      isSelected ? MyColors.taintedWhite : MyColors.textNormal,
+                  color: isSelected
+                      ? MyColors().highlightedFilterText
+                      : MyColors().textNormal,
                   fontSize: 13.0,
                   fontFamily: 'OpenSans',
                 ),

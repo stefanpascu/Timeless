@@ -18,39 +18,46 @@ class MainDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: MyColors.taintedWhite,
+      backgroundColor: MyColors().backgroundNormal,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           Container(
-            padding: const EdgeInsets.all(60),
-            height: 220,
-            decoration: const BoxDecoration(
-              color: Color(0xffCCCED0), // F89D7D
+            padding: EdgeInsets.all(60),
+            height: 300,
+            decoration: BoxDecoration(
+              color: MyColors().primaryDarkest, // F89D7D
             ),
             child: Column(
               children: [
-                FloatingActionButton(
-                  onPressed: () => {
-                    if(pageId != 0) {
-                      Navigator.pop(context),
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Profile()),
-                      ),
-                    }
-                  },
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Profile()),
+                    );
+                  }, // Image tapped
+                  child: CircleAvatar(
+                    backgroundColor: MyColors().accentNormal,
+                    radius: 50.0,
+                    child: CircleAvatar(
+                      radius: 48.5,
+                      backgroundImage: AssetImage('assets/images/NFT.jpeg'),
+                    ),
+                  )
                 ),
                 Container(
                   margin: const EdgeInsets.only(
                     top: 5.0,
                   ),
-                  child: const Text(
+                  child: Text(
                     'Your Name Here',
                     textAlign: TextAlign.center,
                     style: TextStyle(
+                      color: MyColors().lightGray,
                       fontFamily: 'OpenSans',
-                      fontSize: 20.0,
+                      fontSize: 25.0,
                     ),
                   ),
                 ),
@@ -58,10 +65,12 @@ class MainDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: const Text(
+            title: Text(
               'Home',
               textAlign: TextAlign.center,
               style: TextStyle(
+                color: MyColors().textNormal,
+                fontSize: 20,
                 fontFamily: 'OpenSans',
               ),
             ),
@@ -75,17 +84,21 @@ class MainDrawer extends StatelessWidget {
               }
             },
           ),
+
           Divider(
             thickness: 1,
             indent: 40,
             endIndent: 40,
-            color: const Color(0xff4B5052).withOpacity(0.5),
+            color: Color(0xff4B5052).withOpacity(0.5),
           ),
+
           ListTile(
-            title: const Text(
+            title: Text(
               'Friends',
               textAlign: TextAlign.center,
               style: TextStyle(
+                color: MyColors().textNormal,
+                fontSize: 20,
                 fontFamily: 'OpenSans',
               ),
             ),
@@ -103,18 +116,20 @@ class MainDrawer extends StatelessWidget {
             thickness: 2,
             indent: 40,
             endIndent: 40,
-            color: const Color(0xff4B5052).withOpacity(0.2),
+            color: Color(0xff4B5052).withOpacity(0.2),
           ),
           ListTile(
-            title: const Text(
+            title: Text(
               'Settings',
               textAlign: TextAlign.center,
               style: TextStyle(
+                color: MyColors().textNormal,
+                fontSize: 20,
                 fontFamily: 'OpenSans',
               ),
             ),
             onTap: () {
-              if(pageId != 3) {
+              if (pageId != 3) {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
@@ -123,28 +138,7 @@ class MainDrawer extends StatelessWidget {
               }
             },
           ),
-          Divider(
-            thickness: 1,
-            indent: 40,
-            endIndent: 40,
-            color: const Color(0xff4B5052).withOpacity(0.5),
-          ),
-          ListTile(
-            title: const Text(
-              'Logout',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'OpenSans',
-              ),
-            ),
-            onTap: () {
-              // Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Register()),
-              );
-            },
-          ),
+
         ],
       ),
     );

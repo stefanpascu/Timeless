@@ -1,17 +1,20 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timeless/pages/register.dart';
 
+import '../main.dart';
 import '../styles/styles.dart';
+import 'forgot_password_page.dart';
 
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<Login> createState() => LoginStatefulWidgetState();
+  State<LoginPage> createState() => LoginPageState();
 }
 
-class LoginStatefulWidgetState extends State<Login> {
+class LoginPageState extends State<LoginPage> {
   bool _submitted = false;
   final _controllerEmail = TextEditingController();
   final _controllerPassword = TextEditingController();
@@ -27,10 +30,10 @@ class LoginStatefulWidgetState extends State<Login> {
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
             colors: [
-              MyColors.primaryNormal.withOpacity(0.2),
-              MyColors.primaryNormal.withOpacity(0.5),
-              MyColors.accentNormal.withOpacity(0.5),
-              MyColors.accentNormal.withOpacity(0.2),
+              MyColors().primaryNormal.withOpacity(0.2),
+              MyColors().primaryNormal.withOpacity(0.5),
+              MyColors().accentNormal.withOpacity(0.5),
+              MyColors().accentNormal.withOpacity(0.2),
             ],
           ),
         ),
@@ -44,23 +47,23 @@ class LoginStatefulWidgetState extends State<Login> {
                   alignment: Alignment.center,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: MyColors.white.withOpacity(0.5),
+                      color: MyColors().overBackground.withOpacity(0.5),
                       borderRadius: const BorderRadius.all(
                         Radius.circular(7),
                       ),
                       border: Border(
                         top: BorderSide(
                             width: 3.0,
-                            color: MyColors.primaryNormal.withOpacity(0.7)),
+                            color: MyColors().primaryNormal.withOpacity(0.7)),
                         left: BorderSide(
                             width: 3.0,
-                            color: MyColors.primaryNormal.withOpacity(0.7)),
+                            color: MyColors().primaryNormal.withOpacity(0.7)),
                         right: BorderSide(
                             width: 3.0,
-                            color: MyColors.primaryNormal.withOpacity(0.7)),
+                            color: MyColors().primaryNormal.withOpacity(0.7)),
                         bottom: BorderSide(
                             width: 3.0,
-                            color: MyColors.primaryNormal.withOpacity(0.7)),
+                            color: MyColors().primaryNormal.withOpacity(0.7)),
                       ),
                     ),
                     child: Expanded(
@@ -71,12 +74,15 @@ class LoginStatefulWidgetState extends State<Login> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(
-                                top: 50,
-                                left: 40,
-                                right: 40,
+                                top: 50.0,
+                                left: 40.0,
+                                right: 40.0,
+                                bottom: 16.0
                               ),
                               child: TextField(
                                 controller: _controllerEmail,
+                                style: TextStyle(color: MyColors().textNormal),
+                                cursorColor: MyColors().textNormal,
                                 onChanged: (text) => setState(() => _textEmail),
                                 decoration: InputDecoration(
                                   labelText: 'Email',
@@ -85,26 +91,29 @@ class LoginStatefulWidgetState extends State<Login> {
                                   enabledBorder: OutlineInputBorder(
                                     // width: 0.0 produces a thin "hairline" border
                                     borderSide: BorderSide(
-                                        color: MyColors.primaryNormal
+                                        color: MyColors()
+                                            .primaryNormal
                                             .withOpacity(0.7),
                                         width: 1.5),
                                   ),
                                   border: OutlineInputBorder(),
                                   labelStyle: TextStyle(
-                                    color: MyColors.textNormal.withOpacity(0.7),
+                                    color:
+                                        MyColors().textNormal.withOpacity(0.7),
                                   ),
                                 ),
                               ),
                             ),
-
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 16),
+                                  horizontal: 40),
                               child: TextField(
                                 obscureText: true,
                                 enableSuggestions: false,
                                 autocorrect: false,
                                 controller: _controllerPassword,
+                                style: TextStyle(color: MyColors().textNormal),
+                                cursorColor: MyColors().textNormal,
                                 onChanged: (text) =>
                                     setState(() => _textPassword),
                                 decoration: InputDecoration(
@@ -113,28 +122,43 @@ class LoginStatefulWidgetState extends State<Login> {
                                       _submitted ? _errorPasswordText : null,
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: MyColors.primaryNormal
+                                        color: MyColors()
+                                            .primaryNormal
                                             .withOpacity(0.7),
                                         width: 1.5),
                                   ),
                                   border: OutlineInputBorder(),
                                   labelStyle: TextStyle(
-                                    color: MyColors.textNormal.withOpacity(0.7),
+                                    color:
+                                        MyColors().textNormal.withOpacity(0.7),
                                   ),
                                 ),
                               ),
                             ),
 
-                            // TextButton(
-                            //   style: TextButton.styleFrom(
-                            //     primary: MyColors.primaryNormal,
-                            //   ),
-                            //   onPressed: () {
-                            //     print('change password');
-                            //   },
-                            //   child:
-                            //   const Text('Forgot Password?', style: TextStyle(fontWeight: FontWeight.normal, decoration: TextDecoration.underline,),),
-                            // ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  primary: MyColors().primaryNormal,
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                        ForgotPasswordPage()),
+                                  );
+                                },
+                                child: Text(
+                                  'Forgot Password?',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                            ),
 
                             SizedBox(
                               width: 150.0,
@@ -144,7 +168,7 @@ class LoginStatefulWidgetState extends State<Login> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(12.0)),
                                 ),
-                                backgroundColor: MyColors.accentNormal,
+                                backgroundColor: MyColors().accentNormal,
                                 onPressed: () => {
                                   setState(() {
                                     _submitted = true;
@@ -161,7 +185,6 @@ class LoginStatefulWidgetState extends State<Login> {
                                 ),
                               ),
                             ),
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -169,18 +192,19 @@ class LoginStatefulWidgetState extends State<Login> {
                                   'Don\'t have an account?',
                                   style: TextStyle(
                                     fontWeight: FontWeight.normal,
+                                    color: MyColors().textNormal,
                                   ),
                                 ),
                                 TextButton(
                                   style: TextButton.styleFrom(
-                                    primary: MyColors.primaryNormal,
+                                    primary: MyColors().primaryNormal,
                                   ),
                                   onPressed: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const Register()),
+                                              Register()),
                                     );
                                   },
                                   child: const Text(
@@ -212,11 +236,11 @@ class LoginStatefulWidgetState extends State<Login> {
                             height: 100,
                             width: 100,
                             child: CircleAvatar(
-                              backgroundColor: MyColors.primaryNormal,
+                              backgroundColor: MyColors().primaryNormal,
                               radius: 50,
                               child: CircleAvatar(
                                 radius: 48.0,
-                                backgroundColor: MyColors.accentNormal,
+                                backgroundColor: MyColors().accentNormal,
                                 child: ClipRect(
                                   child: SvgPicture.asset(
                                       'assets/profile_icon.svg'),
@@ -242,8 +266,28 @@ class LoginStatefulWidgetState extends State<Login> {
   void _submit() {
     // if there is no error text
     if (_errorEmailText == null && _errorPasswordText == null) {
-      print("Login");
+      signIn();
     }
+  }
+
+  Future signIn() async {
+    showDialog(context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(child: CircularProgressIndicator(),
+        ));
+    
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _controllerEmail.text.trim(),
+          password: _controllerPassword.text.trim());
+    } on FirebaseAuthException catch (e) {
+      print(e);
+
+      Utils.showSnackBar(e.message);
+    }
+
+    navigatorKey.currentState!.popUntil((route) => route.isFirst);
+
   }
 
   String? get _errorEmailText {
@@ -269,7 +313,7 @@ class LoginStatefulWidgetState extends State<Login> {
     if (text.isEmpty) {
       return 'Can\'t be empty';
     }
-    if (text.length < 4) {
+    if (text.length < 6) {
       return 'Too short';
     }
 

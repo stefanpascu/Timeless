@@ -17,10 +17,10 @@ class Task{
     return this.time;
   }
 
-  Task.repetitive(this.name, this.repetitiveType, this.time, this.id) : type = TaskType.Repetitive, color =  MyColors.repetitiveBlue;
+  Task.repetitive(this.name, this.repetitiveType, this.time, this.id) : type = TaskType.Repetitive, color =  MyColors().repetitiveBlue;
 
-  Task.dueTo(this.name, this.time, this.id) : type = TaskType.DueTo, color = MyColors.dueToRed;
+  Task.dueTo(this.name, this.time, this.id) : type = TaskType.DueTo, color = MyColors().dueToRed;
 
-  Task.appointment(this.name, this.time, this.id) : type = TaskType.Appointment, color = MyColors.appointmentGreen;
+  Task.appointment(this.name, this.time, this.id) : type = TaskType.Appointment, color = MyColors().appointmentGreen;
 
 }

@@ -19,11 +19,11 @@ class HomePageState extends State<HomePage> {
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
+  static List<Widget> _widgetOptions = <Widget>[
     Text(
       'DAILY TASKS',
       style: TextStyle(
-          color:  MyColors.primaryDarkest,
+          color:  MyColors().primaryTitle,
           fontFamily: 'OpenSans',
           fontSize: 25.0,
           fontWeight: FontWeight.w900),
@@ -31,7 +31,7 @@ class HomePageState extends State<HomePage> {
     Text(
       'GOALS',
       style: TextStyle(
-          color:  MyColors.primaryDarkest,
+          color:  MyColors().primaryTitle,
           fontFamily: 'OpenSans',
           fontSize: 25.0,
           fontWeight: FontWeight.w900),
@@ -50,17 +50,17 @@ class HomePageState extends State<HomePage> {
       appBar: AppBar(
         leading: Builder(
           builder: (context) => RaisedButton(
-              color:  MyColors.taintedWhite.withOpacity(0),
+              color:  MyColors().backgroundNormal.withOpacity(0),
               elevation: 0,
               onPressed: () => Scaffold.of(context).openDrawer(),
-              child: const Icon(
+              child: Icon(
                 Icons.widgets,
                 size: 30.0,
-                color:  MyColors.primaryDarkest,
+                color:  MyColors().primaryTitle,
               )),
         ),
 
-        backgroundColor:  MyColors.taintedWhite.withOpacity(0),
+        backgroundColor:  MyColors().backgroundNormal.withOpacity(0),
         // Colors.transparent,
 
         title:
@@ -73,8 +73,8 @@ class HomePageState extends State<HomePage> {
         actions: [
           Icon(
             Icons.widgets,
-            color:  MyColors.taintedWhite,
-            size: 60.0,
+            color:  MyColors().backgroundNormal,
+            size: 50.0,
           ),
         ],
 
@@ -90,24 +90,24 @@ class HomePageState extends State<HomePage> {
         height: 70.0,
         child: FloatingActionButton(
           mini: false,
-          backgroundColor:  MyColors.accentNormal,
+          backgroundColor:  MyColors().accentNormal,
           onPressed: () => {
             selectedIndex == 0 ? Navigator.push(context, MaterialPageRoute(builder: (context) => NewTaskPage()),) : Navigator.push(context, MaterialPageRoute(builder: (context) => NewGoalPage()),)
           },
           hoverElevation: 1.5,
-          shape: const StadiumBorder(
-            side: BorderSide(color:  MyColors.taintedWhite, width: 7),
+          shape: StadiumBorder(
+            side: BorderSide(color:  MyColors().backgroundNormal, width: 7),
           ),
           elevation: 1.5,
-          child: const Icon(
+          child: Icon(
             Icons.add,
             size: 35.0,
-            color:  MyColors.taintedWhite,
+            color:  MyColors().backgroundNormal,
           ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      backgroundColor:  MyColors.taintedWhite,
+      backgroundColor:  MyColors().backgroundNormal,
       bottomNavigationBar: Container(
           margin: const EdgeInsets.only(
             left: 10,
@@ -119,8 +119,8 @@ class HomePageState extends State<HomePage> {
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
               colors: [
-                MyColors.primaryDarker,
-                MyColors.primaryNormal,
+                MyColors().primaryDarker,
+                MyColors().primaryNormal,
               ],
             ),
             borderRadius: BorderRadius.all(
@@ -141,7 +141,7 @@ class HomePageState extends State<HomePage> {
                 BottomNavigationBarItem(
                     icon: Icon(Icons.account_balance), label: 'GOALS'),
               ],
-              backgroundColor: MyColors.primaryNormal.withOpacity(0),
+              backgroundColor: MyColors().primaryNormal.withOpacity(0),
               currentIndex: selectedIndex,
               selectedItemColor: const Color(0xffffffff),
               // 0xffEEF0F0

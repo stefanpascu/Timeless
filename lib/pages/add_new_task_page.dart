@@ -92,40 +92,54 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors().backgroundNormal,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: MyColors.primaryDarkest,
+            color: MyColors().primaryTitle,
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: MyColors.taintedWhite.withOpacity(0),
-        title: Text(
-          editMode ? 'EDIT TASK' : 'NEW TASK',
-          style: TextStyle(
-            color: MyColors.primaryDarkest,
-            fontSize: 25.0,
-            fontWeight: FontWeight.w900,
+        backgroundColor: MyColors().backgroundNormal.withOpacity(0),
+        title: Align(
+          alignment: Alignment.center,
+          child: Text(
+            editMode ? 'EDIT TASK' : 'NEW TASK',
+            style: TextStyle(
+              color: MyColors().primaryTitle,
+              fontSize: 25.0,
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ),
         actions: [
-          if (editMode == true)
+          if (editMode == true) ...[
             Padding(
               padding: const EdgeInsets.only(right: 10.0),
               child: IconButton(
                 icon: Icon(
                   Icons.delete,
-                  color: MyColors.primaryDarkest,
-                  size: 35.0,
+                  color: MyColors().primaryTitle,
+                  size: 50.0,
                 ),
                 onPressed: () {
                   print('delete task');
                 },
               ),
             ),
+          ] else ...[
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: Icon(
+                Icons.delete,
+                color: MyColors().backgroundNormal,
+                size: 50.0,
+              ),
+            ),
+          ]
         ],
         elevation: 0,
       ),
@@ -141,472 +155,442 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                   _filterWidget(
                       title: 'Repetitive',
                       index: 0,
-                      color: MyColors.repetitiveBlue),
+                      color: MyColors().repetitiveBlue),
                   _filterWidget(
-                      title: 'Due to', index: 1, color: MyColors.dueToRed),
+                      title: 'Due to', index: 1, color: MyColors().dueToRed),
                   _filterWidget(
                       title: 'Appointment',
                       index: 2,
-                      color: MyColors.appointmentGreen),
+                      color: MyColors().appointmentGreen),
                 ],
               ),
             ),
           ),
           Container(
-              child: selectedDailyIndex == 0
-                  ? Column(
-                      children: [
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(40),
-                              child: TextField(
-                                controller: _controller,
-                                onChanged: (text) => setState(() => _textName),
-                                decoration: InputDecoration(
-                                  labelText: 'Name',
-                                  errorText: _submitted ? _errorNameText : null,
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: MyColors.primaryNormal
-                                            .withOpacity(0.7),
-                                        width: 1.5),
-                                  ),
-                                  border: OutlineInputBorder(),
-                                  labelStyle: TextStyle(
-                                    color: MyColors.primaryNormal,
-                                  ),
-                                ),
+              child: Column(children: [
+            Padding(
+              padding: EdgeInsets.all(40),
+              child: TextField(
+                controller: _controller,
+                cursorColor: MyColors().textNormal,
+                style: TextStyle(color: MyColors().textNormal),
+                onChanged: (text) => setState(() => _textName),
+                decoration: InputDecoration(
+                  errorText: _submitted ? _errorNameText : null,
+                  labelText: 'Name',
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: MyColors().primaryNormal.withOpacity(0.7),
+                        width: 1.5),
+                  ),
+                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                    color: MyColors().primaryNormal,
+                  ),
+                ),
+              ),
+            ),
+            selectedDailyIndex == 0
+                ? Column(
+                    children: [
+                      SizedBox(height: 30.0),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Pick a Time:',
+                            style: TextStyle(
+                                color: MyColors().textNormal, fontSize: 30),
+                          ),
+                          StatefulBuilder(builder: (BuildContext context,
+                              StateSetter timePickState) {
+                            return OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                primary: MyColors().overBackground,
+                                side: BorderSide(
+                                    color: MyColors().primaryNormal, width: 1.2),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 30.0),
-                        Column(
+                              onPressed: () async {
+                                await _show();
+                                timePickState(() {});
+                              },
+                              child: Text(
+                                formattedTime,
+                                style: TextStyle(
+                                    color: MyColors().textNormal, fontSize: 50.0),
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 40.0),
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              'Pick a Time:',
+                              'Repetitive task?',
                               style: TextStyle(
-                                  color: MyColors.textNormal, fontSize: 30),
+                                  fontSize: 30.0, color: MyColors().textNormal),
                             ),
-                            StatefulBuilder(builder: (BuildContext context,
-                                StateSetter timePickState) {
-                              return OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  primary: MyColors.white,
-                                  side: BorderSide(
-                                      color: MyColors.primaryNormal,
-                                      width: 1.2),
-                                ),
-                                onPressed: () async {
-                                  await _show();
-                                  timePickState(() {});
-                                },
-                                child: Text(
-                                  formattedTime,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'No',
                                   style: TextStyle(
-                                      color: MyColors.textNormal,
-                                      fontSize: 50.0),
+                                      fontSize: 20.0,
+                                      color: MyColors().textNormal),
                                 ),
-                              );
-                            }),
+                                Switch(
+                                  value: isSwitched,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isSwitched = value;
+                                      if (isSwitched == false)
+                                        task.repetitiveType = null;
+                                      else
+                                        task.repetitiveType =
+                                            repetitiveType != null
+                                                ? repetitiveType
+                                                : RepetitiveType.Daily;
+                                    });
+                                  },
+                                ),
+                                Text(
+                                  'Yes',
+                                  style: TextStyle(
+                                      fontSize: 20.0,
+                                      color: MyColors().textNormal),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 40.0),
-                          child: Column(
+                      ),
+                      Visibility(
+                        visible: isSwitched,
+                        child: StatefulBuilder(
+                          builder: (BuildContext context,
+                              StateSetter NewTaskPageState) {
+                            return DropdownButton<String>(
+                              value: repetitiveDropdownValue,
+                              dropdownColor: MyColors().overBackground,
+                              icon: Icon(Icons.arrow_downward),
+                              elevation: 0,
+                              style: TextStyle(
+                                  color: MyColors().textNormal.withOpacity(1.0)),
+                              underline: Container(
+                                height: 2,
+                                color: MyColors().primaryNormal.withOpacity(0.7),
+                              ),
+                              onChanged: (String? newRepetitiveValue) {
+                                NewTaskPageState(() {
+                                  repetitiveDropdownValue = newRepetitiveValue!;
+                                  if (repetitiveDropdownValue == 'Daily') {
+                                    repetitiveType = RepetitiveType.Daily;
+                                    task.repetitiveType = RepetitiveType.Daily;
+                                  } else if (repetitiveDropdownValue ==
+                                      'Weekly') {
+                                    repetitiveType = RepetitiveType.Weekly;
+                                    task.repetitiveType = RepetitiveType.Weekly;
+                                  }
+                                });
+                              },
+                              items: <String>[
+                                'Daily',
+                                'Weekly'
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            );
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 30.0),
+                      SizedBox(
+                        width: 150.0,
+                        height: 45.0,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: MyColors().accentNormal,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            shadowColor: Colors.grey,
+                            elevation: 2.5,
+                            side: BorderSide(
+                              width: 0.8,
+                              color: MyColors().lightGray,
+                            ),
+                          ),
+                          onPressed: () => {
+                            setState(() {
+                              _submitted = true;
+                            }),
+                            if (_controller.value.text.isNotEmpty) {_submit()}
+                          },
+                          child: Text(
+                            'Save',
+                            style: TextStyle(
+                                fontSize: 20.0,
+                                color: MyColors().highlightedFilterText),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : selectedDailyIndex == 1
+                    ? Column(
+                        children: [
+                          SizedBox(height: 30.0),
+                          Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                'Repetitive task?',
-                                style: TextStyle(fontSize: 30.0),
+                                'Pick a Time:',
+                                style: TextStyle(
+                                    color: MyColors().textNormal, fontSize: 30),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'No',
-                                    style: TextStyle(fontSize: 20.0),
+                              StatefulBuilder(builder: (BuildContext context,
+                                  StateSetter timePickState) {
+                                return OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    primary: MyColors().overBackground,
+                                    side: BorderSide(
+                                        color: MyColors().primaryNormal,
+                                        width: 1.2),
                                   ),
-                                  Switch(
-                                    value: isSwitched,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        isSwitched = value;
-                                        if (isSwitched == false)
-                                          task.repetitiveType = null;
-                                        else
-                                          task.repetitiveType =
-                                              repetitiveType != null
-                                                  ? repetitiveType
-                                                  : RepetitiveType.Daily;
-                                      });
-                                    },
+                                  onPressed: () async {
+                                    await _show();
+                                    timePickState(() {});
+                                  },
+                                  child: Text(
+                                    formattedTime,
+                                    style: TextStyle(
+                                        color: MyColors().textNormal,
+                                        fontSize: 50.0),
                                   ),
-                                  Text(
-                                    'Yes',
-                                    style: TextStyle(fontSize: 20.0),
-                                  ),
-                                ],
-                              ),
+                                );
+                              }),
                             ],
                           ),
-                        ),
-                        Visibility(
-                          visible: isSwitched,
-                          child: StatefulBuilder(
-                            builder: (BuildContext context,
-                                StateSetter NewTaskPageState) {
-                              return DropdownButton<String>(
-                                value: repetitiveDropdownValue,
-                                icon: Icon(Icons.arrow_downward),
-                                elevation: 0,
+                          Padding(
+                            padding: const EdgeInsets.only(top: 40.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Pick a Date:',
+                                  style: TextStyle(
+                                      fontSize: 30.0,
+                                      color: MyColors().textNormal),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 8,
+                                  ),
+                                  child: OutlinedButton(
+                                    onPressed: () {
+                                      _restorableDatePickerRouteFuture
+                                          .present();
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                          color: MyColors().primaryNormal,
+                                          width: 1.0),
+                                    ),
+                                    child: Text(
+                                      formattedDate,
+                                      style: TextStyle(
+                                          color: MyColors().textNormal,
+                                          fontSize: 25.0),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Visibility(
+                            visible: timeError,
+                            child: StatefulBuilder(
+                              builder: (BuildContext context,
+                                  StateSetter NewTaskPageState) {
+                                return Text(
+                                  'Selected Date and Time combination is invalid',
+                                  style: TextStyle(color: Colors.red),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 30.0),
+                          SizedBox(
+                            width: 150.0,
+                            height: 45.0,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: MyColors().accentNormal,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                shadowColor: Colors.grey,
+                                elevation: 2.5,
+                                side: BorderSide(
+                                  width: 0.8,
+                                  color: MyColors().lightGray,
+                                ),
+                              ),
+                              onPressed: () => {
+                                setState(() {
+                                  _submitted = true;
+                                }),
+                                if (_controller.value.text.isNotEmpty &&
+                                    compareDates(task.time, DateTime.now()))
+                                  {_submit()}
+                                else if (!compareDates(
+                                    task.time, DateTime.now()))
+                                  {timeError = true}
+                              },
+                              child: Text(
+                                'Save',
                                 style: TextStyle(
-                                    color:
-                                        MyColors.textNormal.withOpacity(1.0)),
-                                underline: Container(
-                                  height: 2,
-                                  color:
-                                      MyColors.primaryNormal.withOpacity(0.7),
-                                ),
-                                onChanged: (String? newRepetitiveValue) {
-                                  NewTaskPageState(() {
-                                    repetitiveDropdownValue =
-                                        newRepetitiveValue!;
-                                    if (repetitiveDropdownValue == 'Daily') {
-                                      repetitiveType = RepetitiveType.Daily;
-                                      task.repetitiveType =
-                                          RepetitiveType.Daily;
-                                    } else if (repetitiveDropdownValue ==
-                                        'Weekly') {
-                                      repetitiveType = RepetitiveType.Weekly;
-                                      task.repetitiveType =
-                                          RepetitiveType.Weekly;
-                                    }
-                                  });
-                                },
-                                items: <String>[
-                                  'Daily',
-                                  'Weekly'
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                              );
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 30.0),
-                        SizedBox(
-                          width: 150.0,
-                          height: 45.0,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: MyColors.accentNormal,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              shadowColor: Colors.grey,
-                              elevation: 2.5,
-                              side: BorderSide(
-                                width: 0.8,
-                                color: MyColors.lightGray,
+                                    fontSize: 20.0,
+                                    color: MyColors().highlightedFilterText),
                               ),
                             ),
-                            onPressed: () => {
-                              setState(() {
-                                _submitted = true;
+                          ),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          SizedBox(height: 30.0),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Pick a Time:',
+                                style: TextStyle(
+                                    color: MyColors().textNormal, fontSize: 30),
+                              ),
+                              StatefulBuilder(builder: (BuildContext context,
+                                  StateSetter timePickState) {
+                                return OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    primary: MyColors().overBackground,
+                                    side: BorderSide(
+                                        color: MyColors().primaryNormal,
+                                        width: 1.2),
+                                  ),
+                                  onPressed: () async {
+                                    await _show();
+                                    timePickState(() {});
+                                  },
+                                  child: Text(
+                                    formattedTime,
+                                    style: TextStyle(
+                                        color: MyColors().textNormal,
+                                        fontSize: 50.0),
+                                  ),
+                                );
                               }),
-                              if (_controller.value.text.isNotEmpty) {_submit()}
-                            },
-                            child: const Text(
-                              'Save',
-                              style: TextStyle(
-                                  fontSize: 20.0, color: MyColors.taintedWhite),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 40.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Pick a Date:',
+                                  style: TextStyle(
+                                      fontSize: 30.0,
+                                      color: MyColors().textNormal),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 8.0,
+                                  ),
+                                  child: OutlinedButton(
+                                    onPressed: () {
+                                      _restorableDatePickerRouteFuture
+                                          .present();
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                          color: MyColors().primaryNormal,
+                                          width: 1.0),
+                                    ),
+                                    child: Text(
+                                      formattedDate,
+                                      style: TextStyle(
+                                          color: MyColors().textNormal,
+                                          fontSize: 25.0),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  : selectedDailyIndex == 1
-                      ? Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(40),
-                              child: TextField(
-                                controller: _controller,
-                                onChanged: (text) => setState(() => _textName),
-                                decoration: InputDecoration(
-                                  errorText: _submitted ? _errorNameText : null,
-                                  labelText: 'Name',
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: MyColors.primaryNormal
-                                            .withOpacity(0.7),
-                                        width: 1.5),
-                                  ),
-                                  border: OutlineInputBorder(),
-                                  labelStyle: TextStyle(
-                                    color: MyColors.primaryNormal,
-                                  ),
+                          Visibility(
+                            visible: timeError,
+                            child: StatefulBuilder(
+                              builder: (BuildContext context,
+                                  StateSetter NewTaskPageState) {
+                                return Text(
+                                  'Selected Date and Time combination is invalid',
+                                  style: TextStyle(color: Colors.red),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 30.0),
+                          SizedBox(
+                            width: 150.0,
+                            height: 45.0,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: MyColors().accentNormal,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                shadowColor: Colors.grey,
+                                elevation: 2.5,
+                                side: BorderSide(
+                                  width: 0.8,
+                                  color: MyColors().lightGray,
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 30.0),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Pick a Time:',
-                                  style: TextStyle(
-                                      color: MyColors.textNormal, fontSize: 30),
-                                ),
-                                StatefulBuilder(builder: (BuildContext context,
-                                    StateSetter timePickState) {
-                                  return OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      primary: MyColors.white,
-                                      side: BorderSide(
-                                          color: MyColors.primaryNormal,
-                                          width: 1.2),
-                                    ),
-                                    onPressed: () async {
-                                      await _show();
-                                      timePickState(() {});
-                                    },
-                                    child: Text(formattedTime,
-                                      style: TextStyle(
-                                          color: MyColors.textNormal,
-                                          fontSize: 50.0),),
-                                  );
+                              onPressed: () => {
+                                setState(() {
+                                  _submitted = true;
                                 }),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 40.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text('Pick a Date:', style: TextStyle(fontSize: 30.0),),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 8,
-                                    ),
-                                    child: OutlinedButton(
-                                      onPressed: () {
-                                        _restorableDatePickerRouteFuture
-                                            .present();
-                                      },
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(
-                                            color: MyColors.primaryNormal,
-                                            width: 1.0),
-                                      ),
-                                      child: Text(
-                                        formattedDate,
-                                        style: TextStyle(
-                                            color: MyColors.textNormal,
-                                            fontSize: 25.0
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                if (_controller.value.text.isNotEmpty &&
+                                    compareDates(task.time, DateTime.now()))
+                                  {_submit()}
+                                else if (!compareDates(
+                                    task.time, DateTime.now()))
+                                  {timeError = true}
+                              },
+                              child: Text(
+                                'Save',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: MyColors().highlightedFilterText),
                               ),
                             ),
-                            Visibility(
-                              visible: timeError,
-                              child: StatefulBuilder(
-                                builder: (BuildContext context,
-                                    StateSetter NewTaskPageState) {
-                                  return Text(
-                                    'Selected Date and Time combination is invalid',
-                                    style: TextStyle(color: Colors.red),
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(height: 30.0),
-                            SizedBox(
-                              width: 150.0,
-                              height: 45.0,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: MyColors.accentNormal,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  shadowColor: Colors.grey,
-                                  elevation: 2.5,
-                                  side: BorderSide(
-                                    width: 0.8,
-                                    color: MyColors.lightGray,
-                                  ),
-                                ),
-                                onPressed: () => {
-                                  setState(() {
-                                    _submitted = true;
-                                  }),
-                                  if (_controller.value.text.isNotEmpty &&
-                                      compareDates(task.time, DateTime.now()))
-                                    {_submit()}
-                                  else if (!compareDates(
-                                      task.time, DateTime.now()))
-                                    {timeError = true}
-                                },
-                                child: const Text(
-                                  'Save',
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: MyColors.taintedWhite),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(40),
-                              child: TextField(
-                                controller: _controller,
-                                onChanged: (text) => setState(() => _textName),
-                                decoration: InputDecoration(
-                                  errorText: _submitted ? _errorNameText : null,
-                                  labelText: 'Name',
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: MyColors.primaryNormal
-                                            .withOpacity(0.7),
-                                        width: 1.5),
-                                  ),
-                                  border: OutlineInputBorder(),
-                                  labelStyle: TextStyle(
-                                    color: MyColors.primaryNormal,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 30.0),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Pick a Time:',
-                                  style: TextStyle(
-                                      color: MyColors.textNormal, fontSize: 30),
-                                ),
-                                StatefulBuilder(builder: (BuildContext context,
-                                    StateSetter timePickState) {
-                                  return OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      primary: MyColors.white,
-                                      side: BorderSide(
-                                          color: MyColors.primaryNormal,
-                                          width: 1.2),
-                                    ),
-                                    onPressed: () async {
-                                      await _show();
-                                      timePickState(() {});
-                                    },
-                                    child: Text(formattedTime,
-                                      style: TextStyle(
-                                          color: MyColors.textNormal,
-                                          fontSize: 50.0),),
-                                  );
-                                }),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 40.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text('Pick a Date:', style: TextStyle(fontSize: 30.0),),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 8.0,
-                                    ),
-                                    child: OutlinedButton(
-                                      onPressed: () {
-                                        _restorableDatePickerRouteFuture
-                                            .present();
-                                      },
-                                      style: OutlinedButton.styleFrom(
-                                        side: const BorderSide(
-                                            color: MyColors.primaryNormal,
-                                            width: 1.0),
-                                      ),
-                                      child: Text(
-                                        formattedDate,
-                                        style: TextStyle(
-                                            color: MyColors.textNormal,
-                                            fontSize: 25.0),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Visibility(
-                              visible: timeError,
-                              child: StatefulBuilder(
-                                builder: (BuildContext context,
-                                    StateSetter NewTaskPageState) {
-                                  return Text(
-                                    'Selected Date and Time combination is invalid',
-                                    style: TextStyle(color: Colors.red),
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(height: 30.0),
-                            SizedBox(
-                              width: 150.0,
-                              height: 45.0,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: MyColors.accentNormal,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  shadowColor: Colors.grey,
-                                  elevation: 2.5,
-                                  side: BorderSide(
-                                    width: 0.8,
-                                    color: MyColors.lightGray,
-                                  ),
-                                ),
-                                onPressed: () => {
-                                  setState(() {
-                                    _submitted = true;
-                                  }),
-                                  if (_controller.value.text.isNotEmpty &&
-                                      compareDates(task.time, DateTime.now()))
-                                    {_submit()}
-                                  else if (!compareDates(
-                                      task.time, DateTime.now()))
-                                    {timeError = true}
-                                },
-                                child: const Text(
-                                  'Save',
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: MyColors.taintedWhite),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )),
+                          ),
+                        ],
+                      )
+          ])),
         ]),
       ),
     );
@@ -794,7 +778,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           padding: EdgeInsets.symmetric(horizontal: 10.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(7)),
-            border: Border.all(color: MyColors.lightGray, width: 0.2),
+            border: Border.all(color: MyColors().lightGray, width: 0.2),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
@@ -803,7 +787,8 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                 offset: Offset(1.0, 1.0), // changes position of shadow
               ),
             ],
-            color: isSelected ? MyColors.primaryNormal : MyColors.white,
+            color:
+                isSelected ? MyColors().primaryNormal : MyColors().overBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -824,8 +809,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
               Text(
                 title,
                 style: TextStyle(
-                  color:
-                      isSelected ? MyColors.taintedWhite : MyColors.textNormal,
+                  color: isSelected
+                      ? MyColors().highlightedFilterText
+                      : MyColors().textNormal,
                   fontSize: 13.0,
                   fontFamily: 'OpenSans',
                 ),

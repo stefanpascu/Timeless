@@ -10,8 +10,8 @@ class Goal{
   GoalType type;
   Color color;
 
-  Goal.public(this.name, this.id) : type = GoalType.Public, color =  MyColors.publicYellow;
+  Goal.public(this.name, this.id) : type = GoalType.Public, color =  MyColors().publicYellow;
 
-  Goal.private(this.name, this.id) : type = GoalType.Private, color =  MyColors.privatePurple;
+  Goal.private(this.name, this.id) : type = GoalType.Private, color =  MyColors().privatePurple;
 
 }

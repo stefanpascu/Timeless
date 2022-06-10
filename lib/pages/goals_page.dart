@@ -17,7 +17,6 @@ class GoalsPage extends StatefulWidget {
 class _GoalsPageState extends State<GoalsPage> {
   int selectedGoalsIndex = 0;
 
-
   static List<Goal> goals = [
     Goal.public("hello1", 1),
     Goal.private("hello2", 2),
@@ -40,32 +39,37 @@ class _GoalsPageState extends State<GoalsPage> {
               children: <Widget>[
                 _filterWidget(title: 'All', index: 0, hasCircle: false),
                 _filterWidget(
-                    title: 'Private', index: 2, color: MyColors.privatePurple),
+                    title: 'Private', index: 2, color: MyColors().privatePurple),
                 _filterWidget(
-                    title: 'Public', index: 1, color: MyColors.publicYellow),
+                    title: 'Public', index: 1, color: MyColors().publicYellow),
               ],
             ),
           ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 15.0),
-          child: Expanded(
-            child: GroupedListView<Goal, String>(
-              elements: filteredGoals,
-              groupBy: (element) => _buildGroupByString(element),
-              groupSeparatorBuilder: (String groupByValue) => Padding(
-                padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
-                child: Text(
-                  groupByValue,
-                  style: TextStyle(
-                      fontSize: 15.0,
-                      fontFamily: 'OpenSans',
-                      fontWeight: FontWeight.w500),
+          child: Row(
+            children: [
+              Expanded(
+                child: GroupedListView<Goal, String>(
+                  elements: filteredGoals,
+                  groupBy: (element) => _buildGroupByString(element),
+                  groupSeparatorBuilder: (String groupByValue) => Padding(
+                    padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
+                    child: Text(
+                      groupByValue,
+                      style: TextStyle(
+                          color: MyColors().textNormal,
+                          fontSize: 15.0,
+                          fontFamily: 'OpenSans',
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  itemBuilder: (context, Goal goal) => _goalWidget(goal),
+                  shrinkWrap: true,
                 ),
               ),
-              itemBuilder: (context, Goal goal) => _goalWidget(goal),
-              shrinkWrap: true,
-            ),
+            ],
           ),
         ),
       ]),
@@ -90,8 +94,8 @@ class _GoalsPageState extends State<GoalsPage> {
         child: DecoratedBox(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: MyColors.lightGray, width: 0.2),
-              color: MyColors.white,
+              border: Border.all(color: MyColors().lightGray, width: 0.2),
+              color: MyColors().overBackground,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey,
@@ -124,7 +128,7 @@ class _GoalsPageState extends State<GoalsPage> {
                         goal.name,
                         style: TextStyle(
                             fontSize: 20.0,
-                            color: MyColors.textNormal,
+                            color: MyColors().textNormal,
                             fontFamily: 'OpenSans',
                             fontWeight: FontWeight.w600),
                       ),
@@ -161,7 +165,7 @@ class _GoalsPageState extends State<GoalsPage> {
           padding: EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(7)),
-            border: Border.all(color: MyColors.lightGray, width: 0.2),
+            border: Border.all(color: MyColors().lightGray, width: 0.2),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
@@ -170,7 +174,7 @@ class _GoalsPageState extends State<GoalsPage> {
                 offset: Offset(1.0, 1.0), // changes position of shadow
               ),
             ],
-            color: isSelected ? MyColors.primaryNormal : MyColors.white,
+            color: isSelected ? MyColors().primaryNormal : MyColors().overBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -192,7 +196,7 @@ class _GoalsPageState extends State<GoalsPage> {
                 title,
                 style: TextStyle(
                   color:
-                      isSelected ? MyColors.taintedWhite : MyColors.textNormal,
+                      isSelected ? MyColors().highlightedFilterText : MyColors().textNormal,
                   fontSize: 13.0,
                   fontFamily: 'OpenSans',
                 ),

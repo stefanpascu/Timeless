@@ -33,6 +33,9 @@ dependencies:
   intl: ^0.17.0
   grouped_list: ^5.1.1
   enum_to_string: ^2.0.1
+  shared_preferences: ^2.0.15
+  cloud_firestore: ^3.1.17
+  firebase_auth: ^3.3.19
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -66,6 +69,7 @@ flutter:
     - assets/filter_icon_green.svg
     - assets/login_back_01.svg
     - assets/profile_icon.svg
+    - assets/about_icon.svg
     - assets/images/Tux.png
     - assets/images/NFT.jpeg
     - assets/images/Ragnar_Wallpaper.jpg

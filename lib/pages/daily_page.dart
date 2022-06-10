@@ -53,13 +53,13 @@ class _DailyPageState extends State<DailyPage> {
                 _filterWidget(
                     title: 'Repetitive',
                     index: 1,
-                    color: MyColors.repetitiveBlue),
+                    color: MyColors().repetitiveBlue),
                 _filterWidget(
-                    title: 'Due to', index: 2, color: MyColors.dueToRed),
+                    title: 'Due to', index: 2, color: MyColors().dueToRed),
                 _filterWidget(
                     title: 'Appointment',
                     index: 3,
-                    color: MyColors.appointmentGreen),
+                    color: MyColors().appointmentGreen),
               ],
             ),
           ),
@@ -75,6 +75,7 @@ class _DailyPageState extends State<DailyPage> {
                 child: Text(
                   groupByValue,
                   style: TextStyle(
+                      color: MyColors().textNormal,
                       fontSize: 15.0,
                       fontFamily: 'OpenSans',
                       fontWeight: FontWeight.w500),
@@ -126,8 +127,8 @@ class _DailyPageState extends State<DailyPage> {
         child: DecoratedBox(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: MyColors.lightGray, width: 0.2),
-              color: MyColors.white,
+              border: Border.all(color: MyColors().lightGray, width: 0.2),
+              color: MyColors().overBackground,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey,
@@ -162,7 +163,7 @@ class _DailyPageState extends State<DailyPage> {
                             task.name,
                             style: TextStyle(
                                 fontSize: 20.0,
-                                color: MyColors.textNormal,
+                                color: MyColors().textNormal,
                                 fontFamily: 'OpenSans',
                                 fontWeight: FontWeight.w600),
                           ),
@@ -170,7 +171,7 @@ class _DailyPageState extends State<DailyPage> {
                             EnumToString.convertToString(task.type),
                             style: TextStyle(
                                 fontSize: 13.0,
-                                color: MyColors.textNormal,
+                                color: MyColors().textNormal,
                                 fontFamily: 'OpenSans',
                                 fontWeight: FontWeight.normal),
                           )
@@ -184,6 +185,7 @@ class _DailyPageState extends State<DailyPage> {
                   child: Text(
                     DateFormat('kk:mm').format(task.time),
                     style: TextStyle(
+                        color: MyColors().textNormal,
                         fontSize: 15.0,
                         fontFamily: 'OpenSans',
                         fontWeight: FontWeight.w600),
@@ -219,7 +221,7 @@ class _DailyPageState extends State<DailyPage> {
           padding: EdgeInsets.symmetric(horizontal: 10.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(7)),
-            border: Border.all(color: MyColors.lightGray, width: 0.2),
+            border: Border.all(color: MyColors().lightGray, width: 0.2),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
@@ -228,7 +230,7 @@ class _DailyPageState extends State<DailyPage> {
                 offset: Offset(1.0, 1.0), // changes position of shadow
               ),
             ],
-            color: isSelected ? MyColors.primaryNormal : MyColors.white,
+            color: isSelected ? MyColors().primaryNormal : MyColors().overBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -250,7 +252,7 @@ class _DailyPageState extends State<DailyPage> {
                 title,
                 style: TextStyle(
                   color:
-                      isSelected ? MyColors.taintedWhite : MyColors.textNormal,
+                      isSelected ? MyColors().highlightedFilterText : MyColors().textNormal,
                   fontSize: 13.0,
                   fontFamily: 'OpenSans',
                 ),
