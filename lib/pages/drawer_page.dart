@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:timeless/pages/friendProfile.dart';
-import 'package:timeless/pages/newPersonProfile.dart';
 import 'package:timeless/pages/profile.dart';
-import 'package:timeless/pages/register.dart';
 import 'package:timeless/pages/settings.dart';
 
 import '../styles/styles.dart';

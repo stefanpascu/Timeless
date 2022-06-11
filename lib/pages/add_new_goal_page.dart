@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../model/goal.dart';
 import '../model/goal_type.dart';

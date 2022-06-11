@@ -1,14 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeless/pages/login.dart';
-import 'package:timeless/pages/profile.dart';
 
 import '../styles/styles.dart';
 import 'drawer_page.dart';
-import 'friends_page.dart';
-import 'home_page.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);

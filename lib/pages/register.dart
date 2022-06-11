@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timeless/model/gender_type.dart';
@@ -559,44 +558,6 @@ class RegisterStatefulWidgetState extends State<Register>
       });
     }
   }
-}
-
-class NewUser {
-  String id;
-  final String name;
-  final DateTime birthDate;
-  final String gender;
-  final String email;
-
-  NewUser({
-    this.id = '',
-    required this.name,
-    required this.birthDate,
-    required this.gender,
-    required this.email,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'date_of_birth': birthDate,
-        'email': email,
-        'gender': gender,
-        'id': id,
-        'city': 'City',
-        'country': 'Country',
-        'description': '',
-        'friends': {
-          'email': '',
-        },
-      };
-
-  static NewUser fromJson(Map<String, dynamic> json) => NewUser(
-        id: json['id'],
-        name: json['name'],
-        birthDate: json['date_of_birth'].toDate(),
-        gender: json['gender'],
-        email: json['email'],
-      );
 }
 
 class Utils {

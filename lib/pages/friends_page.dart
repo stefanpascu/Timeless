@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../styles/styles.dart';
 import 'drawer_page.dart';
-import 'home_page.dart';
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({Key? key}) : super(key: key);

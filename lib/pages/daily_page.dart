@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
-import 'package:timeless/model/repetitive_type.dart';
 import 'package:timeless/model/task_type.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 
@@ -47,59 +46,61 @@ class _DailyPageState extends State<DailyPage> {
               .map((DocumentSnapshot e) => Task.fromJson2(e))
               .toList();
           filteredTasks = tasks;
-          print(tasks);
-          return SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              SizedBox(
-                height: 60.0,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      _filterWidget(title: 'All', index: 0, hasCircle: false),
-                      _filterWidget(
-                          title: 'Repetitive',
-                          index: 1,
-                          color: MyColors().repetitiveBlue),
-                      _filterWidget(
-                          title: 'Due to',
-                          index: 2,
-                          color: MyColors().dueToRed),
-                      _filterWidget(
-                          title: 'Appointment',
-                          index: 3,
-                          color: MyColors().appointmentGreen),
-                    ],
-                  ),
+          _filterTasks();
+          return Column(mainAxisSize: MainAxisSize.min, children: [
+            SizedBox(
+              height: 60.0,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    _filterWidget(title: 'All', index: 0, hasCircle: false),
+                    _filterWidget(
+                        title: 'Repetitive',
+                        index: 1,
+                        color: MyColors().repetitiveBlue),
+                    _filterWidget(
+                        title: 'Due to',
+                        index: 2,
+                        color: MyColors().dueToRed),
+                    _filterWidget(
+                        title: 'Appointment',
+                        index: 3,
+                        color: MyColors().appointmentGreen),
+                  ],
                 ),
               ),
+            ),
 
-              Container(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.0),
-                  child: GroupedListView<Task, String>(
-                    elements: sortTaskList(filteredTasks),
-                    groupBy: (element) => _buildGroupByString(element),
-                    groupSeparatorBuilder: (String groupByValue) => Padding(
-                      padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
-                      child: Text(
-                        groupByValue,
-                        style: TextStyle(
-                            color: MyColors().textNormal,
-                            fontSize: 15.0,
-                            fontFamily: 'OpenSans',
-                            fontWeight: FontWeight.w500),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15.0),
+                    child: GroupedListView<Task, String>(
+                      elements: sortTaskList(filteredTasks),
+                      groupBy: (element) => _buildGroupByString(element),
+                      groupSeparatorBuilder: (String groupByValue) => Padding(
+                        padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
+                        child: Text(
+                          groupByValue,
+                          style: TextStyle(
+                              color: MyColors().textNormal,
+                              fontSize: 15.0,
+                              fontFamily: 'OpenSans',
+                              fontWeight: FontWeight.w500),
+                        ),
                       ),
+                      itemBuilder: (context, Task task) => _taskWidget(task),
+                      shrinkWrap: true,
                     ),
-                    itemBuilder: (context, Task task) => _taskWidget(task),
-                    shrinkWrap: true,
                   ),
-                ),
 
-              )]),
-          );
+                ),
+              ),
+            )]);
         }
         return Center(child: CircularProgressIndicator());
       },
@@ -134,7 +135,7 @@ class _DailyPageState extends State<DailyPage> {
       onLongPress: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => NewTaskPage(id: task.id)),
+          MaterialPageRoute(builder: (context) => NewTaskPage(task: task)),
         );
       },
       child: Padding(
