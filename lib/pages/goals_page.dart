@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 
 import '../model/goal.dart';
 import '../model/goal_type.dart';
+import '../service/firebase_service.dart';
 import '../styles/styles.dart';
 import 'add_new_goal_page.dart';
 
@@ -16,62 +18,72 @@ class GoalsPage extends StatefulWidget {
 class _GoalsPageState extends State<GoalsPage> {
   int selectedGoalsIndex = 0;
 
-  static List<Goal> goals = [
-    Goal.public("hello1", 1),
-    Goal.private("hello2", 2),
-    Goal.public("hello3", 3),
-    Goal.public("hello4", 4),
-    Goal.private("hello5", 5),
-  ];
+  static List<Goal> goals = [];
   List<Goal> filteredGoals = goals;
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(children: [
-        SizedBox(
-          height: 60.0,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                _filterWidget(title: 'All', index: 0, hasCircle: false),
-                _filterWidget(
-                    title: 'Private', index: 2, color: MyColors().privatePurple),
-                _filterWidget(
-                    title: 'Public', index: 1, color: MyColors().publicYellow),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: GroupedListView<Goal, String>(
-                  elements: filteredGoals,
-                  groupBy: (element) => _buildGroupByString(element),
-                  groupSeparatorBuilder: (String groupByValue) => Padding(
-                    padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
-                    child: Text(
-                      groupByValue,
-                      style: TextStyle(
-                          color: MyColors().textNormal,
-                          fontSize: 15.0,
-                          fontFamily: 'OpenSans',
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  itemBuilder: (context, Goal goal) => _goalWidget(goal),
-                  shrinkWrap: true,
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseService.getCurrentUserId)
+          .collection('goals')
+          .snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError)
+          return Text('Something went wrong...');
+        else if (snapshot.hasData) {
+          goals = snapshot.data!.docs
+              .map((DocumentSnapshot e) => Goal.fromJson2(e))
+              .toList();
+          filteredGoals = goals;
+          _filterGoals();
+          return Column(children: [
+            SizedBox(
+              height: 60.0,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    _filterWidget(title: 'All', index: 0, hasCircle: false),
+                    _filterWidget(
+                        title: 'Private', index: 2, color: MyColors().privatePurple),
+                    _filterWidget(
+                        title: 'Public', index: 1, color: MyColors().publicYellow),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ]),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0),
+                  child: GroupedListView<Goal, String>(
+                    elements: filteredGoals,
+                    groupBy: (element) => _buildGroupByString(element),
+                    groupSeparatorBuilder: (String groupByValue) => Padding(
+                      padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
+                      child: Text(
+                        groupByValue,
+                        style: TextStyle(
+                            color: MyColors().textNormal,
+                            fontSize: 15.0,
+                            fontFamily: 'OpenSans',
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    itemBuilder: (context, Goal goal) => _goalWidget(goal),
+                    shrinkWrap: true,
+                  ),
+                ),
+              ),
+            ),
+          ]);
+        }
+        return Center(child: CircularProgressIndicator());
+      }
     );
   }
 
@@ -85,7 +97,7 @@ class _GoalsPageState extends State<GoalsPage> {
       onLongPress: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => NewGoalPage(id: 1)),
+          MaterialPageRoute(builder: (context) => NewGoalPage(goal: goal,)),
         );
       },
       child: Padding(
@@ -107,7 +119,7 @@ class _GoalsPageState extends State<GoalsPage> {
             child: Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
                   child: Container(
                     width: 13,
                     height: 13,

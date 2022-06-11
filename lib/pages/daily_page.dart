@@ -25,12 +25,6 @@ class _DailyPageState extends State<DailyPage> {
   String repetitiveDropdownValue = 'Daily';
 
   @override
-  void initState() {
-    // tasks = FirebaseService.getTasks
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
@@ -40,7 +34,7 @@ class _DailyPageState extends State<DailyPage> {
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError)
-          return Text('error');
+          return Text('Something went wrong...');
         else if (snapshot.hasData) {
           tasks = snapshot.data!.docs
               .map((DocumentSnapshot e) => Task.fromJson2(e))
@@ -76,28 +70,25 @@ class _DailyPageState extends State<DailyPage> {
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
-                child: Container(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15.0),
-                    child: GroupedListView<Task, String>(
-                      elements: sortTaskList(filteredTasks),
-                      groupBy: (element) => _buildGroupByString(element),
-                      groupSeparatorBuilder: (String groupByValue) => Padding(
-                        padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
-                        child: Text(
-                          groupByValue,
-                          style: TextStyle(
-                              color: MyColors().textNormal,
-                              fontSize: 15.0,
-                              fontFamily: 'OpenSans',
-                              fontWeight: FontWeight.w500),
-                        ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0),
+                  child: GroupedListView<Task, String>(
+                    elements: sortTaskList(filteredTasks),
+                    groupBy: (element) => _buildGroupByString(element),
+                    groupSeparatorBuilder: (String groupByValue) => Padding(
+                      padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
+                      child: Text(
+                        groupByValue,
+                        style: TextStyle(
+                            color: MyColors().textNormal,
+                            fontSize: 15.0,
+                            fontFamily: 'OpenSans',
+                            fontWeight: FontWeight.w500),
                       ),
-                      itemBuilder: (context, Task task) => _taskWidget(task),
-                      shrinkWrap: true,
                     ),
+                    itemBuilder: (context, Task task) => _taskWidget(task),
+                    shrinkWrap: true,
                   ),
-
                 ),
               ),
             )]);
@@ -157,7 +148,7 @@ class _DailyPageState extends State<DailyPage> {
             child: Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
                   child: Container(
                     width: 13,
                     height: 13,

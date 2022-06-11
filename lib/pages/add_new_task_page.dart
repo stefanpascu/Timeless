@@ -232,37 +232,6 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                             );
                           },
                         ),
-                        SizedBox(height: 30.0),
-                        SizedBox(
-                          width: 150.0,
-                          height: 45.0,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: MyColors().accentNormal,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              shadowColor: Colors.grey,
-                              elevation: 2.5,
-                              side: BorderSide(
-                                width: 0.8,
-                                color: MyColors().lightGray,
-                              ),
-                            ),
-                            onPressed: () => {
-                              setState(() {
-                                _submitted = true;
-                              }),
-                              if (_controller.value.text.isNotEmpty) {_submit()}
-                            },
-                            child: Text(
-                              'Save',
-                              style: TextStyle(
-                                  fontSize: 20.0,
-                                  color: MyColors().highlightedFilterText),
-                            ),
-                          ),
-                        ),
                       ],
                     )
                   : selectedDailyIndex == 1
@@ -350,42 +319,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 },
                               ),
                             ),
-                            SizedBox(height: 30.0),
-                            SizedBox(
-                              width: 150.0,
-                              height: 45.0,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: MyColors().accentNormal,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  shadowColor: Colors.grey,
-                                  elevation: 2.5,
-                                  side: BorderSide(
-                                    width: 0.8,
-                                    color: MyColors().lightGray,
-                                  ),
-                                ),
-                                onPressed: () => {
-                                  setState(() {
-                                    _submitted = true;
-                                  }),
-                                  if (_controller.value.text.isNotEmpty &&
-                                      compareDates(task.time, DateTime.now()))
-                                    {_submit()}
-                                  else if (!compareDates(
-                                      task.time, DateTime.now()))
-                                    {timeError = true}
-                                },
-                                child: Text(
-                                  'Save',
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: MyColors().highlightedFilterText),
-                                ),
-                              ),
-                            ),
+
                           ],
                         )
                       : Column(
@@ -472,45 +406,49 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 },
                               ),
                             ),
-                            SizedBox(height: 30.0),
-                            SizedBox(
-                              width: 150.0,
-                              height: 45.0,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: MyColors().accentNormal,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  shadowColor: Colors.grey,
-                                  elevation: 2.5,
-                                  side: BorderSide(
-                                    width: 0.8,
-                                    color: MyColors().lightGray,
-                                  ),
-                                ),
-                                onPressed: () => {
-                                  setState(() {
-                                    _submitted = true;
-                                  }),
-                                  if (_controller.value.text.isNotEmpty &&
-                                      compareDates(task.time, DateTime.now()))
-                                    {_submit()}
-                                  else if (!compareDates(
-                                      task.time, DateTime.now()))
-                                    {timeError = true}
-                                },
-                                child: Text(
-                                  'Save',
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: MyColors().highlightedFilterText),
-                                ),
-                              ),
-                            ),
                           ],
                         )
+
             ])),
+            SizedBox(height: 30.0),
+            SizedBox(
+              width: 150.0,
+              height: 45.0,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: MyColors().accentNormal,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  shadowColor: Colors.grey,
+                  elevation: 2.5,
+                  side: BorderSide(
+                    width: 0.8,
+                    color: MyColors().lightGray,
+                  ),
+                ),
+                onPressed: () => {
+                  setState(() {
+                    _submitted = true;
+                  }),
+                  if(selectedDailyIndex != 0) {
+                    if (_controller.value.text.isNotEmpty &&
+                        compareDates(task.time, DateTime.now()))
+                      {_submit()}
+                    else
+                      if (!compareDates(
+                          task.time, DateTime.now()))
+                        {timeError = true}
+                  } else if (_controller.value.text.isNotEmpty) {_submit()}
+                },
+                child: Text(
+                  'Save',
+                  style: TextStyle(
+                      fontSize: 20.0,
+                      color: MyColors().highlightedFilterText),
+                ),
+              ),
+            ),
           ]),
         ));
 
@@ -524,10 +462,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
       if (editMode == false)
         FirebaseService.createNewTask(task);
       else {
-        print(task);
         FirebaseService.editExistingTask(task);
       }
-        Navigator.pop(context);
+      Navigator.pop(context);
     }
   }
 

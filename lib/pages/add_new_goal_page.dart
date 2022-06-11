@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../model/goal.dart';
 import '../model/goal_type.dart';
+import '../service/firebase_service.dart';
 import '../styles/styles.dart';
 
 class NewGoalPage extends StatefulWidget {
-  final int? id;
+  final Goal? goal;
 
-  NewGoalPage({Key? key, this.id}) : super(key: key);
+  NewGoalPage({Key? key, this.goal}) : super(key: key);
 
   @override
   State<NewGoalPage> createState() => NewGoalPageState();
@@ -23,18 +24,9 @@ class NewGoalPageState extends State<NewGoalPage> {
 
   @override
   void initState() {
-    editMode = widget.id != null;
-    if (editMode) {
-      goal = findGoalById(widget.id);
-
-      _controller = TextEditingController(text: goal.name);
-
-      if (goal.type == GoalType.Public)
-        selectedDailyIndex = 1;
-      else if (goal.type == GoalType.Private) selectedDailyIndex = 0;
-
-      goal.id = widget.id;
-    } else if (selectedDailyIndex == 0) goal = Goal.private("", null);
+    editMode = widget.goal != null;
+    goal = widget.goal == null ? Goal.private("", null) : widget.goal!;
+    initWidgets(widget.goal);
     super.initState();
   }
 
@@ -65,7 +57,7 @@ class NewGoalPageState extends State<NewGoalPage> {
           ),
         ),
         actions: [
-          if (editMode == true)...[
+          if (editMode == true) ...[
             Padding(
               padding: const EdgeInsets.only(right: 10.0),
               child: IconButton(
@@ -79,14 +71,14 @@ class NewGoalPageState extends State<NewGoalPage> {
                 },
               ),
             ),
-          ] else... [
+          ] else ...[
             Padding(
               padding: const EdgeInsets.only(right: 10.0),
               child: Icon(
-                  Icons.delete,
-                  color: MyColors().backgroundNormal,
-                  size: 50.0,
-                ),
+                Icons.delete,
+                color: MyColors().backgroundNormal,
+                size: 50.0,
+              ),
             ),
           ]
         ],
@@ -106,7 +98,9 @@ class NewGoalPageState extends State<NewGoalPage> {
                       index: 0,
                       color: MyColors().privatePurple),
                   _filterWidget(
-                      title: 'Public', index: 1, color: MyColors().publicYellow),
+                      title: 'Public',
+                      index: 1,
+                      color: MyColors().publicYellow),
                 ],
               ),
             ),
@@ -115,14 +109,11 @@ class NewGoalPageState extends State<NewGoalPage> {
               child: Column(
             children: [
               Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                 child: TextField(
                   controller: _controller,
                   cursorColor: MyColors().textNormal,
-                  style: TextStyle(
-                      color: MyColors().textNormal
-                  ),
+                  style: TextStyle(color: MyColors().textNormal),
                   onChanged: (text) => setState(() => _textName),
                   decoration: InputDecoration(
                     labelText: 'Name',
@@ -167,7 +158,8 @@ class NewGoalPageState extends State<NewGoalPage> {
                   child: Text(
                     'Save',
                     style: TextStyle(
-                        fontSize: 20.0, color: MyColors().highlightedFilterText),
+                        fontSize: 20.0,
+                        color: MyColors().highlightedFilterText),
                   ),
                 ),
               ),
@@ -182,7 +174,11 @@ class NewGoalPageState extends State<NewGoalPage> {
     // if there is no error text
     if (_errorNameText == null) {
       goal.name = _controller.text;
-      printGoal(goal);
+      if (editMode == false)
+        FirebaseService.createNewGoal(goal);
+      else {
+        FirebaseService.editExistingGoal(goal);
+      }
       Navigator.pop(context);
     }
   }
@@ -204,7 +200,7 @@ class NewGoalPageState extends State<NewGoalPage> {
 
   Goal findGoalById(int? id) {
     // Goal goalAux = Goal.public("", 1);
-    Goal goalAux = Goal.private("hello1", 1);
+    Goal goalAux = Goal.private("hello1", '1');
     // Goal goalAux = Goal.appointment("hello1", 1);
     // TODO search database for goal
     return goalAux;
@@ -226,7 +222,7 @@ class NewGoalPageState extends State<NewGoalPage> {
             else if (selectedDailyIndex == 1) goal = Goal.public("", null);
           } else {
             String name = goal.name;
-            int? id = goal.id;
+            String? id = goal.id;
             if (selectedDailyIndex == 0)
               goal = Goal.private(name, id);
             else if (selectedDailyIndex == 1) goal = Goal.public(name, id);
@@ -251,8 +247,9 @@ class NewGoalPageState extends State<NewGoalPage> {
                 offset: Offset(1.0, 1.0), // changes position of shadow
               ),
             ],
-            color:
-                isSelected ? MyColors().primaryNormal : MyColors().overBackground,
+            color: isSelected
+                ? MyColors().primaryNormal
+                : MyColors().overBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -285,5 +282,15 @@ class NewGoalPageState extends State<NewGoalPage> {
         ),
       ),
     );
+  }
+
+  void initWidgets(Goal? task) {
+    if (editMode) {
+      _controller = TextEditingController(text: goal.name);
+
+      if (goal.type == GoalType.Public)
+        selectedDailyIndex = 1;
+      else if (goal.type == GoalType.Private) selectedDailyIndex = 0;
+    }
   }
 }

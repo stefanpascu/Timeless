@@ -27,6 +27,14 @@ class EditProfilePageState extends State<EditProfilePage> {
   var _textCountry = '';
   var _textDescription = '';
   int selectedDailyIndex = 0;
+  @override
+  void initState() {
+    _controllerDescription.text = widget.userData.description == null ? '' : widget.userData.description!;
+    _controllerCity.text = widget.userData.city == null ? '' : widget.userData.city!;
+    _controllerCountry.text = widget.userData.country == null ? '' : widget.userData.country!;
+    _controllerName.text = widget.userData.name;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -206,10 +214,11 @@ class EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> _submit() async {
     // if there is no error text
-    widget.userData.description = _controllerDescription.text;
-    widget.userData.city = _controllerCity.text;
-    widget.userData.country = _controllerCountry.text;
+    widget.userData.description = _controllerDescription.text == '' ? null : _controllerDescription.text;
+    widget.userData.city = _controllerCity.text == '' ? null : _controllerCity.text;
+    widget.userData.country = _controllerCountry.text == '' ? null : _controllerCountry.text;
     widget.userData.name = _controllerName.text;
+
     if (_errorNameText == null && _errorDescriptionText == null) {
       FirebaseService.editProfileData(widget.userData);
       Navigator.pop(context);

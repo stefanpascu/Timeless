@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -436,11 +437,11 @@ class RegisterStatefulWidgetState extends State<Register>
       final docUser =
           FirebaseFirestore.instance.collection('users').doc(data.user!.uid);
 
-      final user = NewUser(
+      final user = UserData(
         id: docUser.id,
         name: _controllerName.text,
         birthDate: _controllerBirthDate,
-        gender: dropdownValue,
+        gender: EnumToString.fromString(GenderType.values, dropdownValue)!,
         email: _controllerEmail.text,
       );
 
@@ -454,15 +455,17 @@ class RegisterStatefulWidgetState extends State<Register>
         gender = GenderType.Female;
       else
         gender = GenderType.NonBinary;
-      userData = UserData(docUser.id, _controllerName.text,
-          _controllerEmail.text, DateTime.parse(formattedDate), gender);
+      userData = UserData(id: docUser.id,name: _controllerName.text,
+          email: _controllerEmail.text, birthDate: DateTime.parse(formattedDate), gender: gender);
+      navigatorKey.currentState!.popUntil((route) => route.isFirst);
     } on FirebaseAuthException catch (e) {
       print(e);
 
       Utils.showSnackBar(e.message);
+      Navigator.pop(context);
     }
 
-    navigatorKey.currentState!.popUntil((route) => route.isFirst);
+
   }
 
   String? get _errorNameText {

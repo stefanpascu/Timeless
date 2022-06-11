@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../model/goal.dart';
 import '../model/task.dart';
 import '../model/user.dart';
 
@@ -32,12 +33,14 @@ class FirebaseService {
     return list.docs.map((e) => Task.fromJson(e.data())).toList();
   }
 
-  static get getGoals {
-    return firestore
+  static getGoals() async {
+    final list = await firestore
         .collection('users')
         .doc(getCurrentUserId)
         .collection('goals')
-        .doc();
+        .get();
+
+    return list.docs.map((e) => Goal.fromJson(e.data())).toList();
   }
 
   static void createNewTask(Task task) async {
@@ -67,6 +70,32 @@ class FirebaseService {
           : EnumToString.convertToString(task.repetitiveType),
       'task_type': EnumToString.convertToString(task.type),
       'time': task.time
+    });
+  }
+
+  static void createNewGoal(Goal goal) async {
+    final savedGoal = await firestore
+        .collection('users')
+        .doc(getCurrentUserId)
+        .collection('goals')
+        .add(goal.toJson());
+    await firestore
+        .collection('users')
+        .doc(getCurrentUserId)
+        .collection('goals')
+        .doc(savedGoal.id)
+        .update({"id": savedGoal.id});
+  }
+
+  static void editExistingGoal(Goal goal) async {
+    await firestore
+        .collection('users')
+        .doc(getCurrentUserId)
+        .collection('goals')
+        .doc(goal.id)
+        .update({
+      'name': goal.name,
+      'task_type': EnumToString.convertToString(goal.type),
     });
   }
 

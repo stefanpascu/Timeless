@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:timeless/main.dart';
 import 'package:timeless/pages/login.dart';
 
 import '../styles/styles.dart';

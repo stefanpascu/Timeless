@@ -280,13 +280,13 @@ class LoginPageState extends State<LoginPage> {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _controllerEmail.text.trim(),
           password: _controllerPassword.text.trim());
+      navigatorKey.currentState!.popUntil((route) => route.isFirst);
     } on FirebaseAuthException catch (e) {
       print(e);
 
       Utils.showSnackBar(e.message);
+      Navigator.pop(context);
     }
-
-    navigatorKey.currentState!.popUntil((route) => route.isFirst);
 
   }
 

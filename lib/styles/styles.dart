@@ -31,7 +31,7 @@ class MyColors {
       primaryTitle = (darkThemeStyles == false ? primaryDarkest : lightGray);
       textNormal = (darkThemeStyles == false ? Color(0xff26292C) : darkThemeTextNormal);
       divider = (darkThemeStyles == false ?  lightThemeDivider : darkThemeDivider);
-      backgroundNormal = (darkThemeStyles == false ? Color(0xffF6F7F7) : darkThemeBackgroundNormal);
+      backgroundNormal = (darkThemeStyles == false ? Color(0xffeeeeee) : darkThemeBackgroundNormal);
       overBackground = (darkThemeStyles == false ? Color(0xffFAFCFC) : darkThemeOverBackground);
       if (darkThemeStyles == null)
         darkThemeStyles = SettingsStatefulWidgetState().isDarkTheme;

@@ -12,9 +12,20 @@ class UserData{
   String? country;
   String? description;
 
-  UserData(this.id, this.name, this.email, this.birthDate, this.gender) : city = '', country = '', description = '';
+  UserData({required this.id, required this.name, required this.email, required this.birthDate, required this.gender}) : city = null, country = null, description = null;
 
   UserData.full({required this.id, required this.name, required this.email, required this.birthDate, required this.gender ,this.city, this.country, this.description});
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'date_of_birth': birthDate,
+    'email': email,
+    'gender': EnumToString.convertToString(gender),
+    'id': id,
+    'city': null,
+    'country': null,
+    'description': null,
+  };
 
   static UserData fromJson(Map<String, dynamic> json) => UserData.full(
     id: json['id'],
@@ -38,42 +49,4 @@ class UserData{
     description: json['description'],
   );
 
-}
-
-class NewUser {
-  String id;
-  final String name;
-  final DateTime birthDate;
-  final String gender;
-  final String email;
-
-  NewUser({
-    this.id = '',
-    required this.name,
-    required this.birthDate,
-    required this.gender,
-    required this.email,
-  });
-
-  Map<String, dynamic> toJson() => {
-    'name': name,
-    'date_of_birth': birthDate,
-    'email': email,
-    'gender': gender,
-    'id': id,
-    'city': 'City',
-    'country': 'Country',
-    'description': '',
-    'friends': {
-      'email': '',
-    },
-  };
-
-  static NewUser fromJson(Map<String, dynamic> json) => NewUser(
-    id: json['id'],
-    name: json['name'],
-    birthDate: json['date_of_birth'].toDate(),
-    gender: json['gender'],
-    email: json['email'],
-  );
 }
