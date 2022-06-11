@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timeless/model/gender_type.dart';
+import 'package:timeless/model/user.dart';
 
 import '../main.dart';
 import '../styles/styles.dart';
@@ -20,6 +21,7 @@ class Register extends StatefulWidget {
 
 class RegisterStatefulWidgetState extends State<Register>
     with RestorationMixin {
+  UserData? userData;
   String nullDateTime = '1800-01-01 00:00';
   bool _selectedBirthDate = false;
   bool _submitted = false;
@@ -42,7 +44,7 @@ class RegisterStatefulWidgetState extends State<Register>
       int.parse(DateTime.now().toString().split(" ")[0].split("-")[1]),
       int.parse(DateTime.now().toString().split(" ")[0].split("-")[2])));
   late final RestorableRouteFuture<DateTime?> _restorableDatePickerRouteFuture =
-  RestorableRouteFuture<DateTime?>(
+      RestorableRouteFuture<DateTime?>(
     onComplete: _selectDate,
     onPresent: (NavigatorState navigator, Object? arguments) {
       return navigator.restorablePush(
@@ -89,25 +91,29 @@ class RegisterStatefulWidgetState extends State<Register>
                             border: Border(
                               top: BorderSide(
                                   width: 3.0,
-                                  color: MyColors().primaryNormal.withOpacity(
-                                      0.7)),
+                                  color: MyColors()
+                                      .primaryNormal
+                                      .withOpacity(0.7)),
                               left: BorderSide(
                                   width: 3.0,
-                                  color: MyColors().primaryNormal.withOpacity(
-                                      0.7)),
+                                  color: MyColors()
+                                      .primaryNormal
+                                      .withOpacity(0.7)),
                               right: BorderSide(
                                   width: 3.0,
-                                  color: MyColors().primaryNormal.withOpacity(
-                                      0.7)),
+                                  color: MyColors()
+                                      .primaryNormal
+                                      .withOpacity(0.7)),
                               bottom: BorderSide(
                                   width: 3.0,
-                                  color: MyColors().primaryNormal.withOpacity(
-                                      0.7)),
+                                  color: MyColors()
+                                      .primaryNormal
+                                      .withOpacity(0.7)),
                             ),
                           ),
                           child: Container(
-                            margin: const EdgeInsets.only(
-                                top: 0.0, bottom: 0.0),
+                            margin:
+                                const EdgeInsets.only(top: 0.0, bottom: 0.0),
                             width: 350.0,
                             child: Column(
                               children: [
@@ -120,25 +126,26 @@ class RegisterStatefulWidgetState extends State<Register>
                                   child: TextField(
                                     controller: _controllerName,
                                     cursorColor: MyColors().textNormal,
-                                    style: TextStyle(
-                                        color: MyColors().textNormal),
+                                    style:
+                                        TextStyle(color: MyColors().textNormal),
                                     onChanged: (text) =>
                                         setState(() => _textName),
                                     decoration: InputDecoration(
                                       labelText: 'Full Name',
-                                      errorText: _submitted
-                                          ? _errorNameText
-                                          : null,
+                                      errorText:
+                                          _submitted ? _errorNameText : null,
                                       enabledBorder: OutlineInputBorder(
                                         // width: 0.0 produces a thin "hairline" border
                                         borderSide: BorderSide(
-                                            color: MyColors().primaryNormal
+                                            color: MyColors()
+                                                .primaryNormal
                                                 .withOpacity(0.7),
                                             width: 1.5),
                                       ),
                                       border: OutlineInputBorder(),
                                       labelStyle: TextStyle(
-                                        color: MyColors().textNormal
+                                        color: MyColors()
+                                            .textNormal
                                             .withOpacity(0.7),
                                       ),
                                     ),
@@ -153,24 +160,26 @@ class RegisterStatefulWidgetState extends State<Register>
                                   child: TextField(
                                     controller: _controllerEmail,
                                     cursorColor: MyColors().textNormal,
-                                    style: TextStyle(
-                                        color: MyColors().textNormal),
+                                    style:
+                                        TextStyle(color: MyColors().textNormal),
                                     onChanged: (text) =>
                                         setState(() => _textEmail),
                                     decoration: InputDecoration(
                                       labelText: 'Email',
                                       errorText:
-                                      _submitted ? _errorEmailText : null,
+                                          _submitted ? _errorEmailText : null,
                                       enabledBorder: OutlineInputBorder(
                                         // width: 0.0 produces a thin "hairline" border
                                         borderSide: BorderSide(
-                                            color: MyColors().primaryNormal
+                                            color: MyColors()
+                                                .primaryNormal
                                                 .withOpacity(0.7),
                                             width: 1.5),
                                       ),
                                       border: OutlineInputBorder(),
                                       labelStyle: TextStyle(
-                                        color: MyColors().textNormal
+                                        color: MyColors()
+                                            .textNormal
                                             .withOpacity(0.7),
                                       ),
                                     ),
@@ -185,23 +194,26 @@ class RegisterStatefulWidgetState extends State<Register>
                                     autocorrect: false,
                                     controller: _controllerPassword,
                                     cursorColor: MyColors().textNormal,
-                                    style: TextStyle(
-                                        color: MyColors().textNormal),
+                                    style:
+                                        TextStyle(color: MyColors().textNormal),
                                     onChanged: (text) =>
                                         setState(() => _textPassword),
                                     decoration: InputDecoration(
                                       labelText: 'Password',
-                                      errorText:
-                                      _submitted ? _errorPasswordText : null,
+                                      errorText: _submitted
+                                          ? _errorPasswordText
+                                          : null,
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: MyColors().primaryNormal
+                                            color: MyColors()
+                                                .primaryNormal
                                                 .withOpacity(0.7),
                                             width: 1.5),
                                       ),
                                       border: OutlineInputBorder(),
                                       labelStyle: TextStyle(
-                                        color: MyColors().textNormal
+                                        color: MyColors()
+                                            .textNormal
                                             .withOpacity(0.7),
                                       ),
                                     ),
@@ -222,7 +234,8 @@ class RegisterStatefulWidgetState extends State<Register>
                                     child: Text(
                                       formattedDate,
                                       style: TextStyle(
-                                        color: MyColors().textNormal
+                                        color: MyColors()
+                                            .textNormal
                                             .withOpacity(0.7),
                                       ),
                                     ),
@@ -251,12 +264,14 @@ class RegisterStatefulWidgetState extends State<Register>
                                     icon: const Icon(Icons.arrow_downward),
                                     elevation: 0,
                                     style: TextStyle(
-                                        color:
-                                        MyColors().textNormal.withOpacity(1.0)),
+                                        color: MyColors()
+                                            .textNormal
+                                            .withOpacity(1.0)),
                                     underline: Container(
                                       height: 2,
-                                      color:
-                                      MyColors().primaryNormal.withOpacity(0.7),
+                                      color: MyColors()
+                                          .primaryNormal
+                                          .withOpacity(0.7),
                                     ),
                                     onChanged: (String? newValue) {
                                       setState(() {
@@ -267,8 +282,8 @@ class RegisterStatefulWidgetState extends State<Register>
                                       GenderType.Male.name,
                                       GenderType.Female.name,
                                       GenderType.NonBinary.name,
-                                    ].map<DropdownMenuItem<String>>((
-                                        String value) {
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
                                       return DropdownMenuItem<String>(
                                         value: value,
                                         child: Text(value),
@@ -283,12 +298,11 @@ class RegisterStatefulWidgetState extends State<Register>
                                     height: 45.0,
                                     child: FloatingActionButton(
                                       shape: const RoundedRectangleBorder(
-                                        borderRadius:
-                                        BorderRadius.all(Radius.circular(12.0)),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(12.0)),
                                       ),
                                       backgroundColor: MyColors().accentNormal,
-                                      onPressed: () =>
-                                      {
+                                      onPressed: () => {
                                         setState(() {
                                           _submitted = true;
                                           if (formattedDate ==
@@ -297,8 +311,8 @@ class RegisterStatefulWidgetState extends State<Register>
                                             dateBorderColor = Colors.red;
                                           }
                                         }),
-                                        if (_controllerName.value.text
-                                            .isNotEmpty &&
+                                        if (_controllerName
+                                                .value.text.isNotEmpty &&
                                             _controllerEmail
                                                 .value.text.isNotEmpty &&
                                             _controllerPassword
@@ -335,8 +349,8 @@ class RegisterStatefulWidgetState extends State<Register>
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (
-                                                  context) => const LoginPage()),
+                                              builder: (context) =>
+                                                  const LoginPage()),
                                         );
                                       },
                                       child: const Text(
@@ -408,17 +422,21 @@ class RegisterStatefulWidgetState extends State<Register>
   }
 
   Future signUp() async {
-    showDialog(context: context,
+    showDialog(
+        context: context,
         barrierDismissible: false,
-        builder: (context) =>
-            Center(child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: CircularProgressIndicator(),
             ));
 
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final data = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _controllerEmail.text.trim(),
           password: _controllerPassword.text.trim());
-      final docUser = FirebaseFirestore.instance.collection('users').doc();
+
+      final docUser =
+          FirebaseFirestore.instance.collection('users').doc(data.user!.uid);
+
       final user = NewUser(
         id: docUser.id,
         name: _controllerName.text,
@@ -426,9 +444,19 @@ class RegisterStatefulWidgetState extends State<Register>
         gender: dropdownValue,
         email: _controllerEmail.text,
       );
+
       final json = user.toJson();
       await docUser.set(json);
 
+      GenderType gender;
+      if (dropdownValue == GenderType.Male.name)
+        gender = GenderType.Male;
+      else if (dropdownValue == GenderType.Female.name)
+        gender = GenderType.Female;
+      else
+        gender = GenderType.NonBinary;
+      userData = UserData(docUser.id, _controllerName.text,
+          _controllerEmail.text, DateTime.parse(formattedDate), gender);
     } on FirebaseAuthException catch (e) {
       print(e);
 
@@ -472,7 +500,7 @@ class RegisterStatefulWidgetState extends State<Register>
 
   bool emailValidator(String text) {
     return RegExp(
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(text);
   }
 
@@ -484,8 +512,10 @@ class RegisterStatefulWidgetState extends State<Register>
     super.dispose();
   }
 
-  static Route<DateTime> _datePickerRoute(BuildContext context,
-      Object? arguments,) {
+  static Route<DateTime> _datePickerRoute(
+    BuildContext context,
+    Object? arguments,
+  ) {
     return DialogRoute<DateTime>(
       context: context,
       builder: (BuildContext context) {
@@ -511,23 +541,18 @@ class RegisterStatefulWidgetState extends State<Register>
     if (newSelectedDate != null) {
       setState(() {
         _selectedDate.value = newSelectedDate;
-        if (_selectedDate.value.month >= 10)
-          if (_selectedDate.value.day >= 10)
-            formattedDate =
-            '${_selectedDate.value.year}-${_selectedDate.value
-                .month}-${_selectedDate.value.day}';
-          else
-            formattedDate =
-            '${_selectedDate.value.year}-${_selectedDate.value
-                .month}-0${_selectedDate.value.day}';
-        else if (_selectedDate.value.day >= 10)
+        if (_selectedDate.value.month >= 10) if (_selectedDate.value.day >= 10)
           formattedDate =
-          '${_selectedDate.value.year}-0${_selectedDate.value
-              .month}-${_selectedDate.value.day}';
+              '${_selectedDate.value.year}-${_selectedDate.value.month}-${_selectedDate.value.day}';
         else
           formattedDate =
-          '${_selectedDate.value.year}-0${_selectedDate.value
-              .month}-0${_selectedDate.value.day}';
+              '${_selectedDate.value.year}-${_selectedDate.value.month}-0${_selectedDate.value.day}';
+        else if (_selectedDate.value.day >= 10)
+          formattedDate =
+              '${_selectedDate.value.year}-0${_selectedDate.value.month}-${_selectedDate.value.day}';
+        else
+          formattedDate =
+              '${_selectedDate.value.year}-0${_selectedDate.value.month}-0${_selectedDate.value.day}';
         _controllerBirthDate = DateTime.parse(formattedDate + " 00:00");
         _selectedBirthDate = false;
         dateBorderColor = MyColors().primaryNormal.withOpacity(0.7);
@@ -552,55 +577,42 @@ class NewUser {
   });
 
   Map<String, dynamic> toJson() => {
-
-    'name': name,
-    'date_of_birth': birthDate,
-    'email': email,
-    'gender': gender,
-    'id': id,
-    'city': 'City',
-    'country': 'Country',
-    'description': '',
-    'friends': {
-      'email': '',
-    },
-    'tasks': {
-      'id': '',
-      'name': '',
-      'repetitive_type': '',
-      'task_type': '',
-      'time': '',
-    },
-    'goals': {
-      'id': '',
-      'name': '',
-      'goal_type': '',
-    },
-  };
+        'name': name,
+        'date_of_birth': birthDate,
+        'email': email,
+        'gender': gender,
+        'id': id,
+        'city': 'City',
+        'country': 'Country',
+        'description': '',
+        'friends': {
+          'email': '',
+        },
+      };
 
   static NewUser fromJson(Map<String, dynamic> json) => NewUser(
-    id: json['id'],
-    name: json['name'],
-    birthDate: json['date_of_birth'].toDate(),
-    gender: json['gender'],
-    email: json['email'],
-  );
-
+        id: json['id'],
+        name: json['name'],
+        birthDate: json['date_of_birth'].toDate(),
+        gender: json['gender'],
+        email: json['email'],
+      );
 }
 
 class Utils {
-  static GlobalKey<ScaffoldMessengerState> messengerKey = GlobalKey<
-      ScaffoldMessengerState>();
+  static GlobalKey<ScaffoldMessengerState> messengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   static showSnackBar(String? text) {
     if (text == null) return;
 
     final snackBar = SnackBar(
-      content: Text(text), backgroundColor: Colors.red,);
+      content: Text(text),
+      backgroundColor: Colors.red,
+    );
 
     messengerKey.currentState!
       ..removeCurrentSnackBar()
       ..showSnackBar(snackBar);
   }
-
 }

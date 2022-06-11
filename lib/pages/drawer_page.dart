@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:timeless/pages/friendProfile.dart';
+import 'package:timeless/pages/newPersonProfile.dart';
 import 'package:timeless/pages/profile.dart';
 import 'package:timeless/pages/register.dart';
 import 'package:timeless/pages/settings.dart';
@@ -48,7 +50,7 @@ class MainDrawer extends StatelessWidget {
                   )
                 ),
                 Container(
-                  margin: const EdgeInsets.only(
+                  margin: EdgeInsets.only(
                     top: 5.0,
                   ),
                   child: Text(
@@ -134,6 +136,27 @@ class MainDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const Settings()),
+                );
+              }
+            },
+          ),
+
+          ListTile(
+            title: Text(
+              'test',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: MyColors().textNormal,
+                fontSize: 20,
+                fontFamily: 'OpenSans',
+              ),
+            ),
+            onTap: () {
+              if (pageId != 4) {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FriendProfile()),
                 );
               }
             },

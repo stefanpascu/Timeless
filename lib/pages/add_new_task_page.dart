@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:timeless/service/firebase_service.dart';
 
 import '../model/repetitive_type.dart';
 import '../model/task.dart';
@@ -7,7 +9,7 @@ import '../model/task_type.dart';
 import '../styles/styles.dart';
 
 class NewTaskPage extends StatefulWidget {
-  final int? id;
+  final String? id;
   final String? restorationId;
 
   NewTaskPage({Key? key, this.id, this.restorationId}) : super(key: key);
@@ -600,7 +602,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
     // if there is no error text
     if (_errorNameText == null) {
       task.name = _controller.text;
-      printTask(task);
+      FirebaseService.createNewTask(task);
       Navigator.pop(context);
     }
   }
@@ -637,15 +639,6 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
             a.toString().split(" ")[1].split(":")[1]) >
         int.parse(b.toString().split(" ")[1].split(":")[1])) return true;
     return false;
-  }
-
-  void printTask(Task task) {
-    print("name: " + task.name);
-    print("type: " + task.type.toString().split('.')[1]);
-    print("repetitive type: " + task.repetitiveType.toString());
-    print("time: " + task.time.toString());
-    print("id: " + task.id.toString());
-    print('///////////////////////////////');
   }
 
   static Route<DateTime> _datePickerRoute(
@@ -727,7 +720,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
     return "$time";
   }
 
-  Task findTaskById(int? id) {
+  Task findTaskById(String? id) {
     // Task taskAux = Task.repetitive("", null,
     //     DateTime.now(), id);
     Task taskAux = Task.dueTo("hello1", DateTime.now(), id);
@@ -757,7 +750,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           } else {
             String name = task.name;
             DateTime dateTime = task.time;
-            int? id = task.id;
+            String? id = task.id;
             if (selectedDailyIndex == 0) if (isSwitched == false)
               task = Task.repetitive(name, null, dateTime, id);
             else

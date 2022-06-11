@@ -1,26 +1,21 @@
-import 'dart:ui';
+import 'package:timeless/model/gender_type.dart';
+import 'package:timeless/model/task.dart';
 
-import 'package:timeless/model/repetitive_type.dart';
-import 'package:timeless/model/task_type.dart';
+import 'goal.dart';
 
-import '../styles/styles.dart';
-
-class User{
+class UserData{
   String uid;
   String name;
-  TaskType type;
-  RepetitiveType? repetitiveType;
-  DateTime time;
-  Color color;
+  String email;
+  DateTime birthDate;
+  GenderType gender;
+  String city;
+  String country;
+  String description;
+  List<String> friends; // emails
+  List<Task> tasks;
+  List<Goal> goals;
 
-  DateTime getDateTime() {
-    return this.time;
-  }
-
-  User.repetitive(this.name, this.repetitiveType, this.time, this.uid) : type = TaskType.Repetitive, color =  MyColors().repetitiveBlue;
-
-  User.dueTo(this.name, this.time, this.uid) : type = TaskType.DueTo, color = MyColors().dueToRed;
-
-  User.appointment(this.name, this.time, this.uid) : type = TaskType.Appointment, color = MyColors().appointmentGreen;
+  UserData(this.uid, this.name, this.email, this.birthDate, this.gender) : city = '', country = '', description = '', friends = [], tasks = [], goals = [];
 
 }

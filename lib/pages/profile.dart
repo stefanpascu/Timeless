@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:timeless/pages/register.dart';
+import 'package:timeless/service/firebase_service.dart';
 
 import '../styles/styles.dart';
 import 'drawer_page.dart';
+import 'edit_profile_page.dart';
 import 'friends_page.dart';
 import 'home_page.dart';
 
@@ -56,7 +58,12 @@ class ProfileStatefulWidgetState extends State<Profile> {
               color: MyColors().primaryTitle,
               size: 40.0,
             ),
-            onPressed: () => {print("Edit")},
+            onPressed: () => {
+            Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => EditProfilePage()),
+            )
+            },
           ), // , color:  MyColors().primaryTitle, size: 40.0,
         ],
 
@@ -387,7 +394,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
   Future<NewUser?> readUser() async {
     final docUser = FirebaseFirestore.instance
         .collection('users')
-        .doc('1w2cwPFIBsEQFyaLAO6e');
+        .doc(FirebaseService.getCurrentUser.uid);
     final snapshot = await docUser.get();
 
     if (snapshot.exists) {

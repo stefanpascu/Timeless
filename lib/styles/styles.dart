@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../pages/settings.dart';
 
 class MyColors {
-  bool? darkThemeStyles = null;
+  bool? darkThemeStyles = false;
   Color primaryNormal = Color(0xff465FC2),
       primaryDarker = Color(0xff404E83),
       primaryDarkest = Color(0xff3D486E),
@@ -31,7 +31,7 @@ class MyColors {
       overBackground = Color(0xffF6F7F7);
 
     MyColors() {
-      primaryTitle = (darkThemeStyles == false ? Color(0xff3D486E) : lightGray);
+      primaryTitle = (darkThemeStyles == false ? primaryDarkest : lightGray);
       textNormal = (darkThemeStyles == false ? Color(0xff26292C) : darkThemeTextNormal);
       divider = (darkThemeStyles == false ?  lightThemeDivider : darkThemeDivider);
       backgroundNormal = (darkThemeStyles == false ? Color(0xffF6F7F7) : darkThemeBackgroundNormal);
@@ -47,8 +47,6 @@ class MyColors {
       divider = (darkThemeStyles == false ?  lightThemeDivider : darkThemeDivider);
       backgroundNormal = (darkThemeStyles == false ? Color(0xffF6F7F7) : darkThemeBackgroundNormal);
       overBackground = (darkThemeStyles == false ? Color(0xffFAFCFC) : darkThemeOverBackground);
-      print("darkThemeStyles: " + darkThemeStyles.toString());
-      print("divider color code: " + divider.toString());
   }
 
 }

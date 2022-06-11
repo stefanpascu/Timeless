@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +7,7 @@ import 'package:timeless/model/task_type.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 
 import '../model/task.dart';
+import '../service/firebase_service.dart';
 import '../styles/styles.dart';
 import 'add_new_task_page.dart';
 
@@ -19,74 +21,88 @@ class DailyPage extends StatefulWidget {
 class _DailyPageState extends State<DailyPage> {
   int selectedDailyIndex = 0;
 
-  static List<Task> tasks = [
-    Task.repetitive("hello1", RepetitiveType.Daily,
-        DateTime.now().add(Duration(minutes: 10)), 1),
-    Task.repetitive("Nameless Task", RepetitiveType.Daily,
-        DateTime.now().add(Duration(minutes: 10)), 2),
-    Task.repetitive("hello4", RepetitiveType.Daily,
-        DateTime.now().add(Duration(minutes: 20)), 3),
-    Task.appointment("hello6", DateTime.now().add(Duration(minutes: 10)), 4),
-    Task.repetitive("hello2", RepetitiveType.Daily,
-        DateTime.now().add(Duration(minutes: 30, days: 1)), 5),
-    Task.repetitive("hello3", RepetitiveType.Daily,
-        DateTime.now().add(Duration(minutes: 5, days: 3)), 6),
-    Task.dueTo("hello5", DateTime.now().add(Duration(minutes: 10, days: 3)), 7),
-  ];
+  static List<Task> tasks = [];
   List<Task> filteredTasks = tasks;
   String repetitiveDropdownValue = 'Daily';
 
-  String? _selectedTime;
+  @override
+  void initState() {
+    // tasks = FirebaseService.getTasks
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(children: [
-        SizedBox(
-          height: 60.0,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                _filterWidget(title: 'All', index: 0, hasCircle: false),
-                _filterWidget(
-                    title: 'Repetitive',
-                    index: 1,
-                    color: MyColors().repetitiveBlue),
-                _filterWidget(
-                    title: 'Due to', index: 2, color: MyColors().dueToRed),
-                _filterWidget(
-                    title: 'Appointment',
-                    index: 3,
-                    color: MyColors().appointmentGreen),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.0),
-          child: Expanded(
-            child: GroupedListView<Task, String>(
-              elements: sortTaskList(filteredTasks),
-              groupBy: (element) => _buildGroupByString(element),
-              groupSeparatorBuilder: (String groupByValue) => Padding(
-                padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
-                child: Text(
-                  groupByValue,
-                  style: TextStyle(
-                      color: MyColors().textNormal,
-                      fontSize: 15.0,
-                      fontFamily: 'OpenSans',
-                      fontWeight: FontWeight.w500),
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseService.getCurrentUserId)
+          .collection('tasks')
+          .snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError)
+          return Text('error');
+        else if (snapshot.hasData) {
+          tasks = snapshot.data!.docs
+              .map((DocumentSnapshot e) => Task.fromJson2(e))
+              .toList();
+          filteredTasks = tasks;
+          print(tasks);
+          return SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              SizedBox(
+                height: 60.0,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      _filterWidget(title: 'All', index: 0, hasCircle: false),
+                      _filterWidget(
+                          title: 'Repetitive',
+                          index: 1,
+                          color: MyColors().repetitiveBlue),
+                      _filterWidget(
+                          title: 'Due to',
+                          index: 2,
+                          color: MyColors().dueToRed),
+                      _filterWidget(
+                          title: 'Appointment',
+                          index: 3,
+                          color: MyColors().appointmentGreen),
+                    ],
+                  ),
                 ),
               ),
-              itemBuilder: (context, Task task) => _taskWidget(task),
-              shrinkWrap: true,
-            ),
-          ),
-        ),
-      ]),
+
+              Container(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0),
+                  child: GroupedListView<Task, String>(
+                    elements: sortTaskList(filteredTasks),
+                    groupBy: (element) => _buildGroupByString(element),
+                    groupSeparatorBuilder: (String groupByValue) => Padding(
+                      padding: EdgeInsets.only(top: 30.0, bottom: 5.0),
+                      child: Text(
+                        groupByValue,
+                        style: TextStyle(
+                            color: MyColors().textNormal,
+                            fontSize: 15.0,
+                            fontFamily: 'OpenSans',
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    itemBuilder: (context, Task task) => _taskWidget(task),
+                    shrinkWrap: true,
+                  ),
+                ),
+
+              )]),
+          );
+        }
+        return Center(child: CircularProgressIndicator());
+      },
     );
   }
 
@@ -98,7 +114,6 @@ class _DailyPageState extends State<DailyPage> {
   List<Task> sortTaskList(List<Task> filteredTasks) {
     List<Task> filteredTasksAux = filteredTasks;
     filteredTasksAux.sort((a, b) => a.getDateTime().compareTo(b.getDateTime()));
-    ;
     return filteredTasksAux;
   }
 
@@ -119,7 +134,7 @@ class _DailyPageState extends State<DailyPage> {
       onLongPress: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => NewTaskPage(id: 1)),
+          MaterialPageRoute(builder: (context) => NewTaskPage(id: task.id)),
         );
       },
       child: Padding(
@@ -230,7 +245,9 @@ class _DailyPageState extends State<DailyPage> {
                 offset: Offset(1.0, 1.0), // changes position of shadow
               ),
             ],
-            color: isSelected ? MyColors().primaryNormal : MyColors().overBackground,
+            color: isSelected
+                ? MyColors().primaryNormal
+                : MyColors().overBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -251,8 +268,9 @@ class _DailyPageState extends State<DailyPage> {
               Text(
                 title,
                 style: TextStyle(
-                  color:
-                      isSelected ? MyColors().highlightedFilterText : MyColors().textNormal,
+                  color: isSelected
+                      ? MyColors().highlightedFilterText
+                      : MyColors().textNormal,
                   fontSize: 13.0,
                   fontFamily: 'OpenSans',
                 ),
