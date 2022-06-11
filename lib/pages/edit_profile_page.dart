@@ -235,7 +235,7 @@ class EditProfilePageState extends State<EditProfilePage> {
 
   String? get _errorDescriptionText {
     final text = _controllerDescription.value.text;
-    if (text.length > 60) return 'Text too long (max. 60 characters)';
+    if (text.length > 200) return 'Text too long (max. 200 characters)';
     return null;
   }
 

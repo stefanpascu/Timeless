@@ -255,6 +255,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                 endIndent: 50,
                                 color: MyColors().divider,
                               ),
+                              SizedBox(height: 30.0,),
                               StreamBuilder(
                                   stream: FirebaseFirestore.instance
                                       .collection('users')
@@ -274,15 +275,15 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                           .where((goal) =>
                                               goal.type == GoalType.Private)
                                           .toList();
+                                      print(privateGoals[0]);
                                       publicGoals = goals
                                           .where((goal) =>
                                               goal.type == GoalType.Public)
                                           .toList();
-                                      return Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 40.0, vertical: 20.0),
-                                        child: Expanded(
-                                          child: Container(
+                                      return Column(
+                                        children: [
+                                          Container(
+                                            width: 330,
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 40.0),
                                             decoration: BoxDecoration(
@@ -303,17 +304,15 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                             child: Column(
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      vertical: 10.0),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                          vertical: 10.0),
                                                   child: Text(
                                                     'Goals',
                                                     style: TextStyle(
                                                       fontSize: 30.0,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color:
-                                                          MyColors().textNormal,
+                                                      fontWeight: FontWeight.w500,
+                                                      color: MyColors().textNormal,
                                                       letterSpacing: 1,
                                                     ),
                                                   ),
@@ -323,25 +322,24 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                   color: MyColors().divider,
                                                 ),
                                                 Padding(
-                                                  padding: EdgeInsets
-                                                          .symmetric(
+                                                  padding: EdgeInsets.symmetric(
                                                       vertical: 10.0),
                                                   child: ListView.separated(
+                                                    shrinkWrap: true,
                                                     padding: EdgeInsets.all(8),
-                                                    itemCount:
-                                                        publicGoals.length,
+                                                    itemCount: publicGoals.length,
                                                     itemBuilder:
                                                         (BuildContext context,
                                                             int index) {
-                                                      print(publicGoals[index].name);
                                                       return Text(
                                                         publicGoals[index].name,
+                                                        textAlign: TextAlign.center,
                                                         style: TextStyle(
                                                           fontSize: 25.0,
                                                           fontWeight:
                                                               FontWeight.normal,
-                                                          color: MyColors()
-                                                              .textNormal,
+                                                          color:
+                                                              MyColors().textNormal,
                                                           letterSpacing: 1,
                                                         ),
                                                       );
@@ -349,81 +347,106 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                     separatorBuilder:
                                                         (BuildContext context,
                                                             int index) {
-                                                      return Divider();
+                                                      return Divider(
+                                                        thickness: 1,
+                                                        color: MyColors().divider,
+                                                      );
                                                     },
                                                   ),
                                                 ),
                                               ],
                                             ),
                                           ),
-                                        ),
+
+                                          SizedBox(height: 30,),
+
+                                          Container(
+                                            width: 330,
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 40.0),
+                                            decoration: BoxDecoration(
+                                              color: MyColors().overBackground,
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(7),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey,
+                                                  blurRadius: 1.0,
+                                                  spreadRadius: 0.2,
+                                                  offset: Offset(1.0,
+                                                      1.0), // changes position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10.0),
+                                                  child: Text(
+                                                    'Private Goals',
+                                                    style: TextStyle(
+                                                      fontSize: 30.0,
+                                                      fontWeight: FontWeight.w500,
+                                                      color: MyColors().textNormal,
+                                                      letterSpacing: 1,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Divider(
+                                                  thickness: 5,
+                                                  color: MyColors().divider,
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 10.0),
+                                                  child: ListView.separated(
+                                                    shrinkWrap: true,
+                                                    padding: EdgeInsets.all(8),
+                                                    itemCount: privateGoals.length,
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                        int index) {
+                                                      return Text(
+                                                        privateGoals[index].name,
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontSize: 25.0,
+                                                          fontWeight:
+                                                          FontWeight.normal,
+                                                          color:
+                                                          MyColors().textNormal,
+                                                          letterSpacing: 1,
+                                                        ),
+                                                      );
+                                                    },
+                                                    separatorBuilder:
+                                                        (BuildContext context,
+                                                        int index) {
+                                                      return Divider(
+                                                        thickness: 1,
+                                                        color: MyColors().divider,
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       );
                                     }
                                     return Center(
                                       child: CircularProgressIndicator(),
                                     );
                                   }),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 40.0, vertical: 20.0),
-                                child: Expanded(
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 40.0),
-                                    decoration: BoxDecoration(
-                                      color: MyColors().overBackground,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(7),
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey,
-                                          blurRadius: 1.0,
-                                          spreadRadius: 0.2,
-                                          offset: Offset(1.0,
-                                              1.0), // changes position of shadow
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10.0),
-                                          child: Text(
-                                            'Private Goals',
-                                            style: TextStyle(
-                                              fontSize: 30.0,
-                                              fontWeight: FontWeight.w500,
-                                              color: MyColors().textNormal,
-                                              letterSpacing: 1,
-                                            ),
-                                          ),
-                                        ),
-                                        Divider(
-                                          thickness: 5,
-                                          color: MyColors().divider,
-                                        ),
-                                        // Padding(
-                                        //   padding: const EdgeInsets.symmetric(
-                                        //       vertical: 10.0),
-                                        //   child: ListView.separated(
-                                        //     padding: EdgeInsets.all(8),
-                                        //     itemBuilder: (BuildContext context, int index) {  },
-                                        //     separatorBuilder: (BuildContext context, int index) {  },
-                                        //     itemCount: user.,
-                                        //   ),
-                                        // ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
+
                             ],
                           ),
                         );
                       } else if (snapshot.hasError) {
-                        print(snapshot);
                         return Text('Something went wrong! $snapshot');
                       } else
                         return Center(

@@ -95,7 +95,7 @@ class FirebaseService {
         .doc(goal.id)
         .update({
       'name': goal.name,
-      'task_type': EnumToString.convertToString(goal.type),
+      'goal_type': EnumToString.convertToString(goal.type),
     });
   }
 
@@ -133,6 +133,15 @@ class FirebaseService {
         .collection('users')
         .doc(getCurrentUserId)
         .collection('tasks')
+        .doc(id)
+        .delete();
+  }
+
+  static deleteGoal(String id) async {
+    await firestore
+        .collection('users')
+        .doc(getCurrentUserId)
+        .collection('goals')
         .doc(id)
         .delete();
   }

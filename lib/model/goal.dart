@@ -26,7 +26,7 @@ class Goal{
   static Goal fromJson(Map<String, dynamic> json) => Goal(
     id: json['id'],
     name: json['name'],
-    type: EnumToString.fromString(GoalType.values, json['task_type'])!,
+    type: EnumToString.fromString(GoalType.values, json['goal_type'])!,
   );
 
   static Goal fromJson2(DocumentSnapshot json) => Goal(

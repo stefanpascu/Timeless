@@ -67,7 +67,8 @@ class NewGoalPageState extends State<NewGoalPage> {
                   size: 50.0,
                 ),
                 onPressed: () {
-                  print('delete goal');
+                  FirebaseService.deleteGoal(goal.id!);
+                  Navigator.pop(context);
                 },
               ),
             ),
@@ -284,8 +285,8 @@ class NewGoalPageState extends State<NewGoalPage> {
     );
   }
 
-  void initWidgets(Goal? task) {
-    if (editMode) {
+  void initWidgets(Goal? goal) {
+    if (goal != null) if (editMode) {
       _controller = TextEditingController(text: goal.name);
 
       if (goal.type == GoalType.Public)
