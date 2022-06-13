@@ -1,7 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeless/main.dart';
 import 'package:timeless/pages/login.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../styles/styles.dart';
 import 'drawer_page.dart';
@@ -132,7 +136,7 @@ class SettingsStatefulWidgetState extends State<Settings> {
           ),
           SizedBox(height: 3.0),
           GestureDetector(
-            onTap: _about,
+            onTap: _showAboutUsDialog,
             child: Container(
               decoration: BoxDecoration(
                 color: MyColors().overBackground,
@@ -146,7 +150,7 @@ class SettingsStatefulWidgetState extends State<Settings> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'About',
+                            'About Us',
                             style: TextStyle(
                               fontSize: 15.0,
                               fontWeight: FontWeight.w500,
@@ -168,7 +172,7 @@ class SettingsStatefulWidgetState extends State<Settings> {
           ),
           SizedBox(height: 3.0),
           GestureDetector(
-            onTap: _help,
+            onTap: _showHelpDialog,
             child: Container(
               decoration: BoxDecoration(
                 color: MyColors().overBackground,
@@ -262,7 +266,7 @@ class SettingsStatefulWidgetState extends State<Settings> {
   //   print("darkThemeStyles: " + MyColors().darkThemeStyles.toString());
   // }
   //
-  // Future<bool> getThemeFromSharedPref() async{
+  // Future<bool> getThemeFromSharedPref() async {
   //   final prefs = await SharedPreferences.getInstance();
   //   final startupBool = prefs.getBool('option');
   //   if (startupBool == null) {
@@ -279,11 +283,121 @@ class SettingsStatefulWidgetState extends State<Settings> {
     FirebaseAuth.instance.signOut();
   }
 
-  void _help() {
-    print('help');
+  Future<void> _showHelpDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Help'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text.rich(
+                  TextSpan(
+                    text: 'This mobile application, ', // default text style
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: ' Timeless',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(
+                        text: ', was created to help users '
+                            'manage their time more easily and efficiently. we intend '
+                            'the term ',
+                      ),
+                      TextSpan(
+                          text: 'task',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(
+                        text: ' to be used for small and medium successes, '
+                            'and the term ',
+                      ),
+                      TextSpan(
+                          text: ' goal',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(
+                        text: ' for large, long-term achievements. '
+                            'Also, users can customize their profile to look their '
+                            'best in front of friends and for their own selves.',
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  void _about() {
-    print('about');
+  Future<void> _showAboutUsDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('About Us'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Text.rich(
+                  TextSpan(
+                    text: 'This mobile application, ', // default text style
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: ' Timeless ',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(
+                        text: ', was, and still is, '
+                            'developed by '
+                            'a single person for teaching purposes. Through this '
+                            'application we want to help people and highlight what '
+                            'we know best to do.'
+                            '\n\nEmail: stefanpascu1199@gmail.com'
+                            // '\nWebsite: ',
+                      ),
+                      // TextSpan(
+                      //   text: 'Github Page',
+                      //   style: new TextStyle(color: Colors.blue),
+                      //   recognizer: new TapGestureRecognizer()
+                      //     ..onTap = () {
+                      //       _launchURL();
+                      //     },
+                      // )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _launchURL() async {
+    const url = 'https://github.com/stefanpascu';
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

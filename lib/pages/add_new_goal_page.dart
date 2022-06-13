@@ -64,7 +64,7 @@ class NewGoalPageState extends State<NewGoalPage> {
                 icon: Icon(
                   Icons.delete,
                   color: MyColors().primaryTitle,
-                  size: 50.0,
+                  size: 40.0,
                 ),
                 onPressed: () {
                   FirebaseService.deleteGoal(goal.id!);
@@ -192,12 +192,12 @@ class NewGoalPageState extends State<NewGoalPage> {
     return null;
   }
 
-  void printGoal(Goal goal) {
-    print("name: " + goal.name);
-    print("type: " + goal.type.toString().split('.')[1]);
-    print("id: " + goal.id.toString());
-    print('///////////////////////////////');
-  }
+  // void printGoal(Goal goal) {
+  //   print("name: " + goal.name);
+  //   print("type: " + goal.type.toString().split('.')[1]);
+  //   print("id: " + goal.id.toString());
+  //   print('///////////////////////////////');
+  // }
 
   Goal findGoalById(int? id) {
     // Goal goalAux = Goal.public("", 1);

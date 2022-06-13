@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import '../pages/settings.dart';
+import '../pages/settings_page.dart';
 
 class MyColors {
   bool? darkThemeStyles = false;

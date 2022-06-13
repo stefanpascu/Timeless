@@ -425,7 +425,8 @@ class RegisterStatefulWidgetState extends State<Register>
     showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => Center(
+        builder: (context) =>
+            Center(
               child: CircularProgressIndicator(),
             ));
 
@@ -435,7 +436,7 @@ class RegisterStatefulWidgetState extends State<Register>
           password: _controllerPassword.text.trim());
 
       final docUser =
-          FirebaseFirestore.instance.collection('users').doc(data.user!.uid);
+      FirebaseFirestore.instance.collection('users').doc(data.user!.uid);
 
       final user = UserData(
         id: docUser.id,
@@ -455,8 +456,16 @@ class RegisterStatefulWidgetState extends State<Register>
         gender = GenderType.Female;
       else
         gender = GenderType.NonBinary;
-      userData = UserData(id: docUser.id,name: _controllerName.text,
-          email: _controllerEmail.text, birthDate: DateTime.parse(formattedDate), gender: gender);
+      userData = UserData(id: docUser.id,
+          name: _controllerName.text,
+          email: _controllerEmail.text,
+          birthDate: DateTime.parse(formattedDate),
+          gender: gender);
+
+      final docUserEmails = FirebaseFirestore.instance.collection('emails').doc(
+          data.user!.email);
+      await docUserEmails.set({'id': data.user!.uid});
+
       navigatorKey.currentState!.popUntil((route) => route.isFirst);
     } on FirebaseAuthException catch (e) {
       print(e);
@@ -464,8 +473,6 @@ class RegisterStatefulWidgetState extends State<Register>
       Utils.showSnackBar(e.message);
       Navigator.pop(context);
     }
-
-
   }
 
   String? get _errorNameText {

@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:timeless/model/user.dart';
 import 'package:timeless/service/firebase_service.dart';
 
@@ -16,6 +20,8 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class EditProfilePageState extends State<EditProfilePage> {
+  late String profilePicLink;
+  late String coverLink;
   bool _submitted = false;
   late Goal goal;
   TextEditingController _controllerName = TextEditingController();
@@ -27,11 +33,18 @@ class EditProfilePageState extends State<EditProfilePage> {
   var _textCountry = '';
   var _textDescription = '';
   int selectedDailyIndex = 0;
+
   @override
   void initState() {
-    _controllerDescription.text = widget.userData.description == null ? '' : widget.userData.description!;
-    _controllerCity.text = widget.userData.city == null ? '' : widget.userData.city!;
-    _controllerCountry.text = widget.userData.country == null ? '' : widget.userData.country!;
+    profilePicLink = widget.userData.profilePicture;
+    coverLink = widget.userData.cover;
+
+    _controllerDescription.text =
+        widget.userData.description == null ? '' : widget.userData.description!;
+    _controllerCity.text =
+        widget.userData.city == null ? '' : widget.userData.city!;
+    _controllerCountry.text =
+        widget.userData.country == null ? '' : widget.userData.country!;
     _controllerName.text = widget.userData.name;
     super.initState();
   }
@@ -83,13 +96,70 @@ class EditProfilePageState extends State<EditProfilePage> {
                   child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                    child: OutlinedButton(
+                        onPressed: () {
+                          pickUploadProfilePic();
+                        },
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: MyColors().overBackground,
+                          side: BorderSide(
+                              color: MyColors().primaryNormal.withOpacity(0.7),
+                              width: 1.5),
+                          padding: EdgeInsets.symmetric(vertical: 20.0),
+                          alignment: Alignment.centerRight
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.camera_alt, color: MyColors().textNormal,),
+                            SizedBox(width: 10.0,),
+                            Text('Change Profile Picture', style: TextStyle(
+                              fontFamily: 'OpenSans',
+                              fontSize: 20,
+                              color: MyColors().textNormal
+                            ),)
+                          ],
+                        )),
+                  ),
+                  SizedBox(height: 15.0,),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                    child: OutlinedButton(
+                        onPressed: () {
+                          pickUploadCoverPic();
+                        },
+                        style: OutlinedButton.styleFrom(
+                            backgroundColor: MyColors().overBackground,
+                            side: BorderSide(
+                                color: MyColors().primaryNormal.withOpacity(0.7),
+                                width: 1.5),
+                            padding: EdgeInsets.symmetric(vertical: 20.0),
+                            alignment: Alignment.centerRight
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.camera_alt, color: MyColors().textNormal,),
+                            SizedBox(width: 10.0,),
+                            Text('Change Cover Picture', style: TextStyle(
+                                fontFamily: 'OpenSans',
+                                fontSize: 20,
+                                color: MyColors().textNormal
+                            ),)
+                          ],
+                        )),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 40, right: 40, bottom: 16, top: 30),
                     child: TextField(
                       controller: _controllerName,
                       cursorColor: MyColors().textNormal,
                       style: TextStyle(color: MyColors().textNormal),
                       onChanged: (text) => setState(() => _textName),
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: MyColors().overBackground,
                         labelText: 'Name',
                         errorText: _submitted ? _errorNameText : null,
                         enabledBorder: OutlineInputBorder(
@@ -112,6 +182,8 @@ class EditProfilePageState extends State<EditProfilePage> {
                       style: TextStyle(color: MyColors().textNormal),
                       onChanged: (text) => setState(() => _textCity),
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: MyColors().overBackground,
                         labelText: 'City',
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -133,6 +205,8 @@ class EditProfilePageState extends State<EditProfilePage> {
                       style: TextStyle(color: MyColors().textNormal),
                       onChanged: (text) => setState(() => _textCountry),
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: MyColors().overBackground,
                         labelText: 'Country',
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -156,6 +230,8 @@ class EditProfilePageState extends State<EditProfilePage> {
                       style: TextStyle(color: MyColors().textNormal),
                       onChanged: (text) => setState(() => _textDescription),
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: MyColors().overBackground,
                         labelText: 'Description',
                         errorText: _errorDescriptionText,
                         enabledBorder: OutlineInputBorder(
@@ -203,6 +279,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 30.0,)
                 ],
               )),
             ]),
@@ -214,15 +291,58 @@ class EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> _submit() async {
     // if there is no error text
-    widget.userData.description = _controllerDescription.text == '' ? null : _controllerDescription.text;
-    widget.userData.city = _controllerCity.text == '' ? null : _controllerCity.text;
-    widget.userData.country = _controllerCountry.text == '' ? null : _controllerCountry.text;
+    widget.userData.description =
+        _controllerDescription.text == '' ? null : _controllerDescription.text;
+    widget.userData.city =
+        _controllerCity.text == '' ? null : _controllerCity.text;
+    widget.userData.country =
+        _controllerCountry.text == '' ? null : _controllerCountry.text;
     widget.userData.name = _controllerName.text;
 
     if (_errorNameText == null && _errorDescriptionText == null) {
+      FirebaseService.updateProfilePic(profilePicLink);
+      FirebaseService.updateCoverPic(coverLink);
       FirebaseService.editProfileData(widget.userData);
       Navigator.pop(context);
     }
+  }
+
+  void pickUploadProfilePic() async {
+    final image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxHeight: 512,
+      maxWidth: 512,
+      imageQuality: 90,
+    );
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child("${widget.userData.id}_profile_picture_${widget.userData.profileIndex}.jpg");
+    FirebaseService.updateProfilePicIndex(widget.userData.profileIndex);
+    await ref.putFile(File(image!.path));
+    ref.getDownloadURL().then((value) async {
+      setState(() {
+        profilePicLink = value;
+      });
+    });
+  }
+
+  void pickUploadCoverPic() async {
+    final image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxHeight: 512,
+      maxWidth: 512,
+      imageQuality: 90,
+    );
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child("${widget.userData.id}_cover_picture_${widget.userData.coverIndex}.jpg");
+    FirebaseService.updateCoverPicIndex(widget.userData.coverIndex);
+    await ref.putFile(File(image!.path));
+    ref.getDownloadURL().then((value) async {
+      setState(() {
+        coverLink = value;
+      });
+    });
   }
 
   String? get _errorNameText {

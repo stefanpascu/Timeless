@@ -11,16 +11,26 @@ class FirebaseService {
   static final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   static get getCurrentUser async {
-    final user = await firestore
-        .collection('users')
-        .doc(getCurrentUserId)
-        .get();
+    final user =
+        await firestore.collection('users').doc(getCurrentUserId).get();
 
     return UserData.fromJson(user.data()!);
   }
 
   static get getCurrentUserId {
     return auth.currentUser!.uid;
+  }
+
+  static getUserByEmail(String email) async {
+    final id = (await firestore.collection('emails').doc(email).get()).data();
+    if (id == null) return null;
+
+    final user = await firestore
+        .collection('users')
+        .doc(id.toString().split(" ")[1].split("}")[0])
+        .get();
+    print(user.data());
+    return UserData.fromJson(user.data()!);
   }
 
   static getTasks() async {
@@ -54,7 +64,7 @@ class FirebaseService {
         .doc(getCurrentUserId)
         .collection('tasks')
         .doc(savedTask.id)
-        .update({"id": savedTask.id});
+        .update({'id': savedTask.id});
   }
 
   static void editExistingTask(Task task) async {
@@ -100,20 +110,11 @@ class FirebaseService {
   }
 
   static void editProfileData(UserData user) async {
-    await firestore
-        .collection('users')
-        .doc(getCurrentUserId)
-        .update({
+    await firestore.collection('users').doc(getCurrentUserId).update({
       'name': user.name,
-      'city': user.city == null
-          ? null
-          : user.city,
-      'country': user.country == null
-          ? null
-          : user.country,
-      'description': user.description == null
-          ? null
-          : user.description
+      'city': user.city == null ? null : user.city,
+      'country': user.country == null ? null : user.country,
+      'description': user.description == null ? null : user.description
     });
   }
 
@@ -144,5 +145,87 @@ class FirebaseService {
         .collection('goals')
         .doc(id)
         .delete();
+  }
+
+  static void updateProfilePicIndex(int index) async {
+    await firestore.collection('users').doc(getCurrentUserId).update({
+      'profile_index': index + 1,
+    });
+  }
+
+  static void updateCoverPicIndex(int index) async {
+    await firestore.collection('users').doc(getCurrentUserId).update({
+      'cover_index': index + 1,
+    });
+  }
+
+  static void updateProfilePic(String link) async {
+    await firestore.collection('users').doc(getCurrentUserId).update({
+      'profile_pic': link,
+    });
+  }
+
+  static void updateCoverPic(String link) async {
+    await firestore.collection('users').doc(getCurrentUserId).update({
+      'cover_pic': link,
+    });
+  }
+
+  static followList(List<String> list) async {
+    List<UserData> usersList = [];
+    UserData auxUser;
+    if (list.length > 0)
+      for (int index = 0; index < list.length; index++) {
+        var x =
+            (await firestore.collection('users').doc(list[index]).get()).data();
+        if (x != null) {
+          auxUser = UserData.fromJson(x);
+          usersList.add(auxUser);
+        }
+      }
+
+    return usersList;
+  }
+
+  static void addFollower(String id) async {
+    dynamic auxId = id;
+    await firestore
+        .collection('users')
+        .doc(getCurrentUserId)
+        .update({
+      'following': FieldValue.arrayUnion([auxId])
+    });
+
+    await firestore
+        .collection('users')
+        .doc(id)
+        .update({
+      'followers': FieldValue.arrayUnion([getCurrentUserId])
+    });
+  }
+
+  static removeFollower(String id) async {
+    dynamic auxId = id;
+    await firestore
+        .collection('users')
+        .doc(getCurrentUserId)
+        .update({
+      'following': FieldValue.arrayRemove([auxId]),
+    });
+
+    await firestore
+        .collection('users')
+        .doc(auxId)
+        .update({
+      'followers': FieldValue.arrayRemove([getCurrentUserId]),
+    });
+  }
+
+  static isFollowedBy(String id) async {
+    final query = await firestore
+        .collection("users")
+        .doc(getCurrentUserId)
+        .get();
+    return UserData.fromJson(query.data()!).following.contains(id);
   }
 }

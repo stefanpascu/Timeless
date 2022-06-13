@@ -189,13 +189,27 @@ class _DailyPageState extends State<DailyPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 10.0),
-                  child: Text(
-                    DateFormat('kk:mm').format(task.time),
-                    style: TextStyle(
-                        color: MyColors().textNormal,
-                        fontSize: 15.0,
-                        fontFamily: 'OpenSans',
-                        fontWeight: FontWeight.w600),
+                  child: Column(
+                    children: [
+                      if (task.type == TaskType.Repetitive)...[
+                        Text(
+                          task.repetitiveType.toString().split('.')[1],
+                          style: TextStyle(
+                              color: MyColors().textNormal,
+                              fontSize: 15.0,
+                              fontFamily: 'OpenSans',
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                      Text(
+                        DateFormat('kk:mm').format(task.time),
+                        style: TextStyle(
+                            color: MyColors().textNormal,
+                            fontSize: 15.0,
+                            fontFamily: 'OpenSans',
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ],
                   ),
                 )
               ],

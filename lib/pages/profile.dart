@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:timeless/service/firebase_service.dart';
 
@@ -96,8 +97,8 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                 children: [
                                   AspectRatio(
                                     aspectRatio: 2,
-                                    child: Image.asset(
-                                      'assets/images/Ragnar_Wallpaper.jpg',
+                                    child: Image.network(
+                                      user.cover,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
                                     ),
@@ -105,34 +106,24 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                   Align(
                                     alignment:
                                         AlignmentDirectional.bottomCenter,
-                                    child: SizedBox(
-                                      height: 120,
-                                      width: 100,
-                                      child: Stack(
-                                        children: [
-                                          FractionalTranslation(
-                                            translation: Offset(0.0, 0.5),
-                                            child: SizedBox(
-                                              height: 150,
-                                              width: 100,
-                                              child: CircleAvatar(
-                                                radius: 50,
-                                                backgroundColor:
-                                                    Color(0xffF89D7D),
-                                                child: CircleAvatar(
-                                                  radius: 48,
-                                                  backgroundColor:
-                                                      Color(0xffF89D7D),
-                                                  backgroundImage: AssetImage(
-                                                      'assets/images/NFT.jpeg'),
-                                                ),
-                                              ),
-                                              // Image.asset(
-                                              //   'assets/images/Tux.png',),
+                                    child: Stack(
+                                      children: [
+                                        FractionalTranslation(
+                                          translation: Offset(0.0, 0.5),
+                                          child: CircleAvatar(
+                                            radius: 60,
+                                            backgroundColor: Color(0xffF89D7D),
+                                            child: CircleAvatar(
+                                              radius: 55,
+                                              backgroundColor:
+                                                  Color(0xffF89D7D),
+                                              backgroundImage: Image.network(
+                                                      user.profilePicture)
+                                                  .image,
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -161,9 +152,66 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                   ),
                                 ),
                               ]),
+
                               Container(
                                 margin: EdgeInsets.only(
-                                  top: 60.0,
+                                  top: 40.0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          user.followers.length.toString(),
+                                          style: TextStyle(
+                                            fontSize: 17.0,
+                                            fontWeight: FontWeight.w400,
+                                            color: MyColors().textNormal,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Followers',
+                                          style: TextStyle(
+                                            fontSize: 17.0,
+                                            fontWeight: FontWeight.w400,
+                                            color: MyColors().textNormal,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(width: 100.0,),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          user.following.length.toString(),
+                                          style: TextStyle(
+                                            fontSize: 17.0,
+                                            fontWeight: FontWeight.w400,
+                                            color: MyColors().textNormal,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Following',
+                                          style: TextStyle(
+                                            fontSize: 17.0,
+                                            fontWeight: FontWeight.w400,
+                                            color: MyColors().textNormal,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              Container(
+                                margin: EdgeInsets.only(
+                                  top: 80.0,
                                 ),
                                 child: Column(
                                   children: [
@@ -255,7 +303,9 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                 endIndent: 50,
                                 color: MyColors().divider,
                               ),
-                              SizedBox(height: 30.0,),
+                              SizedBox(
+                                height: 30.0,
+                              ),
                               StreamBuilder(
                                   stream: FirebaseFirestore.instance
                                       .collection('users')
@@ -275,7 +325,6 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                           .where((goal) =>
                                               goal.type == GoalType.Private)
                                           .toList();
-                                      print(privateGoals[0]);
                                       publicGoals = goals
                                           .where((goal) =>
                                               goal.type == GoalType.Public)
@@ -304,15 +353,17 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                             child: Column(
                                               children: [
                                                 Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                          vertical: 10.0),
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      vertical: 10.0),
                                                   child: Text(
                                                     'Goals',
                                                     style: TextStyle(
                                                       fontSize: 30.0,
-                                                      fontWeight: FontWeight.w500,
-                                                      color: MyColors().textNormal,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color:
+                                                          MyColors().textNormal,
                                                       letterSpacing: 1,
                                                     ),
                                                   ),
@@ -327,19 +378,21 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                   child: ListView.separated(
                                                     shrinkWrap: true,
                                                     padding: EdgeInsets.all(8),
-                                                    itemCount: publicGoals.length,
+                                                    itemCount:
+                                                        publicGoals.length,
                                                     itemBuilder:
                                                         (BuildContext context,
                                                             int index) {
                                                       return Text(
                                                         publicGoals[index].name,
-                                                        textAlign: TextAlign.center,
+                                                        textAlign:
+                                                            TextAlign.center,
                                                         style: TextStyle(
                                                           fontSize: 25.0,
                                                           fontWeight:
                                                               FontWeight.normal,
-                                                          color:
-                                                              MyColors().textNormal,
+                                                          color: MyColors()
+                                                              .textNormal,
                                                           letterSpacing: 1,
                                                         ),
                                                       );
@@ -349,7 +402,8 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                             int index) {
                                                       return Divider(
                                                         thickness: 1,
-                                                        color: MyColors().divider,
+                                                        color:
+                                                            MyColors().divider,
                                                       );
                                                     },
                                                   ),
@@ -357,9 +411,9 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                               ],
                                             ),
                                           ),
-
-                                          SizedBox(height: 30,),
-
+                                          SizedBox(
+                                            height: 30,
+                                          ),
                                           Container(
                                             width: 330,
                                             padding: EdgeInsets.symmetric(
@@ -382,15 +436,17 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                             child: Column(
                                               children: [
                                                 Padding(
-                                                  padding:
-                                                  const EdgeInsets.symmetric(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
                                                       vertical: 10.0),
                                                   child: Text(
                                                     'Private Goals',
                                                     style: TextStyle(
                                                       fontSize: 30.0,
-                                                      fontWeight: FontWeight.w500,
-                                                      color: MyColors().textNormal,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color:
+                                                          MyColors().textNormal,
                                                       letterSpacing: 1,
                                                     ),
                                                   ),
@@ -405,35 +461,42 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                   child: ListView.separated(
                                                     shrinkWrap: true,
                                                     padding: EdgeInsets.all(8),
-                                                    itemCount: privateGoals.length,
+                                                    itemCount:
+                                                        privateGoals.length,
                                                     itemBuilder:
                                                         (BuildContext context,
-                                                        int index) {
+                                                            int index) {
                                                       return Text(
-                                                        privateGoals[index].name,
-                                                        textAlign: TextAlign.center,
+                                                        privateGoals[index]
+                                                            .name,
+                                                        textAlign:
+                                                            TextAlign.center,
                                                         style: TextStyle(
                                                           fontSize: 25.0,
                                                           fontWeight:
-                                                          FontWeight.normal,
-                                                          color:
-                                                          MyColors().textNormal,
+                                                              FontWeight.normal,
+                                                          color: MyColors()
+                                                              .textNormal,
                                                           letterSpacing: 1,
                                                         ),
                                                       );
                                                     },
                                                     separatorBuilder:
                                                         (BuildContext context,
-                                                        int index) {
+                                                            int index) {
                                                       return Divider(
                                                         thickness: 1,
-                                                        color: MyColors().divider,
+                                                        color:
+                                                            MyColors().divider,
                                                       );
                                                     },
                                                   ),
                                                 ),
                                               ],
                                             ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
                                           ),
                                         ],
                                       );
@@ -442,16 +505,15 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                       child: CircularProgressIndicator(),
                                     );
                                   }),
-
                             ],
                           ),
                         );
                       } else if (snapshot.hasError) {
                         return Text('Something went wrong! $snapshot');
-                      } else
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
                     });
               } else if (streamSnapshot.hasError) {
                 Text('Something went wrong');
