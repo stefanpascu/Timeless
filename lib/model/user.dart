@@ -15,6 +15,7 @@ class UserData {
   String cover;
   int profileIndex;
   int coverIndex;
+  int notificationIndex;
   List<String> followers;
   List<String> following;
 
@@ -33,6 +34,7 @@ class UserData {
             'https://firebasestorage.googleapis.com/v0/b/timeless-35302.appspot.com/o/Portrait_Placeholder%5B1%5D.png?alt=media&token=34332fa9-9bfc-4a5b-9f0f-77ba0ec387f2',
         cover =
             'https://firebasestorage.googleapis.com/v0/b/timeless-35302.appspot.com/o/50-Beautiful-and-Minimalist-Presentation-Backgrounds-036.jpg?alt=media&token=246755ab-165f-41d8-849b-ea5f34aff659',
+        notificationIndex = 0,
         followers = [],
         following = [];
 
@@ -50,7 +52,8 @@ class UserData {
       required this.profileIndex,
       required this.coverIndex,
       required this.followers,
-      required this.following});
+      required this.following,
+      required this.notificationIndex});
 
   Map<String, dynamic> toJson() => {
         'name': name,
@@ -65,6 +68,7 @@ class UserData {
         'cover_pic': cover,
         'profile_index': profileIndex,
         'cover_index': coverIndex,
+        'notification_index': notificationIndex,
         'followers': followers,
         'following': following
       };
@@ -86,6 +90,7 @@ class UserData {
             : 'https://firebasestorage.googleapis.com/v0/b/timeless-35302.appspot.com/o/50-Beautiful-and-Minimalist-Presentation-Backgrounds-036.jpg?alt=media&token=246755ab-165f-41d8-849b-ea5f34aff659',
         profileIndex: json['profile_index'] != null ? json['profile_index'] : 0,
         coverIndex: json['cover_index'] != null ? json['cover_index'] : 0,
+        notificationIndex: json['notification_index'] != null ? json['notification_index'] : 0,
         followers: json['followers'] != null
             ? List<String>.from(json['followers'])
             : [],
@@ -113,6 +118,7 @@ class UserData {
           json['profile_index'] != null ? int.parse(json['profile_index']) : 0,
       coverIndex:
           json['cover_index'] != null ? int.parse(json['cover_index']) : 0,
+      notificationIndex: json['notification_index'] != null ? json['notification_index'] : 0,
       followers:
           json['followers'] != null ? List<String>.from(json['followers']) : [],
       following: json['following'] != null

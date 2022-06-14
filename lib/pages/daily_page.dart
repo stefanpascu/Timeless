@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
+import 'package:timeless/model/repetitive_type.dart';
 import 'package:timeless/model/task_type.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 
@@ -19,10 +22,15 @@ class DailyPage extends StatefulWidget {
 
 class _DailyPageState extends State<DailyPage> {
   int selectedDailyIndex = 0;
-
   static List<Task> tasks = [];
   List<Task> filteredTasks = tasks;
   String repetitiveDropdownValue = 'Daily';
+  late Timer myTimer;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +47,30 @@ class _DailyPageState extends State<DailyPage> {
           tasks = snapshot.data!.docs
               .map((DocumentSnapshot e) => Task.fromJson2(e))
               .toList();
+          // print(tasks.toString());
+
+          myTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+            for (int i = 0; i < tasks.length; i++) {
+              if (!compareDates(tasks[i].time, DateTime.now())) {
+                if (tasks[i].type == TaskType.Repetitive) {
+                  if (tasks[i].repetitiveType == RepetitiveType.Daily) {
+                    Task auxTask = tasks[i];
+                    auxTask.time = auxTask.time.add(Duration(days: 1));
+                    FirebaseService.editExistingTask(auxTask);
+                  } else {
+                    Task auxTask = tasks[i];
+                    auxTask.time = auxTask.time.add(Duration(days: 7));
+                    FirebaseService.editExistingTask(auxTask);
+                  }
+                } else {
+                  Task auxTask = tasks[i];
+                  tasks.remove(tasks[i]);
+                  FirebaseService.deleteTask(auxTask.id!);
+                }
+              }
+            }
+            // myTimer.cancel() //to terminate this timer
+          });
           filteredTasks = tasks;
           _filterTasks();
           return Column(mainAxisSize: MainAxisSize.min, children: [
@@ -55,9 +87,7 @@ class _DailyPageState extends State<DailyPage> {
                         index: 1,
                         color: MyColors().repetitiveBlue),
                     _filterWidget(
-                        title: 'Due to',
-                        index: 2,
-                        color: MyColors().dueToRed),
+                        title: 'Due to', index: 2, color: MyColors().dueToRed),
                     _filterWidget(
                         title: 'Appointment',
                         index: 3,
@@ -66,7 +96,6 @@ class _DailyPageState extends State<DailyPage> {
                 ),
               ),
             ),
-
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
@@ -91,11 +120,38 @@ class _DailyPageState extends State<DailyPage> {
                   ),
                 ),
               ),
-            )]);
+            )
+          ]);
         }
         return Center(child: CircularProgressIndicator());
       },
     );
+  }
+
+  bool compareDates(DateTime a, DateTime b) {
+    if (int.parse(a.toString().split(" ")[0].split("-")[0]) >
+        int.parse(b.toString().split(" ")[0].split("-")[0]))
+      return true;
+    else if (int.parse(a.toString().split(" ")[0].split("-")[0]) ==
+        int.parse(b.toString().split(" ")[0].split("-")[0])) if (int.parse(
+            a.toString().split(" ")[0].split("-")[1]) >
+        int.parse(b.toString().split(" ")[0].split("-")[1]))
+      return true;
+    else if (int.parse(a.toString().split(" ")[0].split("-")[1]) ==
+        int.parse(b.toString().split(" ")[0].split("-")[1])) if (int.parse(
+            a.toString().split(" ")[0].split("-")[2]) >
+        int.parse(b.toString().split(" ")[0].split("-")[2]))
+      return true;
+    else if (int.parse(a.toString().split(" ")[0].split("-")[2]) ==
+        int.parse(b.toString().split(" ")[0].split("-")[2])) if (int.parse(
+            a.toString().split(" ")[1].split(":")[0]) >
+        int.parse(b.toString().split(" ")[1].split(":")[0]))
+      return true;
+    else if (int.parse(a.toString().split(" ")[1].split(":")[0]) ==
+        int.parse(b.toString().split(" ")[1].split(":")[0])) if (int.parse(
+            a.toString().split(" ")[1].split(":")[1]) >
+        int.parse(b.toString().split(" ")[1].split(":")[1])) return true;
+    return false;
   }
 
   String to24hours(TimeOfDay? tod) {
@@ -191,7 +247,7 @@ class _DailyPageState extends State<DailyPage> {
                   padding: const EdgeInsets.only(right: 10.0),
                   child: Column(
                     children: [
-                      if (task.type == TaskType.Repetitive)...[
+                      if (task.type == TaskType.Repetitive) ...[
                         Text(
                           task.repetitiveType.toString().split('.')[1],
                           style: TextStyle(

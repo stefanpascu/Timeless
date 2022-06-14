@@ -4,6 +4,8 @@ import 'package:timeless/service/firebase_service.dart';
 import '../model/repetitive_type.dart';
 import '../model/task.dart';
 import '../model/task_type.dart';
+import '../model/user.dart';
+import '../service/notification_service.dart';
 import '../styles/styles.dart';
 
 class NewTaskPage extends StatefulWidget {
@@ -50,7 +52,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
   @override
   void initState() {
     editMode = widget.task != null;
-    task = widget.task == null ? Task.repetitive("", RepetitiveType.Daily, DateTime.now(), null) : widget.task!;
+    task = widget.task == null
+        ? Task.repetitive("", RepetitiveType.Daily, DateTime.now(), null, 0)
+        : widget.task!;
     initWidgets(widget.task);
     super.initState();
   }
@@ -58,59 +62,61 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColors().backgroundNormal,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: MyColors().primaryTitle,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        backgroundColor: MyColors().backgroundNormal.withOpacity(0),
-        title: Align(
-          alignment: Alignment.center,
-          child: Text(
-            editMode ? 'EDIT TASK' : 'NEW TASK',
-            style: TextStyle(
+        backgroundColor: MyColors().backgroundNormal,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios,
               color: MyColors().primaryTitle,
-              fontSize: 25.0,
-              fontWeight: FontWeight.w900,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          backgroundColor: MyColors().backgroundNormal.withOpacity(0),
+          title: Align(
+            alignment: Alignment.center,
+            child: Text(
+              editMode ? 'EDIT TASK' : 'NEW TASK',
+              style: TextStyle(
+                color: MyColors().primaryTitle,
+                fontSize: 25.0,
+                fontWeight: FontWeight.w900,
+              ),
             ),
           ),
-        ),
-        actions: [
-          if (editMode == true) ...[
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: IconButton(
-                icon: Icon(
-                  Icons.delete,
-                  color: MyColors().primaryTitle,
-                  size: 40.0,
+          actions: [
+            if (editMode == true) ...[
+              Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.delete,
+                    color: MyColors().primaryTitle,
+                    size: 40.0,
+                  ),
+                  onPressed: () async {
+                    FirebaseService.deleteTask(task.id!);
+                    await NotificationService()
+                        .cancelNotification(task.notificationId);
+                    Navigator.pop(context);
+                  },
                 ),
-                onPressed: () {
-                  FirebaseService.deleteTask(task.id!);
-                  Navigator.pop(context);
-                },
               ),
-            ),
-          ] else ...[
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: Icon(
-                Icons.delete,
-                color: MyColors().backgroundNormal,
-                size: 50.0,
+            ] else ...[
+              Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: Icon(
+                  Icons.delete,
+                  color: MyColors().backgroundNormal,
+                  size: 50.0,
+                ),
               ),
-            ),
-          ]
-        ],
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
+            ]
+          ],
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
           child: Column(children: [
             Container(
               height: 60.0,
@@ -148,8 +154,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                     labelText: 'Name',
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: MyColors().primaryNormal.withOpacity(0.7),
-                          width: 1.5,),
+                        color: MyColors().primaryNormal.withOpacity(0.7),
+                        width: 1.5,
+                      ),
                     ),
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(
@@ -161,18 +168,19 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
               selectedDailyIndex == 0
                   ? Column(
                       children: [
-                        SizedBox(height: 40.0,),
+                        SizedBox(
+                          height: 40.0,
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 40.0),
                           child: Row(
-                            // mainAxisAlignment: MainAxisAlignment.center,
-                            // crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
                                 'Pick a Time:',
                                 style: TextStyle(
-                                    color: MyColors().textNormal,
-                                    fontSize: 20.0,),
+                                  color: MyColors().textNormal,
+                                  fontSize: 20.0,
+                                ),
                               ),
                               Spacer(),
                               StatefulBuilder(builder: (BuildContext context,
@@ -181,7 +189,8 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   style: OutlinedButton.styleFrom(
                                     primary: MyColors().overBackground,
                                     side: BorderSide(
-                                        color: MyColors().primaryNormal, width: 1.2),
+                                        color: MyColors().primaryNormal,
+                                        width: 1.2),
                                   ),
                                   onPressed: () async {
                                     await _show();
@@ -190,21 +199,23 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   child: Text(
                                     formattedTime,
                                     style: TextStyle(
-                                        color: MyColors().textNormal, fontSize: 30.0),
+                                        color: MyColors().textNormal,
+                                        fontSize: 30.0),
                                   ),
                                 );
                               }),
                             ],
                           ),
                         ),
-
-                        SizedBox(height: 40.0,),
-
+                        SizedBox(
+                          height: 40.0,
+                        ),
                         StatefulBuilder(
                           builder: (BuildContext context,
                               StateSetter NewTaskPageState) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 40.0),
                               child: Align(
                                 alignment: Alignment.centerRight,
                                 child: DropdownButton<String>(
@@ -213,30 +224,35 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   icon: Icon(Icons.arrow_downward),
                                   elevation: 0,
                                   style: TextStyle(
-                                      color: MyColors().textNormal.withOpacity(1.0),
-                                    fontSize: 25.0
-                                  ),
+                                      color: MyColors()
+                                          .textNormal
+                                          .withOpacity(1.0),
+                                      fontSize: 25.0),
                                   underline: Container(
                                     height: 2,
-                                    color: MyColors().primaryNormal.withOpacity(0.7),
+                                    color: MyColors()
+                                        .primaryNormal
+                                        .withOpacity(0.7),
                                   ),
                                   onChanged: (String? newRepetitiveValue) {
                                     NewTaskPageState(() {
-                                      repetitiveDropdownValue = newRepetitiveValue!;
+                                      repetitiveDropdownValue =
+                                          newRepetitiveValue!;
                                       if (repetitiveDropdownValue == 'Daily') {
                                         repetitiveType = RepetitiveType.Daily;
-                                        task.repetitiveType = RepetitiveType.Daily;
+                                        task.repetitiveType =
+                                            RepetitiveType.Daily;
                                       } else if (repetitiveDropdownValue ==
                                           'Weekly') {
                                         repetitiveType = RepetitiveType.Weekly;
-                                        task.repetitiveType = RepetitiveType.Weekly;
+                                        task.repetitiveType =
+                                            RepetitiveType.Weekly;
                                       }
                                     });
                                   },
-                                  items: <String>[
-                                    'Daily',
-                                    'Weekly'
-                                  ].map<DropdownMenuItem<String>>((String value) {
+                                  items: <String>['Daily', 'Weekly']
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(value),
@@ -247,7 +263,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                             );
                           },
                         ),
-                        SizedBox(height: 8.0,)
+                        SizedBox(
+                          height: 8.0,
+                        )
                       ],
                     )
                   : selectedDailyIndex == 1
@@ -255,7 +273,8 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                           children: [
                             SizedBox(height: 40.0),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 40.0),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -264,11 +283,13 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                     'Pick a Time:',
                                     style: TextStyle(
                                       color: MyColors().textNormal,
-                                      fontSize: 20.0,),
+                                      fontSize: 20.0,
+                                    ),
                                   ),
                                   Spacer(),
-                                  StatefulBuilder(builder: (BuildContext context,
-                                      StateSetter timePickState) {
+                                  StatefulBuilder(builder:
+                                      (BuildContext context,
+                                          StateSetter timePickState) {
                                     return OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         primary: MyColors().overBackground,
@@ -291,9 +312,12 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 40.0,),
+                            SizedBox(
+                              height: 40.0,
+                            ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 40.0),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -302,7 +326,8 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                     'Pick a Date:',
                                     style: TextStyle(
                                       color: MyColors().textNormal,
-                                      fontSize: 20.0,),
+                                      fontSize: 20.0,
+                                    ),
                                   ),
                                   Spacer(),
                                   Padding(
@@ -342,14 +367,14 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 },
                               ),
                             ),
-
                           ],
                         )
                       : Column(
                           children: [
                             SizedBox(height: 40.0),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 40.0),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -358,10 +383,13 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                     'Pick a Time:',
                                     style: TextStyle(
                                       color: MyColors().textNormal,
-                                      fontSize: 20.0,),),
+                                      fontSize: 20.0,
+                                    ),
+                                  ),
                                   Spacer(),
-                                  StatefulBuilder(builder: (BuildContext context,
-                                      StateSetter timePickState) {
+                                  StatefulBuilder(builder:
+                                      (BuildContext context,
+                                          StateSetter timePickState) {
                                     return OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         primary: MyColors().overBackground,
@@ -384,7 +412,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 40.0,),
+                            SizedBox(
+                              height: 40.0,
+                            ),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 40.0),
                               child: Row(
@@ -395,7 +425,8 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                     'Pick a Date:',
                                     style: TextStyle(
                                       color: MyColors().textNormal,
-                                      fontSize: 20.0,),
+                                      fontSize: 20.0,
+                                    ),
                                   ),
                                   Spacer(),
                                   Padding(
@@ -437,7 +468,6 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                             ),
                           ],
                         )
-
             ])),
             SizedBox(height: 30.0),
             SizedBox(
@@ -460,38 +490,61 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                   setState(() {
                     _submitted = true;
                   }),
-                  if(selectedDailyIndex != 0) {
-                    if (_controller.value.text.isNotEmpty &&
-                        compareDates(task.time, DateTime.now()))
-                      {_submit()}
-                    else
-                      if (!compareDates(
-                          task.time, DateTime.now()))
+                  if (selectedDailyIndex != 0)
+                    {
+                      if (_controller.value.text.isNotEmpty &&
+                          compareDates(task.time, DateTime.now()))
+                        {_submit()}
+                      else if (!compareDates(task.time, DateTime.now()))
                         {timeError = true}
-                  } else if (_controller.value.text.isNotEmpty) {_submit()}
+                    }
+                  else if (_controller.value.text.isNotEmpty)
+                    {_submit()}
                 },
                 child: Text(
                   'Save',
                   style: TextStyle(
-                      fontSize: 20.0,
-                      color: MyColors().highlightedFilterText),
+                      fontSize: 20.0, color: MyColors().highlightedFilterText),
                 ),
               ),
             ),
           ]),
         ));
-
-
   }
 
-  void _submit() {
-    // if there is no error text
+  Future<void> _submit() async {
     if (_errorNameText == null) {
       task.name = _controller.text;
-      if (editMode == false)
+      if (editMode == false) {
+        final notificationIndex = UserData.fromJson((await FirebaseService
+                    .firestore
+                    .collection('users')
+                    .doc(FirebaseService.getCurrentUserId)
+                    .get())
+                .data()!)
+            .notificationIndex;
+        task.notificationId = notificationIndex;
         FirebaseService.createNewTask(task);
-      else {
+        await NotificationService().showNotification(
+            notificationIndex,
+            task.name,
+            task.type == TaskType.Repetitive
+                ? 'Your repetitive task is here!'
+                : task.type == TaskType.DueTo
+                    ? 'Your task is due to now!'
+                    : 'Attention please, you have an appointment!',
+            task.time);
+        await FirebaseService.firestore
+            .collection('users')
+            .doc(FirebaseService.getCurrentUserId)
+            .update({
+          'notification_index': notificationIndex + 1,
+        });
+      } else {
         FirebaseService.editExistingTask(task);
+        await NotificationService().cancelNotification(task.notificationId);
+        await NotificationService().showNotification(task.notificationId,
+            task.name, 'Your task notification body', task.time);
       }
       Navigator.pop(context);
     }
@@ -595,7 +648,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
       setState(() {
         String string = '';
         for (int index = 10; index <= 14; index++) {
-          string += to24hours(result)[index]; // result.format(context);
+          string += to24hours(result)[index];
         }
         formattedTime = string;
         DateTime time = task.time;
@@ -635,7 +688,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
 
           if (repetitiveType != null) {
             repetitiveDropdownValue =
-            task.repetitiveType.toString().split('.')[1];
+                task.repetitiveType.toString().split('.')[1];
           }
         }
       } else if (selectedDailyIndex == 1 || selectedDailyIndex == 2) {
@@ -656,23 +709,25 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           selectedDailyIndex = index;
           if (editMode == false) {
             if (selectedDailyIndex == 0)
-              task = Task.repetitive("", null, DateTime.now(), null);
+              task = Task.repetitive("", null, DateTime.now(), null, 0);
             else if (selectedDailyIndex == 1)
-              task = Task.dueTo("", DateTime.now(), null);
+              task = Task.dueTo("", DateTime.now(), null, 0);
             else if (selectedDailyIndex == 2)
-              task = Task.appointment("", DateTime.now(), null);
+              task = Task.appointment("", DateTime.now(), null, 0);
           } else {
             String name = task.name;
             DateTime dateTime = task.time;
             String? id = task.id;
+            int notifId = task.notificationId;
             if (selectedDailyIndex == 0) if (isSwitched == false)
-              task = Task.repetitive(name, null, dateTime, id);
+              task = Task.repetitive(name, null, dateTime, id, notifId);
             else
-              task = Task.repetitive(name, repetitiveType, dateTime, id);
+              task =
+                  Task.repetitive(name, repetitiveType, dateTime, id, notifId);
             else if (selectedDailyIndex == 1)
-              task = Task.dueTo(name, dateTime, id);
+              task = Task.dueTo(name, dateTime, id, notifId);
             else if (selectedDailyIndex == 2)
-              task = Task.appointment(name, dateTime, id);
+              task = Task.appointment(name, dateTime, id, notifId);
           }
         });
       },
@@ -691,11 +746,12 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                 color: Colors.grey,
                 blurRadius: 1.0,
                 spreadRadius: 0.2,
-                offset: Offset(1.0, 1.0), // changes position of shadow
+                offset: Offset(1.0, 1.0),
               ),
             ],
-            color:
-                isSelected ? MyColors().primaryNormal : MyColors().overBackground,
+            color: isSelected
+                ? MyColors().primaryNormal
+                : MyColors().overBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
