@@ -36,9 +36,9 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                     primary: MyColors().backgroundNormal.withOpacity(0),
                     elevation: 0,
                   ),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
+                  onPressed: () => Navigator.pop(context), // Scaffold.of(context).openDrawer(),
                   child: Icon(
-                    Icons.widgets,
+                    Icons.arrow_back_ios,
                     size: 30.0,
                     color: MyColors().primaryTitle,
                   )),
@@ -68,7 +68,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
 
           elevation: 0,
         ),
-        drawer: MainDrawer(pageId: 0),
+        // drawer: MainDrawer(pageId: 0),
         body: SingleChildScrollView(
           child: Column(
             children: [

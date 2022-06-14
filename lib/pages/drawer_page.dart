@@ -74,7 +74,7 @@ class MainDrawer extends StatelessWidget {
                   ),
                   ListTile(
                     title: Text(
-                      'Home',
+                      'Tasks & Goals',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: MyColors().textNormal,
@@ -101,7 +101,7 @@ class MainDrawer extends StatelessWidget {
                   ),
                   ListTile(
                     title: Text(
-                      'Friends',
+                      'Social',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: MyColors().textNormal,

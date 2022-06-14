@@ -1,7 +1,9 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:timeless/pages/newPersonProfile.dart';
+import 'package:timeless/pages/profile.dart';
 import 'package:timeless/pages/register.dart';
 
 import '../model/user.dart';
@@ -51,34 +53,39 @@ class NewFollowPageState extends State<NewFollowPage> {
                 ),
               ),
             ),
-            SizedBox(
-              width: 150.0,
-              height: 45.0,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: MyColors().accentNormal,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+            FutureBuilder(
+              future: readUser(),
+              builder: (context, snapshot) {
+                return SizedBox(
+                  width: 150.0,
+                  height: 45.0,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: MyColors().accentNormal,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      shadowColor: Colors.grey,
+                      elevation: 2.5,
+                      side: BorderSide(
+                        width: 0.8,
+                        color: MyColors().lightGray,
+                      ),
+                    ),
+                    onPressed: () => {
+                      setState(() {
+                        _submitted = true;
+                      }),
+                      if (_controller.value.text.isNotEmpty) {_submit()}
+                    },
+                    child: Text(
+                      'Search',
+                      style: TextStyle(
+                          fontSize: 20.0, color: MyColors().highlightedFilterText),
+                    ),
                   ),
-                  shadowColor: Colors.grey,
-                  elevation: 2.5,
-                  side: BorderSide(
-                    width: 0.8,
-                    color: MyColors().lightGray,
-                  ),
-                ),
-                onPressed: () => {
-                  setState(() {
-                    _submitted = true;
-                  }),
-                  if (_controller.value.text.isNotEmpty) {_submit()}
-                },
-                child: Text(
-                  'Search',
-                  style: TextStyle(
-                      fontSize: 20.0, color: MyColors().highlightedFilterText),
-                ),
-              ),
+                );
+              }
             ),
           ],
         ),
@@ -86,25 +93,40 @@ class NewFollowPageState extends State<NewFollowPage> {
     );
   }
 
+  Future<String?> readUser() async {
+    final docUser = FirebaseService.firestore
+        .collection('users')
+        .doc(FirebaseService.getCurrentUserId);
+    final snapshot = await docUser.get();
+
+    if (snapshot.exists) {
+      return UserData.fromJson(snapshot.data()!).email;
+    }
+    return null;
+  }
+
   Future<void> _submit() async {
     // if there is no error text
     if (_errorText == null) {
       final user = await FirebaseService.getUserByEmail(_controller.text);
-      if(user == null) {
+      if (user == null) {
         Utils.showSnackBar('User with the specified email address not found');
       } else {
         final isFollowing = await FirebaseService.isFollowedBy(user.id);
-
-
-        if (user == null)
-          Utils.showSnackBar('User with specified email not found');
-        else
-          Navigator.push(context, MaterialPageRoute(
-            builder: (context) {
-              return NewPersonProfile(
-                user: user, followIndex: isFollowing == true ? 1 : 0,);
-            }, //_controller.text)),
-          ));
+        final auxEmail = await FirebaseService.getCurrentUserEmail();
+        if (_controller.text == auxEmail) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return Profile();
+          }));
+        } else {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return NewPersonProfile(
+              user: user,
+              followIndex: isFollowing == true ? 1 : 0,
+            );
+          } //_controller.text)),
+              ));
+        }
       }
     }
   }
@@ -122,8 +144,7 @@ class NewFollowPageState extends State<NewFollowPage> {
 
   bool emailValidator(String text) {
     return RegExp(
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(text);
   }
-  
 }

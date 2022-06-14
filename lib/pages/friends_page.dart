@@ -124,7 +124,7 @@ class FriendsStatefulWidgetState extends State<FriendsPage> {
                 BottomNavigationBarItem(
                     icon: Icon(Icons.group), label: 'FOLLOWING'),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.group_add), label: 'FOLLOWERS'),
+                    icon: Icon(Icons.group_outlined), label: 'FOLLOWERS'),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.group_add), label: 'FOLLOW PEOPLE'),
               ],

@@ -200,7 +200,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                     formattedTime,
                                     style: TextStyle(
                                         color: MyColors().textNormal,
-                                        fontSize: 30.0),
+                                        fontSize: 20.0),
                                   ),
                                 );
                               }),
@@ -227,7 +227,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                       color: MyColors()
                                           .textNormal
                                           .withOpacity(1.0),
-                                      fontSize: 25.0),
+                                      fontSize: 20.0),
                                   underline: Container(
                                     height: 2,
                                     color: MyColors()
@@ -305,7 +305,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                         formattedTime,
                                         style: TextStyle(
                                             color: MyColors().textNormal,
-                                            fontSize: 30.0),
+                                            fontSize: 20.0),
                                       ),
                                     );
                                   }),
@@ -348,7 +348,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                         formattedDate,
                                         style: TextStyle(
                                             color: MyColors().textNormal,
-                                            fontSize: 30.0),
+                                            fontSize: 20.0),
                                       ),
                                     ),
                                   ),
@@ -405,7 +405,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                         formattedTime,
                                         style: TextStyle(
                                             color: MyColors().textNormal,
-                                            fontSize: 30.0),
+                                            fontSize: 20.0),
                                       ),
                                     );
                                   }),
@@ -447,7 +447,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                         formattedDate,
                                         style: TextStyle(
                                             color: MyColors().textNormal,
-                                            fontSize: 30.0),
+                                            fontSize: 20.0),
                                       ),
                                     ),
                                   ),
@@ -492,8 +492,8 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                   }),
                   if (selectedDailyIndex != 0)
                     {
-                      if (_controller.value.text.isNotEmpty &&
-                          compareDates(task.time, DateTime.now()))
+                      if (_controller.value.text
+                          .isNotEmpty) //&& compareDates(task.time, DateTime.now()))
                         {_submit()}
                       else if (!compareDates(task.time, DateTime.now()))
                         {timeError = true}
@@ -533,7 +533,13 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                 : task.type == TaskType.DueTo
                     ? 'Your task is due to now!'
                     : 'Attention please, you have an appointment!',
-            task.time);
+            task.type == TaskType.Repetitive
+                ? (compareDates(task.time, DateTime.now())
+                    ? task.time
+                    : (task.repetitiveType == RepetitiveType.Daily
+                        ? task.time.add(Duration(days: 1))
+                        : task.time.add(Duration(days: 7))))
+                : task.time);
         await FirebaseService.firestore
             .collection('users')
             .doc(FirebaseService.getCurrentUserId)

@@ -228,4 +228,14 @@ class FirebaseService {
         .get();
     return UserData.fromJson(query.data()!).following.contains(id);
   }
+
+  static getCurrentUserEmail() async{
+    final String auxEmail = await (UserData.fromJson((await firestore
+        .collection('users')
+        .doc(FirebaseService.getCurrentUserId)
+        .get())
+        .data()!))
+    .email;
+    return auxEmail;
+  }
 }
