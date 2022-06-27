@@ -1,407 +1,575 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
+import 'package:timeless/service/firebase_service.dart';
 
+import '../model/goal.dart';
+import '../model/goal_type.dart';
+import '../model/user.dart';
 import '../styles/styles.dart';
-import 'friends_page.dart';
-import 'home_page.dart';
+import 'drawer_page.dart';
+import 'edit_profile_page.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({Key? key}) : super(key: key);
+  final isDarkTheme;
+  Profile({Key? key, required this.isDarkTheme}) : super(key: key);
 
   @override
   State<Profile> createState() => ProfileStatefulWidgetState();
 }
 
 class ProfileStatefulWidgetState extends State<Profile> {
+  late bool isDarkTheme;
+  late UserData user;
+  static List<Goal> goals = [];
+  List<Goal> privateGoals = [];
+  List<Goal> publicGoals = [];
+
+  @override
+  void initState() {
+    isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: Builder(
-          builder: (context) => Center(
-            child: RaisedButton(
-                color:  MyColors.taintedWhite.withOpacity(0),
-                elevation: 0,
-                onPressed: () => Scaffold.of(context).openDrawer(),
-                child: const Icon(
-                  Icons.widgets,
-                  size: 30.0,
-                  color:  MyColors.primaryDarkest,
-                )),
+        backgroundColor: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
+        appBar: AppBar(
+          leading: Builder(
+            builder: (context) => Center(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: MyColors.backgroundNormal.withOpacity(0),
+                    elevation: 0,
+                  ),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                  child: Icon(
+                    Icons.widgets,
+                    size: 30.0,
+                    color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
+                  )),
+            ),
           ),
-        ),
 
-        backgroundColor:  MyColors.taintedWhite.withOpacity(0),
-        // Colors.transparent,
+          backgroundColor: MyColors.backgroundNormal.withOpacity(0),
+          // Colors.transparent,
 
-        title: const Center(
-          child: Text(
-            'Profile',
-            style: TextStyle(
-                color:  MyColors.primaryDarkest,
-                fontSize: 25.0,
-                fontWeight: FontWeight.w900),
-          ),
-        ),
-
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.edit,
-              color:  MyColors.primaryDarkest,
-              size: 40.0,
-            ),
-            onPressed: () => {print("Edit")},
-          ), // , color:  MyColors.primaryDarkest, size: 40.0,
-        ],
-
-        elevation: 0,
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: MyColors.primaryNormal,
-              ),
-              child: Text(
-                'Drawer Header',
-                textAlign: TextAlign.center,
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                'Home',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomePage()),
-                );
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'Friends',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const FriendsPage()),
-                );
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'Settings',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                // Navigator.pop(context);
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()),);
-              },
-            ),
-            ListTile(
-              title: const Text(
-                'Logout',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                // Navigator.pop(context);
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()),);
-              },
-            ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              alignment: AlignmentDirectional.bottomCenter,
-              children: [
-                DecoratedBox(
-                  decoration: const BoxDecoration(
-                    color:  MyColors.taintedWhite,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(70.0),
-                      topRight: Radius.circular(70.0),
-                      bottomLeft: Radius.circular(70.0),
-                      bottomRight: Radius.circular(70.0),
-                    ),
-                  ),
-                  child: AspectRatio(
-                    aspectRatio: 2,
-                    child: Image.asset(
-                      'assets/images/Ragnar_Wallpaper.jpg',
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: AlignmentDirectional.bottomCenter,
-                  child: SizedBox(
-                    height: 120,
-                    width: 100,
-                    child: Stack(
-                      children: const [
-                        FractionalTranslation(
-                          translation: Offset(0.0, 0.5),
-                          child: SizedBox(
-                            height: 150,
-                            width: 100,
-                            child: CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Color(0xffF89D7D),
-                              child: CircleAvatar(
-                                radius: 48,
-                                backgroundColor: Color(0xffF89D7D),
-                                backgroundImage:
-                                    AssetImage('assets/images/NFT.jpeg'),
-                              ),
-                            ),
-                            // Image.asset(
-                            //   'assets/images/Tux.png',),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              margin: const EdgeInsets.only(
-                top: 60.0,
-              ),
-              child: const Text(
-                'Your Name Here',
-                style: TextStyle(
-                  fontSize: 35.0,
-                  fontWeight: FontWeight.w300,
-                  color: Color(0xff4B5052),
-                  letterSpacing: 0.3,
-                ),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(
-                top: 60.0,
-              ),
-              child: const Text(
-                'Gender | Age ??',
-                style: TextStyle(
-                  fontSize: 17.0,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xff4B5052),
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(
-                top: 5.0,
-                bottom: 50.0,
-              ),
-              child: const Text(
-                'City, Country',
-                style: TextStyle(
-                  fontSize: 17.0,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xff4B5052),
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-            const Divider(
-              height: 10,
-              thickness: 5,
-              indent: 160,
-              endIndent: 160,
-            ),
-            Container(
-              margin: const EdgeInsets.only(
-                top: 10.0,
-              ),
-              child: const Text(
-                'About Me',
-                style: TextStyle(
+          title: Center(
+            child: Text(
+              'Profile',
+              style: TextStyle(
+                  color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
                   fontSize: 25.0,
-                  fontWeight: FontWeight.w300,
-                  color: Color(0xff4B5052),
-                  letterSpacing: 1,
-                ),
+                  fontWeight: FontWeight.w900),
+            ),
+          ),
+
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.edit,
+                color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
+                size: 40.0,
               ),
-            ),
-            const Divider(
-              height: 20,
-              thickness: 5,
-              indent: 20,
-              endIndent: 20,
-            ),
-            Container(
-              margin: const EdgeInsets.only(
-                top: 5.0,
-              ),
-              child: const Text(
-                'Your description will be here...',
-                style: TextStyle(
-                  fontSize: 17.0,
-                  fontWeight: FontWeight.w300,
-                  color: Color(0xff4B5052),
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-            const Divider(
-              height: 20,
-              thickness: 5,
-              indent: 20,
-              endIndent: 20,
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 50.0, bottom: 25.0),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: const Color(0xffFAFCFC),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(7),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(1),
-                      spreadRadius: 1,
-                      blurRadius: 0.0,
-                      offset: const Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                  border: Border(
-                    top: BorderSide(
-                        width: 1.0,
-                        color: const Color(0xff4B5052).withOpacity(0.5)),
-                    left: BorderSide(
-                        width: 1.0,
-                        color: const Color(0xff4B5052).withOpacity(0.5)),
-                    right: BorderSide(
-                        width: 1.0,
-                        color: const Color(0xff4B5052).withOpacity(0.5)),
-                    bottom: BorderSide(
-                        width: 1.0,
-                        color: const Color(0xff4B5052).withOpacity(0.5)),
-                  ),
-                ),
-                child: Container(
-                  margin: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-                  height: 100.0,
-                  width: 350.0,
-                  child: Column(
-                    children: const [
-                      Text(
-                        'Goals',
-                        style: TextStyle(
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff4B5052),
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      Divider(
-                        height: 20,
-                        thickness: 5,
-                        indent: 125,
-                        endIndent: 125,
-                      ),
-                      Text(
-                        'Goal 1',
-                        style: TextStyle(
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.w300,
-                          color: Color(0xff4B5052),
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 25.0, bottom: 50.0),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: const Color(0xffFAFCFC),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(7),
-                    topRight: Radius.circular(7),
-                    bottomLeft: Radius.circular(7),
-                    bottomRight: Radius.circular(7),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(1),
-                      spreadRadius: 1,
-                      blurRadius: 0.0,
-                      offset: const Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                  border: Border(
-                    top: BorderSide(
-                        width: 1.0,
-                        color: const Color(0xff4B5052).withOpacity(0.5)),
-                    left: BorderSide(
-                        width: 1.0,
-                        color: const Color(0xff4B5052).withOpacity(0.5)),
-                    right: BorderSide(
-                        width: 1.0,
-                        color: const Color(0xff4B5052).withOpacity(0.5)),
-                    bottom: BorderSide(
-                        width: 1.0,
-                        color: const Color(0xff4B5052).withOpacity(0.5)),
-                  ),
-                ),
-                child: Container(
-                  margin: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-                  height: 100.0,
-                  width: 350.0,
-                  child: Column(
-                    children: const [
-                      Text(
-                        'Private Goals',
-                        style: TextStyle(
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff4B5052),
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      Divider(
-                        height: 20,
-                        thickness: 5,
-                        indent: 70,
-                        endIndent: 70,
-                      ),
-                      Text(
-                        'Private Goal 1',
-                        style: TextStyle(
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.w300,
-                          color: Color(0xff4B5052),
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+              onPressed: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditProfilePage(
+                            userData: user,
+                            isDarkTheme: isDarkTheme,
+                          )),
+                )
+              },
+            ), 
           ],
+
+          elevation: 0,
         ),
-      ),
-    );
+        drawer: MainDrawer(pageId: 0, isDarkTheme: isDarkTheme,),
+        body: StreamBuilder(
+            stream: FirebaseService.firestore.collection('users').snapshots(),
+            builder: (BuildContext context, AsyncSnapshot streamSnapshot) {
+              if (streamSnapshot.hasData) {
+                return FutureBuilder<UserData?>(
+                    future: readUser(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        user = snapshot.data!;
+                        return SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Stack(
+                                alignment: AlignmentDirectional.bottomCenter,
+                                children: [
+                                  AspectRatio(
+                                    aspectRatio: 2,
+                                    child: Image.network(
+                                      user.cover,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment:
+                                        AlignmentDirectional.bottomCenter,
+                                    child: Stack(
+                                      children: [
+                                        FractionalTranslation(
+                                          translation: Offset(0.0, 0.5),
+                                          child: CircleAvatar(
+                                            radius: 60,
+                                            backgroundColor: Color(0xffF89D7D),
+                                            child: CircleAvatar(
+                                              radius: 55,
+                                              backgroundColor:
+                                                  Color(0xffF89D7D),
+                                              backgroundImage: Image.network(
+                                                      user.profilePicture)
+                                                  .image,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 60.0,
+                              ),
+                              Column(children: [
+                                Text(
+                                  user.name,
+                                  style: TextStyle(
+                                    color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                    fontSize: 40.0,
+                                    fontWeight: FontWeight.normal,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                                SizedBox(height: 5.0),
+                                Text(
+                                  user.email,
+                                  style: TextStyle(
+                                    color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.normal,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              ]),
+
+                              Container(
+                                margin: EdgeInsets.only(
+                                  top: 40.0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          user.followers.length.toString(),
+                                          style: TextStyle(
+                                            fontSize: 17.0,
+                                            fontWeight: FontWeight.w400,
+                                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Followers',
+                                          style: TextStyle(
+                                            fontSize: 17.0,
+                                            fontWeight: FontWeight.w400,
+                                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(width: 100.0,),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          user.following.length.toString(),
+                                          style: TextStyle(
+                                            fontSize: 17.0,
+                                            fontWeight: FontWeight.w400,
+                                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Following',
+                                          style: TextStyle(
+                                            fontSize: 17.0,
+                                            fontWeight: FontWeight.w400,
+                                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                            letterSpacing: 1,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              Container(
+                                margin: EdgeInsets.only(
+                                  top: 80.0,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      (EnumToString.convertToString(
+                                              user.gender) +
+                                          " | Age " +
+                                          userAge(user.birthDate)),
+                                      style: TextStyle(
+                                        fontSize: 17.0,
+                                        fontWeight: FontWeight.w400,
+                                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                        letterSpacing: 1,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 7.0,
+                                    ),
+                                    Text(
+                                      ((user.city == null
+                                              ? 'City'
+                                              : user.city!) +
+                                          ", " +
+                                          (user.country == null
+                                              ? 'Country'
+                                              : user.country!)),
+                                      style: TextStyle(
+                                        fontSize: 17.0,
+                                        fontWeight: FontWeight.w400,
+                                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                        letterSpacing: 1,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 40.0,
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Divider(
+                                thickness: 4,
+                                indent: 150,
+                                endIndent: 150,
+                                color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(
+                                  top: 10.0,
+                                ),
+                                child: Text(
+                                  'About Me',
+                                  style: TextStyle(
+                                    fontSize: 25.0,
+                                    fontWeight: FontWeight.normal,
+                                    color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                thickness: 4,
+                                indent: 50,
+                                endIndent: 50,
+                                color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                  top: 5.0,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 40.0, vertical: 10.0),
+                                  child: Text(
+                                    user.description == null
+                                        ? 'Your Description Here...'
+                                        : user.description!,
+                                    style: TextStyle(
+                                      fontSize: 17.0,
+                                      fontWeight: FontWeight.normal,
+                                      color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                thickness: 5,
+                                indent: 50,
+                                endIndent: 50,
+                                color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
+                              ),
+                              SizedBox(
+                                height: 30.0,
+                              ),
+                              StreamBuilder(
+                                  stream: FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(FirebaseService.getCurrentUserId)
+                                      .collection('goals')
+                                      .snapshots(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                                    if (snapshot.hasError)
+                                      return Text('Something went wrong...');
+                                    else if (snapshot.hasData) {
+                                      goals = snapshot.data!.docs
+                                          .map((DocumentSnapshot e) =>
+                                              Goal.fromJson2(e))
+                                          .toList();
+                                      privateGoals = goals
+                                          .where((goal) =>
+                                              goal.type == GoalType.Private)
+                                          .toList();
+                                      publicGoals = goals
+                                          .where((goal) =>
+                                              goal.type == GoalType.Public)
+                                          .toList();
+                                      return Column(
+                                        children: [
+                                          Container(
+                                            width: 330,
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 40.0),
+                                            decoration: BoxDecoration(
+                                              color: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(7),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey,
+                                                  blurRadius: 1.0,
+                                                  spreadRadius: 0.2,
+                                                  offset: Offset(1.0,
+                                                      1.0), // changes position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      vertical: 10.0),
+                                                  child: Text(
+                                                    'Goals',
+                                                    style: TextStyle(
+                                                      fontSize: 30.0,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color:
+                                                          isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                                      letterSpacing: 1,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Divider(
+                                                  thickness: 5,
+                                                  color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 10.0),
+                                                  child: ListView.separated(
+                                                    shrinkWrap: true,
+                                                    padding: EdgeInsets.all(8),
+                                                    itemCount:
+                                                        publicGoals.length,
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            int index) {
+                                                      return Text(
+                                                        publicGoals[index].name,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontSize: 25.0,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                          color: isDarkTheme == false ? MyColors
+                                                              .lightThemeText : MyColors.darkThemeText,
+                                                          letterSpacing: 1,
+                                                        ),
+                                                      );
+                                                    },
+                                                    separatorBuilder:
+                                                        (BuildContext context,
+                                                            int index) {
+                                                      return Divider(
+                                                        thickness: 1,
+                                                        color:
+                                                            isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          ),
+                                          Container(
+                                            width: 330,
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 40.0),
+                                            decoration: BoxDecoration(
+                                              color: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(7),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey,
+                                                  blurRadius: 1.0,
+                                                  spreadRadius: 0.2,
+                                                  offset: Offset(1.0,
+                                                      1.0), // changes position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      vertical: 10.0),
+                                                  child: Text(
+                                                    'Private Goals',
+                                                    style: TextStyle(
+                                                      fontSize: 30.0,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color:
+                                                          isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                                                      letterSpacing: 1,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Divider(
+                                                  thickness: 5,
+                                                  color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 10.0),
+                                                  child: ListView.separated(
+                                                    shrinkWrap: true,
+                                                    padding: EdgeInsets.all(8),
+                                                    itemCount:
+                                                        privateGoals.length,
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            int index) {
+                                                      return Text(
+                                                        privateGoals[index]
+                                                            .name,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontSize: 25.0,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                          color: isDarkTheme == false ? MyColors
+                                                              .lightThemeText : MyColors.darkThemeText,
+                                                          letterSpacing: 1,
+                                                        ),
+                                                      );
+                                                    },
+                                                    separatorBuilder:
+                                                        (BuildContext context,
+                                                            int index) {
+                                                      return Divider(
+                                                        thickness: 1,
+                                                        color:
+                                                            isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }),
+                            ],
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Something went wrong! $snapshot');
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    });
+              } else if (streamSnapshot.hasError) {
+                Text('Something went wrong');
+              }
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }));
+  }
+
+  String userAge(DateTime dateOfBirth) {
+    DateTime now = DateTime.now();
+    int birthYear =
+        int.parse(dateOfBirth.toString().split(' ')[0].split('-')[0]);
+    int birthMonth =
+        int.parse(dateOfBirth.toString().split(' ')[0].split('-')[1]);
+    int birthDay =
+        int.parse(dateOfBirth.toString().split(' ')[0].split('-')[2]);
+    int nowYear = int.parse(now.toString().split(' ')[0].split('-')[0]);
+    int nowMonth = int.parse(now.toString().split(' ')[0].split('-')[1]);
+    int nowDay = int.parse(now.toString().split(' ')[0].split('-')[2]);
+
+    if (nowMonth >= birthMonth && nowDay >= birthDay)
+      return (nowYear - birthYear).toString();
+    return (nowYear - birthYear - 1).toString();
+  }
+
+  Widget buildUser(UserData user) => ListTile(
+        leading: CircleAvatar(child: Text('${user.gender}')),
+        title: Text(user.name),
+        subtitle: Text(user.email),
+      );
+
+  Stream<List<UserData>> readUsers() => FirebaseFirestore.instance
+      .collection('users')
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => UserData.fromJson(doc.data())).toList());
+
+  Future<UserData?> readUser() async {
+    final docUser = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseService.getCurrentUserId);
+    final snapshot = await docUser.get();
+
+    if (snapshot.exists) {
+      return UserData.fromJson(snapshot.data()!);
+    }
+    return null;
   }
 }

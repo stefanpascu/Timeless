@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "886065978499",
+    "project_id": "timeless-35302",
+    "storage_bucket": "timeless-35302.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886065978499:android:fd6864e803c8cbe18f0fb6",
+        "android_client_info": {
+          "package_name": "com.example.timeless"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886065978499-6sn176pcea9ai7dd38d3mtmipogrmv9q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAxexj-85bhV03cuR7o50okP7xJML1DsA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "886065978499-6sn176pcea9ai7dd38d3mtmipogrmv9q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

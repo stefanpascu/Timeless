@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeless/pages/daily_page.dart';
+import 'package:timeless/pages/drawer_page.dart';
 import 'package:timeless/pages/goals_page.dart';
-import 'package:timeless/pages/profile.dart';
-import 'package:timeless/pages/register.dart';
-import 'package:timeless/pages/settings.dart';
 
 import '../styles/styles.dart';
-import 'friends_page.dart';
+import 'add_new_goal_page.dart';
+import 'add_new_task_page.dart';
 
 class HomePage extends StatefulWidget {
+
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -17,520 +17,204 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  late bool isDarkTheme;
+  int selectedIndex = 0;
 
-  set selectedIndex(int value) {
-    _selectedIndex = value;
-  }
-
-  int _selectedNewIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'DAILY TASKS',
-      style: TextStyle(
-          color:  MyColors.primaryDarkest,
-          fontSize: 25.0,
-          fontWeight: FontWeight.w900),
-    ),
-    Text(
-      'NEW TASK',
-      style: TextStyle(
-          color:  MyColors.primaryDarkest,
-          fontSize: 25.0,
-          fontWeight: FontWeight.w900),
-    ),
-    Text(
-      'GOALS',
-      style: TextStyle(
-          color:  MyColors.primaryDarkest,
-          fontSize: 25.0,
-          fontWeight: FontWeight.w900),
-    ),
-  ];
 
-  int getSelectedIndex() {
-    return _selectedIndex;
-  }
-
-  int getSelectedNewIndex() {
-    return _selectedNewIndex;
-  }
-
-  void _onNewItemTapped(int index) {
+  _onItemTapped(int index) {
     setState(() {
-      _selectedNewIndex = index;
+      selectedIndex = index;
     });
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  Future<bool> getThemeFromSharedPref() async {
+    final prefs = await SharedPreferences.getInstance();
+    final startupBool = prefs.getBool('option');
+    return startupBool == null ? false : startupBool;
+  }
+
+  @override
+  void initState() {
+    // isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: Builder(
-          builder: (context) => RaisedButton(
-              color:  MyColors.taintedWhite.withOpacity(0),
-              elevation: 0,
-              onPressed: () => Scaffold.of(context).openDrawer(),
-              child: const Icon(
-                Icons.widgets,
-                size: 30.0,
-                color:  MyColors.primaryDarkest,
-              )),
-        ),
-
-        backgroundColor:  MyColors.taintedWhite.withOpacity(0),
-        // Colors.transparent,
-
-        title:
-          _widgetOptions.elementAt(_selectedIndex),
-
-        actions: const [
-          Icon(
-            Icons.widgets,
-            color:  MyColors.taintedWhite,
-            size: 50.0,
-          ),
-        ],
-
-        elevation: 0,
-      ),
-      drawer: Drawer(
-        backgroundColor:  MyColors.taintedWhite,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(60),
-              height: 220,
-              decoration: const BoxDecoration(
-                color: Color(0xffCCCED0), // F89D7D
+    return FutureBuilder<bool>(
+        future: getThemeFromSharedPref(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            bool isDarkTheme = snapshot.data!;
+            late List<Widget> _widgetOptions = <Widget>[
+              Text(
+                'DAILY TASKS',
+                style: TextStyle(
+                    color: isDarkTheme == false
+                        ? MyColors.lightThemeTitle
+                        : MyColors.darkThemeTitle,
+                    fontFamily: 'OpenSans',
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.w900),
               ),
-              child: Column(
-                children: [
-                  FloatingActionButton(
-                    onPressed: () => {
-                      Navigator.pop(context),
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Profile()),
-                      ),
-                    },
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(
-                      top: 5.0,
-                    ),
-                    child: const Text(
-                      'Your Name Here',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20.0,
-                      ),
-                    ),
+              Text(
+                'GOALS',
+                style: TextStyle(
+                    color: isDarkTheme == false
+                        ? MyColors.lightThemeTitle
+                        : MyColors.darkThemeTitle,
+                    fontFamily: 'OpenSans',
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.w900),
+              ),
+            ];
+
+            return Scaffold(
+              appBar: AppBar(
+                leading: Builder(
+                  builder: (context) => RaisedButton(
+                      color: MyColors.backgroundNormal.withOpacity(0),
+                      elevation: 0,
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                      child: Icon(
+                        Icons.widgets,
+                        size: 30.0,
+                        color: isDarkTheme == false
+                            ? MyColors.lightThemeTitle
+                            : MyColors.darkThemeTitle,
+                      )),
+                ),
+
+                backgroundColor: MyColors.backgroundNormal.withOpacity(0),
+                // Colors.transparent,
+
+                title: Align(
+                  alignment: Alignment.center,
+                  child: _widgetOptions.elementAt(selectedIndex),
+                ),
+
+                actions: [
+                  Icon(
+                    Icons.widgets,
+                    color: isDarkTheme == false
+                        ? MyColors.lightThemeBackground
+                        : MyColors.darkThemeBackground,
+                    size: 50.0,
                   ),
                 ],
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                'Home',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                // Navigator.pop(context);
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()),);
-              },
-            ),
-            Divider(
-              thickness: 1,
-              indent: 40,
-              endIndent: 40,
-              color: const Color(0xff4B5052).withOpacity(0.5),
-            ),
-            ListTile(
-              title: const Text(
-                'Friends',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const FriendsPage()),
-                );
-              },
-            ),
-            Divider(
-              thickness: 2,
-              indent: 40,
-              endIndent: 40,
-              color: const Color(0xff4B5052).withOpacity(0.2),
-            ),
-            ListTile(
-              title: const Text(
-                'Settings',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Settings()),
-                );
-              },
-            ),
-            Divider(
-              thickness: 1,
-              indent: 40,
-              endIndent: 40,
-              color: const Color(0xff4B5052).withOpacity(0.5),
-            ),
-            ListTile(
-              title: const Text(
-                'Logout',
-                textAlign: TextAlign.center,
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Register()),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-      body: Container(
-        child:
-          ////////////////////////////////////////////////GOALS FRAGMENT//////////////////////////////////////////////////
-          getSelectedIndex() == 2 ?
-          Column(children: [
-            if (getSelectedNewIndex() == 0) ...[
-              Wrap(
-                children: <Widget>[
-                  Container(
-                    width: 103,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor: MyColors.primaryNormal,
-                      onPressed: () => {
-                        _onNewItemTapped(0),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_blue.svg'),
-                          const Text(
-                            'Repetitive',
-                            style: TextStyle(
-                              color: Color(0xffEEF0F0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 76,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor: const Color(0xffEEF0F0),
-                      onPressed: () => {
-                        _onNewItemTapped(1),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_red.svg'),
-                          const Text(
-                            'Due to',
-                            style: TextStyle(
-                              color: MyColors.primaryNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 123,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor:  MyColors.taintedWhite,
-                      onPressed: () => {
-                        _onNewItemTapped(2),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_green.svg'),
-                          const Text(
-                            'Appointment',
-                            style: TextStyle(
-                              color:  MyColors.textNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
 
-              const Icon(Icons.wysiwyg), // TODO continut
-            ] else if (getSelectedNewIndex() == 1) ...[
-              Wrap(
-                children: <Widget>[
-                  Container(
-                    width: 103,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor: const Color(0xffEEF0F0),
-                      onPressed: () => {
-                        _onNewItemTapped(0),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_blue.svg'),
-                          const Text(
-                            'Repetitive',
-                            style: TextStyle(
-                              color: MyColors.primaryNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 76,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor: MyColors.primaryNormal,
-                      onPressed: () => {
-                        _onNewItemTapped(1),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_red.svg'),
-                          const Text(
-                            'Due to',
-                            style: TextStyle(
-                              color:  MyColors.taintedWhite,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 123,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor:  MyColors.taintedWhite,
-                      onPressed: () => {
-                        _onNewItemTapped(2),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_green.svg'),
-                          const Text(
-                            'Appointment',
-                            style: TextStyle(
-                              color: MyColors.primaryNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                elevation: 0,
               ),
-
-              const Icon(Icons.account_balance), // TODO continut
-            ] else if (getSelectedNewIndex() == 2) ...[
-              Wrap(
-                children: <Widget>[
-                  Container(
-                    width: 103,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor:  MyColors.taintedWhite,
-                      onPressed: () => {
-                        _onNewItemTapped(0),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_blue.svg'),
-                          const Text(
-                            'Repetitive',
-                            style: TextStyle(
-                              color:  MyColors.textNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 76,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor:  MyColors.taintedWhite,
-                      onPressed: () => {
-                        _onNewItemTapped(1),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_red.svg'),
-                          const Text(
-                            'Due to',
-                            style: TextStyle(
-                              color:  MyColors.textNormal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 123,
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      backgroundColor: MyColors.primaryNormal,
-                      onPressed: () => {
-                        _onNewItemTapped(2),
-                      },
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('assets/filter_icon_green.svg'),
-                          const Text(
-                            'Appointment',
-                            style: TextStyle(
-                              color:  MyColors.taintedWhite,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              drawer: MainDrawer(
+                pageId: 1,
+                isDarkTheme: isDarkTheme,
               ),
-
-              const Icon(Icons.star), // TODO continut
-            ]
-          ]) :
-          ////////////////////////////////////////////////NEW TASK//////////////////////////////////////////////////
-          getSelectedIndex() == 1 ?
-            // TODO open new page
-          GoalsPage() :
-            ////////////////////////////////////////////////DAILY TASKS//////////////////////////////////////////////////
-            DailyPage()
-      ),
-      floatingActionButton: SizedBox(
-        width: 70.0,
-        height: 70.0,
-        child: FloatingActionButton(
-          mini: false,
-          backgroundColor:  MyColors.accentNormal,
-          onPressed: () => {
-            _onItemTapped(1),
-          },
-          hoverElevation: 1.5,
-          shape: const StadiumBorder(
-            side: BorderSide(color:  MyColors.taintedWhite, width: 7),
-          ),
-          elevation: 1.5,
-          child: const Icon(
-            Icons.add,
-            size: 35.0,
-            color:  MyColors.taintedWhite,
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      backgroundColor:  MyColors.taintedWhite,
-      bottomNavigationBar: Container(
-          margin: const EdgeInsets.only(
-            left: 10,
-            right: 10,
-            bottom: 10,
-          ),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [
-                MyColors.primaryDarker,
-                MyColors.primaryNormal,
-              ],
-            ),
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(15.0),
-                topLeft: Radius.circular(15.0),
-                bottomLeft: Radius.circular(15.0),
-                bottomRight: Radius.circular(15.0)),
-            boxShadow: [
-              BoxShadow(color: Colors.black38, spreadRadius: 0, blurRadius: 10),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(15.0),
-              topRight: Radius.circular(15.0),
-              bottomLeft: Radius.circular(15.0),
-              bottomRight: Radius.circular(15.0),
-            ),
-            child: BottomNavigationBar(
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.list_alt), label: 'DAILY'),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.account_balance), label: 'GOALS'),
-              ],
-              backgroundColor: MyColors.primaryNormal.withOpacity(0),
-              currentIndex: _selectedIndex,
-              selectedItemColor: const Color(0xffffffff),
-              // 0xffEEF0F0
-              unselectedItemColor: const Color(0xffC2C6D5),
-              onTap: _onItemTapped,
-              elevation: 0,
-            ),
-          )),
-    );
+              body: Container(
+                  child: selectedIndex == 1
+                      ? GoalsPage(
+                          isDarkTheme: isDarkTheme,
+                        )
+                      : DailyPage(
+                          isDarkTheme: isDarkTheme,
+                        )),
+              floatingActionButton: SizedBox(
+                width: 70.0,
+                height: 70.0,
+                child: FloatingActionButton(
+                  mini: false,
+                  backgroundColor: MyColors.accentNormal,
+                  onPressed: () => {
+                    selectedIndex == 0
+                        ? Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => NewTaskPage(
+                                      isDarkTheme: isDarkTheme,
+                                    )),
+                          )
+                        : Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => NewGoalPage(
+                                      isDarkTheme: isDarkTheme,
+                                    )),
+                          )
+                  },
+                  hoverElevation: 1.5,
+                  shape: StadiumBorder(
+                    side: BorderSide(
+                        color: isDarkTheme == false
+                            ? MyColors.lightThemeBackground
+                            : MyColors.darkThemeBackground,
+                        width: 7),
+                  ),
+                  elevation: 1.5,
+                  child: Icon(
+                    Icons.add,
+                    size: 35.0,
+                    color: isDarkTheme == false
+                        ? MyColors.lightThemeBackground
+                        : MyColors.darkThemeBackground,
+                  ),
+                ),
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              backgroundColor: isDarkTheme == false
+                  ? MyColors.lightThemeBackground
+                  : MyColors.darkThemeBackground,
+              bottomNavigationBar: Container(
+                  margin: const EdgeInsets.only(
+                    left: 10,
+                    right: 10,
+                    bottom: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [
+                        MyColors.primaryDarker,
+                        MyColors.primaryNormal,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(15.0),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black38,
+                          spreadRadius: 0,
+                          blurRadius: 10),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(15.0),
+                    ),
+                    child: BottomNavigationBar(
+                      items: const <BottomNavigationBarItem>[
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.list_alt), label: 'DAILY'),
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.account_balance), label: 'GOALS'),
+                      ],
+                      backgroundColor: MyColors.primaryNormal.withOpacity(0),
+                      currentIndex: selectedIndex,
+                      selectedItemColor: const Color(0xffffffff),
+                      // 0xffEEF0F0
+                      unselectedItemColor: const Color(0xffC2C6D5),
+                      onTap: _onItemTapped,
+                      elevation: 0,
+                    ),
+                  )),
+            );
+          } else if (snapshot.hasError) {
+              return Center(child: Text(snapshot.error.toString()));
+          } else return Center(child: CircularProgressIndicator(),);
+        });
   }
+
 }
