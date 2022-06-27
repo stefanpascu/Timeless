@@ -7,14 +7,16 @@ import '../styles/styles.dart';
 
 class NewGoalPage extends StatefulWidget {
   final Goal? goal;
+  final isDarkTheme;
 
-  NewGoalPage({Key? key, this.goal}) : super(key: key);
+  NewGoalPage({Key? key, this.goal, required this.isDarkTheme}) : super(key: key);
 
   @override
   State<NewGoalPage> createState() => NewGoalPageState();
 }
 
 class NewGoalPageState extends State<NewGoalPage> {
+  late bool isDarkTheme;
   bool _submitted = false;
   late bool editMode;
   late Goal goal;
@@ -24,6 +26,7 @@ class NewGoalPageState extends State<NewGoalPage> {
 
   @override
   void initState() {
+    isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
     editMode = widget.goal != null;
     goal = widget.goal == null ? Goal.private("", null) : widget.goal!;
     initWidgets(widget.goal);
@@ -33,24 +36,24 @@ class NewGoalPageState extends State<NewGoalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColors().backgroundNormal,
+      backgroundColor: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: MyColors().primaryTitle,
+            color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: MyColors().backgroundNormal.withOpacity(0),
+        backgroundColor: MyColors.backgroundNormal.withOpacity(0),
         title: Align(
           alignment: Alignment.center,
           child: Text(
             editMode ? 'EDIT GOAL' : 'NEW GOAL',
             style: TextStyle(
-              color: MyColors().primaryTitle,
+              color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
               fontSize: 25.0,
               fontWeight: FontWeight.w900,
             ),
@@ -63,7 +66,7 @@ class NewGoalPageState extends State<NewGoalPage> {
               child: IconButton(
                 icon: Icon(
                   Icons.delete,
-                  color: MyColors().primaryTitle,
+                  color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
                   size: 40.0,
                 ),
                 onPressed: () {
@@ -77,7 +80,7 @@ class NewGoalPageState extends State<NewGoalPage> {
               padding: const EdgeInsets.only(right: 10.0),
               child: Icon(
                 Icons.delete,
-                color: MyColors().backgroundNormal,
+                color: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
                 size: 50.0,
               ),
             ),
@@ -97,11 +100,11 @@ class NewGoalPageState extends State<NewGoalPage> {
                   _filterWidget(
                       title: 'Private',
                       index: 0,
-                      color: MyColors().privatePurple),
+                      color: MyColors.privatePurple),
                   _filterWidget(
                       title: 'Public',
                       index: 1,
-                      color: MyColors().publicYellow),
+                      color: MyColors.publicYellow),
                 ],
               ),
             ),
@@ -113,20 +116,20 @@ class NewGoalPageState extends State<NewGoalPage> {
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                 child: TextField(
                   controller: _controller,
-                  cursorColor: MyColors().textNormal,
-                  style: TextStyle(color: MyColors().textNormal),
+                  cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                  style: TextStyle(color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText),
                   onChanged: (text) => setState(() => _textName),
                   decoration: InputDecoration(
                     labelText: 'Name',
                     errorText: _submitted ? _errorNameText : null,
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color: MyColors().primaryNormal.withOpacity(0.7),
+                          color: MyColors.primaryNormal.withOpacity(0.7),
                           width: 1.5),
                     ),
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(
-                      color: MyColors().primaryNormal,
+                      color: MyColors.primaryNormal,
                     ),
                   ),
                 ),
@@ -139,7 +142,7 @@ class NewGoalPageState extends State<NewGoalPage> {
                 height: 45.0,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: MyColors().accentNormal,
+                    primary: MyColors.accentNormal,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -147,7 +150,7 @@ class NewGoalPageState extends State<NewGoalPage> {
                     elevation: 2.5,
                     side: BorderSide(
                       width: 0.8,
-                      color: MyColors().lightGray,
+                      color: MyColors.lightGray,
                     ),
                   ),
                   onPressed: () => {
@@ -160,7 +163,7 @@ class NewGoalPageState extends State<NewGoalPage> {
                     'Save',
                     style: TextStyle(
                         fontSize: 20.0,
-                        color: MyColors().highlightedFilterText),
+                        color: isDarkTheme ? MyColors.lightThemeBackground : MyColors.lightThemeBackground),
                   ),
                 ),
               ),
@@ -239,7 +242,7 @@ class NewGoalPageState extends State<NewGoalPage> {
           padding: EdgeInsets.symmetric(horizontal: 10.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(7)),
-            border: Border.all(color: MyColors().lightGray, width: 0.2),
+            border: Border.all(color: MyColors.lightGray, width: 0.2),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
@@ -249,8 +252,8 @@ class NewGoalPageState extends State<NewGoalPage> {
               ),
             ],
             color: isSelected
-                ? MyColors().primaryNormal
-                : MyColors().overBackground,
+                ? MyColors.primaryNormal
+                : isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -272,8 +275,8 @@ class NewGoalPageState extends State<NewGoalPage> {
                 title,
                 style: TextStyle(
                   color: isSelected
-                      ? MyColors().highlightedFilterText
-                      : MyColors().textNormal,
+                      ? isDarkTheme ? MyColors.lightThemeBackground : MyColors.lightThemeBackground
+                      : isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                   fontSize: 13.0,
                   fontFamily: 'OpenSans',
                 ),

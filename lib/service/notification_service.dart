@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationService {
   static final NotificationService _notificationService =
@@ -27,14 +25,16 @@ class NotificationService {
   }
 
   Future<void> showNotification(
-      int id, String title, String body, DateTime time) async { //
+      int id, String title, String body, DateTime time) async {
+    final difference = time.month != DateTime.now().month ? time.difference(DateTime.now()).inDays : time.day - DateTime.now().day;
+    print("diferenta: days-" + difference.toString() + ", hours-" + (time.hour - DateTime.now().hour).toString() + ", minutes-" + (time.minute - DateTime.now().minute).toString() + ", seconds-" + (time.second - DateTime.now().second).toString());
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
       body,
       tz.TZDateTime.now(tz.UTC)
-          .add(Duration( // seconds: 1
-          days: time.day - DateTime.now().day,
+          .add(Duration(
+          days: difference,
           hours: time.hour - DateTime.now().hour,
           minutes: time.minute - DateTime.now().minute,
           seconds: time.second - DateTime.now().second

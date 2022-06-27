@@ -53,6 +53,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+flutter_icons:
+  image_path: "assets/images/timetable.png"
+  android: true
+
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -69,9 +73,7 @@ flutter:
   assets:
     - assets/txt_back_01.svg
     - assets/profile_icon.svg
-    - assets/images/Tux.png
-    - assets/images/NFT.jpeg
-    - assets/images/Ragnar_Wallpaper.jpg
+    - assets/images/timetable.png
     - assets/images/
 
   # An image assets can refer to one or more resolution-specific "variants", see

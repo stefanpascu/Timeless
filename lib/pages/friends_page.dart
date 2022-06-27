@@ -6,36 +6,38 @@ import 'drawer_page.dart';
 import 'follow_page.dart';
 
 class FriendsPage extends StatefulWidget {
-  const FriendsPage({Key? key}) : super(key: key);
+  final isDarkTheme;
+  const FriendsPage({Key? key, required this.isDarkTheme}) : super(key: key);
 
   @override
   State<FriendsPage> createState() => FriendsStatefulWidgetState();
 }
 
 class FriendsStatefulWidgetState extends State<FriendsPage> {
+  late bool isDarkTheme;
   int selectedFriendsIndex = 0;
 
   static TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static List<Widget> widgetFriendsOptions = <Widget>[
+  late List<Widget> widgetFriendsOptions = <Widget>[
     Text(
       'FOLLOWING',
       style: TextStyle(
-          color: MyColors().primaryTitle,
+          color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
           fontSize: 25.0,
           fontWeight: FontWeight.w900),
     ),
     Text(
       'FOLLOWERS',
       style: TextStyle(
-          color: MyColors().primaryTitle,
+          color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
           fontSize: 25.0,
           fontWeight: FontWeight.w900),
     ),
     Text(
       'FOLLOW PEOPLE',
       style: TextStyle(
-          color: MyColors().primaryTitle,
+          color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
           fontSize: 25.0,
           fontWeight: FontWeight.w900),
     ),
@@ -49,29 +51,30 @@ class FriendsStatefulWidgetState extends State<FriendsPage> {
 
   @override
   void initState() {
+    isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColors().backgroundNormal,
+      backgroundColor: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
       appBar: AppBar(
         leading: Builder(
           builder: (context) => Center(
             child: RaisedButton(
-                color: MyColors().backgroundNormal.withOpacity(0),
+                color: MyColors.backgroundNormal.withOpacity(0),
                 elevation: 0,
                 onPressed: () => Scaffold.of(context).openDrawer(),
                 child: Icon(
                   Icons.widgets,
                   size: 30.0,
-                  color: MyColors().primaryTitle,
+                  color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
                 )),
           ),
         ),
 
-        backgroundColor: MyColors().backgroundNormal.withOpacity(0),
+        backgroundColor: MyColors.backgroundNormal.withOpacity(0),
         // Colors.transparent,
 
         title: Center(
@@ -81,7 +84,7 @@ class FriendsStatefulWidgetState extends State<FriendsPage> {
         actions: [
           Icon(
             Icons.widgets,
-            color: MyColors().backgroundNormal,
+            color: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
             size: 50.0,
           ),
         ],
@@ -89,9 +92,9 @@ class FriendsStatefulWidgetState extends State<FriendsPage> {
         elevation: 0,
       ),
 
-      drawer: MainDrawer(pageId: 2),
+      drawer: MainDrawer(pageId: 2, isDarkTheme: isDarkTheme,),
 
-      body: (selectedFriendsIndex == 0 || selectedFriendsIndex == 1) ? FollowPage(selectedFriendsIndex: selectedFriendsIndex) : NewFollowPage(),
+      body: (selectedFriendsIndex == 0 || selectedFriendsIndex == 1) ? FollowPage(selectedFriendsIndex: selectedFriendsIndex, isDarkTheme: isDarkTheme,) : NewFollowPage(isDarkTheme: isDarkTheme,),
 
 
       bottomNavigationBar: Container(
@@ -105,8 +108,8 @@ class FriendsStatefulWidgetState extends State<FriendsPage> {
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
               colors: [
-                MyColors().primaryDarker,
-                MyColors().primaryNormal,
+                MyColors.primaryDarker,
+                MyColors.primaryNormal,
               ],
             ),
             borderRadius: BorderRadius.all(
@@ -128,7 +131,7 @@ class FriendsStatefulWidgetState extends State<FriendsPage> {
                 BottomNavigationBarItem(
                     icon: Icon(Icons.group_add), label: 'FOLLOW PEOPLE'),
               ],
-              backgroundColor: MyColors().primaryNormal.withOpacity(0),
+              backgroundColor: MyColors.primaryNormal.withOpacity(0),
               currentIndex: selectedFriendsIndex,
               selectedItemColor: Color(0xffffffff),
               // 0xffEEF0F0

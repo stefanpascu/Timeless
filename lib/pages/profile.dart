@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enum_to_string/enum_to_string.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:timeless/service/firebase_service.dart';
 
@@ -12,47 +11,55 @@ import 'drawer_page.dart';
 import 'edit_profile_page.dart';
 
 class Profile extends StatefulWidget {
-  Profile({Key? key}) : super(key: key);
+  final isDarkTheme;
+  Profile({Key? key, required this.isDarkTheme}) : super(key: key);
 
   @override
   State<Profile> createState() => ProfileStatefulWidgetState();
 }
 
 class ProfileStatefulWidgetState extends State<Profile> {
+  late bool isDarkTheme;
   late UserData user;
   static List<Goal> goals = [];
   List<Goal> privateGoals = [];
   List<Goal> publicGoals = [];
 
   @override
+  void initState() {
+    isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: MyColors().backgroundNormal,
+        backgroundColor: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
         appBar: AppBar(
           leading: Builder(
             builder: (context) => Center(
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: MyColors().backgroundNormal.withOpacity(0),
+                    primary: MyColors.backgroundNormal.withOpacity(0),
                     elevation: 0,
                   ),
                   onPressed: () => Scaffold.of(context).openDrawer(),
                   child: Icon(
                     Icons.widgets,
                     size: 30.0,
-                    color: MyColors().primaryTitle,
+                    color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
                   )),
             ),
           ),
 
-          backgroundColor: MyColors().backgroundNormal.withOpacity(0),
+          backgroundColor: MyColors.backgroundNormal.withOpacity(0),
           // Colors.transparent,
 
           title: Center(
             child: Text(
               'Profile',
               style: TextStyle(
-                  color: MyColors().primaryTitle,
+                  color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
                   fontSize: 25.0,
                   fontWeight: FontWeight.w900),
             ),
@@ -62,7 +69,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
             IconButton(
               icon: Icon(
                 Icons.edit,
-                color: MyColors().primaryTitle,
+                color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
                 size: 40.0,
               ),
               onPressed: () => {
@@ -71,15 +78,16 @@ class ProfileStatefulWidgetState extends State<Profile> {
                   MaterialPageRoute(
                       builder: (context) => EditProfilePage(
                             userData: user,
+                            isDarkTheme: isDarkTheme,
                           )),
                 )
               },
-            ), // , color:  MyColors().primaryTitle, size: 40.0,
+            ), 
           ],
 
           elevation: 0,
         ),
-        drawer: MainDrawer(pageId: 0),
+        drawer: MainDrawer(pageId: 0, isDarkTheme: isDarkTheme,),
         body: StreamBuilder(
             stream: FirebaseService.firestore.collection('users').snapshots(),
             builder: (BuildContext context, AsyncSnapshot streamSnapshot) {
@@ -135,7 +143,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                 Text(
                                   user.name,
                                   style: TextStyle(
-                                    color: MyColors().textNormal,
+                                    color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                     fontSize: 40.0,
                                     fontWeight: FontWeight.normal,
                                     letterSpacing: 0.3,
@@ -145,7 +153,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                 Text(
                                   user.email,
                                   style: TextStyle(
-                                    color: MyColors().textNormal,
+                                    color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                     fontSize: 20.0,
                                     fontWeight: FontWeight.normal,
                                     letterSpacing: 0.3,
@@ -167,7 +175,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                           style: TextStyle(
                                             fontSize: 17.0,
                                             fontWeight: FontWeight.w400,
-                                            color: MyColors().textNormal,
+                                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                             letterSpacing: 1,
                                           ),
                                         ),
@@ -176,7 +184,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                           style: TextStyle(
                                             fontSize: 17.0,
                                             fontWeight: FontWeight.w400,
-                                            color: MyColors().textNormal,
+                                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                             letterSpacing: 1,
                                           ),
                                         ),
@@ -190,7 +198,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                           style: TextStyle(
                                             fontSize: 17.0,
                                             fontWeight: FontWeight.w400,
-                                            color: MyColors().textNormal,
+                                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                             letterSpacing: 1,
                                           ),
                                         ),
@@ -199,7 +207,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                           style: TextStyle(
                                             fontSize: 17.0,
                                             fontWeight: FontWeight.w400,
-                                            color: MyColors().textNormal,
+                                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                             letterSpacing: 1,
                                           ),
                                         ),
@@ -223,7 +231,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                       style: TextStyle(
                                         fontSize: 17.0,
                                         fontWeight: FontWeight.w400,
-                                        color: MyColors().textNormal,
+                                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                         letterSpacing: 1,
                                       ),
                                     ),
@@ -241,7 +249,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                       style: TextStyle(
                                         fontSize: 17.0,
                                         fontWeight: FontWeight.w400,
-                                        color: MyColors().textNormal,
+                                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                         letterSpacing: 1,
                                       ),
                                     ),
@@ -255,7 +263,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                 thickness: 4,
                                 indent: 150,
                                 endIndent: 150,
-                                color: MyColors().divider,
+                                color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
                               ),
                               Container(
                                 margin: EdgeInsets.only(
@@ -266,7 +274,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                   style: TextStyle(
                                     fontSize: 25.0,
                                     fontWeight: FontWeight.normal,
-                                    color: MyColors().textNormal,
+                                    color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                     letterSpacing: 1,
                                   ),
                                 ),
@@ -275,7 +283,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                 thickness: 4,
                                 indent: 50,
                                 endIndent: 50,
-                                color: MyColors().divider,
+                                color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
                               ),
                               Container(
                                 margin: const EdgeInsets.only(
@@ -291,7 +299,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                     style: TextStyle(
                                       fontSize: 17.0,
                                       fontWeight: FontWeight.normal,
-                                      color: MyColors().textNormal,
+                                      color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                       letterSpacing: 1,
                                     ),
                                   ),
@@ -301,7 +309,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                 thickness: 5,
                                 indent: 50,
                                 endIndent: 50,
-                                color: MyColors().divider,
+                                color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
                               ),
                               SizedBox(
                                 height: 30.0,
@@ -336,7 +344,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 40.0),
                                             decoration: BoxDecoration(
-                                              color: MyColors().overBackground,
+                                              color: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
                                               borderRadius: BorderRadius.all(
                                                 Radius.circular(7),
                                               ),
@@ -363,14 +371,14 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                       fontWeight:
                                                           FontWeight.w500,
                                                       color:
-                                                          MyColors().textNormal,
+                                                          isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                                       letterSpacing: 1,
                                                     ),
                                                   ),
                                                 ),
                                                 Divider(
                                                   thickness: 5,
-                                                  color: MyColors().divider,
+                                                  color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
                                                 ),
                                                 Padding(
                                                   padding: EdgeInsets.symmetric(
@@ -391,8 +399,8 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                           fontSize: 25.0,
                                                           fontWeight:
                                                               FontWeight.normal,
-                                                          color: MyColors()
-                                                              .textNormal,
+                                                          color: isDarkTheme == false ? MyColors
+                                                              .lightThemeText : MyColors.darkThemeText,
                                                           letterSpacing: 1,
                                                         ),
                                                       );
@@ -403,7 +411,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                       return Divider(
                                                         thickness: 1,
                                                         color:
-                                                            MyColors().divider,
+                                                            isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
                                                       );
                                                     },
                                                   ),
@@ -419,7 +427,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 40.0),
                                             decoration: BoxDecoration(
-                                              color: MyColors().overBackground,
+                                              color: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
                                               borderRadius: BorderRadius.all(
                                                 Radius.circular(7),
                                               ),
@@ -446,14 +454,14 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                       fontWeight:
                                                           FontWeight.w500,
                                                       color:
-                                                          MyColors().textNormal,
+                                                          isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                                       letterSpacing: 1,
                                                     ),
                                                   ),
                                                 ),
                                                 Divider(
                                                   thickness: 5,
-                                                  color: MyColors().divider,
+                                                  color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
                                                 ),
                                                 Padding(
                                                   padding: EdgeInsets.symmetric(
@@ -475,8 +483,8 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                           fontSize: 25.0,
                                                           fontWeight:
                                                               FontWeight.normal,
-                                                          color: MyColors()
-                                                              .textNormal,
+                                                          color: isDarkTheme == false ? MyColors
+                                                              .lightThemeText : MyColors.darkThemeText,
                                                           letterSpacing: 1,
                                                         ),
                                                       );
@@ -487,7 +495,7 @@ class ProfileStatefulWidgetState extends State<Profile> {
                                                       return Divider(
                                                         thickness: 1,
                                                         color:
-                                                            MyColors().divider,
+                                                            isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
                                                       );
                                                     },
                                                   ),

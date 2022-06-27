@@ -6,13 +6,13 @@ import '../model/goal_type.dart';
 import '../model/user.dart';
 import '../service/firebase_service.dart';
 import '../styles/styles.dart';
-import 'drawer_page.dart';
 
 class NewPersonProfile extends StatefulWidget {
   final UserData user;
   int followIndex;
+  final isDarkTheme;
 
-  NewPersonProfile({Key? key, required this.user, required this.followIndex})
+  NewPersonProfile({Key? key, required this.user, required this.followIndex, required this.isDarkTheme})
       : super(key: key);
 
   @override
@@ -20,39 +20,46 @@ class NewPersonProfile extends StatefulWidget {
 }
 
 class NewPersonProfileState extends State<NewPersonProfile> {
+  late bool isDarkTheme;
   late UserData user = widget.user;
   static List<Goal> goals = [];
   List<Goal> publicGoals = [];
 
   @override
+  void initState() {
+    isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: MyColors().backgroundNormal,
+        backgroundColor: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
         appBar: AppBar(
           leading: Builder(
             builder: (context) => Center(
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: MyColors().backgroundNormal.withOpacity(0),
+                    primary: MyColors.backgroundNormal.withOpacity(0),
                     elevation: 0,
                   ),
                   onPressed: () => Navigator.pop(context), // Scaffold.of(context).openDrawer(),
                   child: Icon(
                     Icons.arrow_back_ios,
                     size: 30.0,
-                    color: MyColors().primaryTitle,
+                    color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
                   )),
             ),
           ),
 
-          backgroundColor: MyColors().backgroundNormal.withOpacity(0),
+          backgroundColor: MyColors.backgroundNormal.withOpacity(0),
           // Colors.transparent,
 
           title: Center(
             child: Text(
-              'New Person\'s Profile',
+              'Someone\'s Profile',
               style: TextStyle(
-                  color: MyColors().primaryTitle,
+                  color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
                   fontSize: 25.0,
                   fontWeight: FontWeight.w900),
             ),
@@ -61,9 +68,9 @@ class NewPersonProfileState extends State<NewPersonProfile> {
           actions: [
             Icon(
               Icons.edit,
-              color: MyColors().backgroundNormal,
+              color: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
               size: 50.0,
-            ), // , color:  MyColors().primaryTitle, size: 40.0,
+            ),
           ],
 
           elevation: 0,
@@ -112,7 +119,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                 Text(
                   user.name,
                   style: TextStyle(
-                    color: MyColors().textNormal,
+                    color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                     fontSize: 40.0,
                     fontWeight: FontWeight.normal,
                     letterSpacing: 0.3,
@@ -122,7 +129,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                 Text(
                   user.email,
                   style: TextStyle(
-                    color: MyColors().textNormal,
+                    color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                     fontSize: 20.0,
                     fontWeight: FontWeight.normal,
                     letterSpacing: 0.3,
@@ -144,7 +151,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                           style: TextStyle(
                             fontSize: 17.0,
                             fontWeight: FontWeight.w400,
-                            color: MyColors().textNormal,
+                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                             letterSpacing: 1,
                           ),
                         ),
@@ -153,7 +160,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                           style: TextStyle(
                             fontSize: 17.0,
                             fontWeight: FontWeight.w400,
-                            color: MyColors().textNormal,
+                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                             letterSpacing: 1,
                           ),
                         ),
@@ -167,7 +174,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                           style: TextStyle(
                             fontSize: 17.0,
                             fontWeight: FontWeight.w400,
-                            color: MyColors().textNormal,
+                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                             letterSpacing: 1,
                           ),
                         ),
@@ -176,7 +183,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                           style: TextStyle(
                             fontSize: 17.0,
                             fontWeight: FontWeight.w400,
-                            color: MyColors().textNormal,
+                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                             letterSpacing: 1,
                           ),
                         ),
@@ -199,7 +206,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                       style: TextStyle(
                         fontSize: 17.0,
                         fontWeight: FontWeight.w400,
-                        color: MyColors().textNormal,
+                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                         letterSpacing: 1,
                       ),
                     ),
@@ -213,7 +220,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                       style: TextStyle(
                         fontSize: 17.0,
                         fontWeight: FontWeight.w400,
-                        color: MyColors().textNormal,
+                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                         letterSpacing: 1,
                       ),
                     ),
@@ -227,7 +234,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                 thickness: 4,
                 indent: 150,
                 endIndent: 150,
-                color: MyColors().divider,
+                color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
               ),
               Container(
                 margin: EdgeInsets.only(
@@ -238,7 +245,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                   style: TextStyle(
                     fontSize: 25.0,
                     fontWeight: FontWeight.normal,
-                    color: MyColors().textNormal,
+                    color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                     letterSpacing: 1,
                   ),
                 ),
@@ -247,7 +254,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                 thickness: 4,
                 indent: 50,
                 endIndent: 50,
-                color: MyColors().divider,
+                color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
               ),
               Container(
                 margin: const EdgeInsets.only(
@@ -263,7 +270,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                     style: TextStyle(
                       fontSize: 17.0,
                       fontWeight: FontWeight.normal,
-                      color: MyColors().textNormal,
+                      color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                       letterSpacing: 1,
                     ),
                   ),
@@ -273,7 +280,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                 thickness: 5,
                 indent: 50,
                 endIndent: 50,
-                color: MyColors().divider,
+                color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
               ),
               SizedBox(
                 height: 30.0,
@@ -323,7 +330,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
         width: 330,
         padding: EdgeInsets.symmetric(horizontal: 40.0),
         decoration: BoxDecoration(
-          color: MyColors().overBackground,
+          color: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
           borderRadius: BorderRadius.all(
             Radius.circular(7),
           ),
@@ -345,14 +352,14 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                 style: TextStyle(
                   fontSize: 30.0,
                   fontWeight: FontWeight.w500,
-                  color: MyColors().textNormal,
+                  color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                   letterSpacing: 1,
                 ),
               ),
             ),
             Divider(
               thickness: 5,
-              color: MyColors().divider,
+              color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
             ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 10.0),
@@ -367,7 +374,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                     style: TextStyle(
                       fontSize: 25.0,
                       fontWeight: FontWeight.normal,
-                      color: MyColors().textNormal,
+                      color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                       letterSpacing: 1,
                     ),
                   );
@@ -375,7 +382,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
                 separatorBuilder: (BuildContext context, int index) {
                   return Divider(
                     thickness: 1,
-                    color: MyColors().divider,
+                    color: isDarkTheme == false ? MyColors.lightThemeDivider : MyColors.darkThemeDivider,
                   );
                 },
               ),
@@ -390,7 +397,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
       height: 45.0,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: MyColors().accentNormal,
+          primary: MyColors.accentNormal,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
@@ -398,7 +405,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
           elevation: 2.5,
           side: BorderSide(
             width: 0.8,
-            color: MyColors().lightGray,
+            color: MyColors.lightGray,
           ),
         ),
         onPressed: () => {
@@ -410,7 +417,7 @@ class NewPersonProfileState extends State<NewPersonProfile> {
         child: Text(
           label,
           style: TextStyle(
-              fontSize: 20.0, color: MyColors().highlightedFilterText),
+              fontSize: 20.0, color: isDarkTheme ? MyColors.lightThemeBackground : MyColors.darkThemeBackground),
         ),
       ),
     );

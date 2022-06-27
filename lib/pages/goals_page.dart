@@ -9,17 +9,25 @@ import '../styles/styles.dart';
 import 'add_new_goal_page.dart';
 
 class GoalsPage extends StatefulWidget {
-  const GoalsPage({Key? key}) : super(key: key);
+  final isDarkTheme;
+  const GoalsPage({Key? key, required this.isDarkTheme}) : super(key: key);
 
   @override
   State<GoalsPage> createState() => _GoalsPageState();
 }
 
 class _GoalsPageState extends State<GoalsPage> {
+  late bool isDarkTheme;
   int selectedGoalsIndex = 0;
 
   static List<Goal> goals = [];
   List<Goal> filteredGoals = goals;
+
+  @override
+  void initState() {
+    isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +56,9 @@ class _GoalsPageState extends State<GoalsPage> {
                   children: <Widget>[
                     _filterWidget(title: 'All', index: 0, hasCircle: false),
                     _filterWidget(
-                        title: 'Private', index: 2, color: MyColors().privatePurple),
+                        title: 'Private', index: 2, color: MyColors.privatePurple),
                     _filterWidget(
-                        title: 'Public', index: 1, color: MyColors().publicYellow),
+                        title: 'Public', index: 1, color: MyColors.publicYellow),
                   ],
                 ),
               ),
@@ -68,7 +76,7 @@ class _GoalsPageState extends State<GoalsPage> {
                       child: Text(
                         groupByValue,
                         style: TextStyle(
-                            color: MyColors().textNormal,
+                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                             fontSize: 15.0,
                             fontFamily: 'OpenSans',
                             fontWeight: FontWeight.w500),
@@ -80,6 +88,7 @@ class _GoalsPageState extends State<GoalsPage> {
                 ),
               ),
             ),
+            SizedBox(height: 30,)
           ]);
         }
         return Center(child: CircularProgressIndicator());
@@ -97,7 +106,7 @@ class _GoalsPageState extends State<GoalsPage> {
       onLongPress: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => NewGoalPage(goal: goal,)),
+          MaterialPageRoute(builder: (context) => NewGoalPage(goal: goal, isDarkTheme: isDarkTheme,)),
         );
       },
       child: Padding(
@@ -105,8 +114,8 @@ class _GoalsPageState extends State<GoalsPage> {
         child: DecoratedBox(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: MyColors().lightGray, width: 0.2),
-              color: MyColors().overBackground,
+              border: Border.all(color: MyColors.lightGray, width: 0.2),
+              color: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey,
@@ -139,7 +148,7 @@ class _GoalsPageState extends State<GoalsPage> {
                         goal.name,
                         style: TextStyle(
                             fontSize: 20.0,
-                            color: MyColors().textNormal,
+                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                             fontFamily: 'OpenSans',
                             fontWeight: FontWeight.w600),
                       ),
@@ -176,7 +185,7 @@ class _GoalsPageState extends State<GoalsPage> {
           padding: EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(7)),
-            border: Border.all(color: MyColors().lightGray, width: 0.2),
+            border: Border.all(color: MyColors.lightGray, width: 0.2),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
@@ -185,7 +194,7 @@ class _GoalsPageState extends State<GoalsPage> {
                 offset: Offset(1.0, 1.0), // changes position of shadow
               ),
             ],
-            color: isSelected ? MyColors().primaryNormal : MyColors().overBackground,
+            color: isSelected ? MyColors.primaryNormal : isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -207,7 +216,7 @@ class _GoalsPageState extends State<GoalsPage> {
                 title,
                 style: TextStyle(
                   color:
-                      isSelected ? MyColors().highlightedFilterText : MyColors().textNormal,
+                      isSelected ? MyColors.highlightedFilterText : isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                   fontSize: 13.0,
                   fontFamily: 'OpenSans',
                 ),

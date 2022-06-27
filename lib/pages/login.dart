@@ -4,6 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timeless/pages/register.dart';
 
 import '../main.dart';
+import '../model/repetitive_type.dart';
+import '../model/task.dart';
+import '../model/task_type.dart';
+import '../service/firebase_service.dart';
+import '../service/notification_service.dart';
 import '../styles/styles.dart';
 import 'forgot_password_page.dart';
 
@@ -15,6 +20,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  bool isDarkTheme = false;
   bool _submitted = false;
   final _controllerEmail = TextEditingController();
   final _controllerPassword = TextEditingController();
@@ -30,10 +36,10 @@ class LoginPageState extends State<LoginPage> {
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
             colors: [
-              MyColors().primaryNormal.withOpacity(0.2),
-              MyColors().primaryNormal.withOpacity(0.5),
-              MyColors().accentNormal.withOpacity(0.5),
-              MyColors().accentNormal.withOpacity(0.2),
+              MyColors.primaryNormal.withOpacity(0.2),
+              MyColors.primaryNormal.withOpacity(0.5),
+              MyColors.accentNormal.withOpacity(0.5),
+              MyColors.accentNormal.withOpacity(0.2),
             ],
           ),
         ),
@@ -47,33 +53,33 @@ class LoginPageState extends State<LoginPage> {
                   alignment: Alignment.center,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: MyColors().overBackground.withOpacity(0.5),
-                      borderRadius: const BorderRadius.all(
+                      color: MyColors.overBackground.withOpacity(0.5),
+                      borderRadius: BorderRadius.all(
                         Radius.circular(7),
                       ),
                       border: Border(
                         top: BorderSide(
                             width: 3.0,
-                            color: MyColors().primaryNormal.withOpacity(0.7)),
+                            color: MyColors.primaryNormal.withOpacity(0.7)),
                         left: BorderSide(
                             width: 3.0,
-                            color: MyColors().primaryNormal.withOpacity(0.7)),
+                            color: MyColors.primaryNormal.withOpacity(0.7)),
                         right: BorderSide(
                             width: 3.0,
-                            color: MyColors().primaryNormal.withOpacity(0.7)),
+                            color: MyColors.primaryNormal.withOpacity(0.7)),
                         bottom: BorderSide(
                             width: 3.0,
-                            color: MyColors().primaryNormal.withOpacity(0.7)),
+                            color: MyColors.primaryNormal.withOpacity(0.7)),
                       ),
                     ),
-                    child: Expanded(
+                    child: Container(
                       child: Container(
                         width: 350,
-                        margin: const EdgeInsets.only(top: 0.0, bottom: 0.0),
+                        margin: EdgeInsets.only(top: 0.0, bottom: 0.0),
                         child: Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(
+                              padding: EdgeInsets.only(
                                 top: 50.0,
                                 left: 40.0,
                                 right: 40.0,
@@ -81,8 +87,8 @@ class LoginPageState extends State<LoginPage> {
                               ),
                               child: TextField(
                                 controller: _controllerEmail,
-                                style: TextStyle(color: MyColors().textNormal),
-                                cursorColor: MyColors().textNormal,
+                                style: TextStyle(color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText),
+                                cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                 onChanged: (text) => setState(() => _textEmail),
                                 decoration: InputDecoration(
                                   labelText: 'Email',
@@ -91,7 +97,7 @@ class LoginPageState extends State<LoginPage> {
                                   enabledBorder: OutlineInputBorder(
                                     // width: 0.0 produces a thin "hairline" border
                                     borderSide: BorderSide(
-                                        color: MyColors()
+                                        color: MyColors
                                             .primaryNormal
                                             .withOpacity(0.7),
                                         width: 1.5),
@@ -99,7 +105,7 @@ class LoginPageState extends State<LoginPage> {
                                   border: OutlineInputBorder(),
                                   labelStyle: TextStyle(
                                     color:
-                                        MyColors().textNormal.withOpacity(0.7),
+                                        isDarkTheme == false ? MyColors.primaryNormal : MyColors.darkThemeText.withOpacity(0.7),
                                   ),
                                 ),
                               ),
@@ -112,8 +118,8 @@ class LoginPageState extends State<LoginPage> {
                                 enableSuggestions: false,
                                 autocorrect: false,
                                 controller: _controllerPassword,
-                                style: TextStyle(color: MyColors().textNormal),
-                                cursorColor: MyColors().textNormal,
+                                style: TextStyle(color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText),
+                                cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                 onChanged: (text) =>
                                     setState(() => _textPassword),
                                 decoration: InputDecoration(
@@ -122,7 +128,7 @@ class LoginPageState extends State<LoginPage> {
                                       _submitted ? _errorPasswordText : null,
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: MyColors()
+                                        color: MyColors
                                             .primaryNormal
                                             .withOpacity(0.7),
                                         width: 1.5),
@@ -130,7 +136,7 @@ class LoginPageState extends State<LoginPage> {
                                   border: OutlineInputBorder(),
                                   labelStyle: TextStyle(
                                     color:
-                                        MyColors().textNormal.withOpacity(0.7),
+                                        isDarkTheme == false ? MyColors.primaryNormal : MyColors.darkThemeText.withOpacity(0.7),
                                   ),
                                 ),
                               ),
@@ -140,7 +146,7 @@ class LoginPageState extends State<LoginPage> {
                               padding: const EdgeInsets.only(bottom: 10.0),
                               child: TextButton(
                                 style: TextButton.styleFrom(
-                                  primary: MyColors().primaryNormal,
+                                  primary: MyColors.primaryNormal,
                                 ),
                                 onPressed: () {
                                   Navigator.push(
@@ -168,7 +174,7 @@ class LoginPageState extends State<LoginPage> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(12.0)),
                                 ),
-                                backgroundColor: MyColors().accentNormal,
+                                backgroundColor: MyColors.accentNormal,
                                 onPressed: () => {
                                   setState(() {
                                     _submitted = true;
@@ -192,12 +198,12 @@ class LoginPageState extends State<LoginPage> {
                                   'Don\'t have an account?',
                                   style: TextStyle(
                                     fontWeight: FontWeight.normal,
-                                    color: MyColors().textNormal,
+                                    color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                   ),
                                 ),
                                 TextButton(
                                   style: TextButton.styleFrom(
-                                    primary: MyColors().primaryNormal,
+                                    primary: MyColors.primaryNormal,
                                   ),
                                   onPressed: () {
                                     Navigator.push(
@@ -236,11 +242,11 @@ class LoginPageState extends State<LoginPage> {
                             height: 100,
                             width: 100,
                             child: CircleAvatar(
-                              backgroundColor: MyColors().primaryNormal,
+                              backgroundColor: MyColors.primaryNormal,
                               radius: 50,
                               child: CircleAvatar(
                                 radius: 48.0,
-                                backgroundColor: MyColors().accentNormal,
+                                backgroundColor: MyColors.accentNormal,
                                 child: ClipRect(
                                   child: SvgPicture.asset(
                                       'assets/profile_icon.svg'),
@@ -281,6 +287,22 @@ class LoginPageState extends State<LoginPage> {
           email: _controllerEmail.text.trim(),
           password: _controllerPassword.text.trim());
       navigatorKey.currentState!.popUntil((route) => route.isFirst);
+      final tasks = await FirebaseService.getTasks();
+      for (int index = 0; index < tasks.length; index++) {
+        await NotificationService().showNotification(tasks[index].notificationId,
+            tasks[index].name, tasks[index].type == TaskType.Repetitive
+                ? 'Your repetitive task is here!'
+                : tasks[index].type == TaskType.DueTo
+                ? 'Your task is due to now!'
+                : 'Attention please, you have an appointment!',
+            tasks[index].type == TaskType.Repetitive
+                ? (FirebaseService.compareDates(tasks[index].time, DateTime.now())
+                ? tasks[index].time
+                : (tasks[index].repetitiveType == RepetitiveType.Daily
+                ? DateTime.parse(DateTime.now().toString().split(' ')[0] + ' ' + tasks[index].time.toString().split(' ')[1]).add(Duration(days: 1))
+                : DateTime.parse(DateTime.now().toString().split(' ')[0] + ' ' + tasks[index].time.toString().split(' ')[1]).add(Duration(days: 7))))
+                : tasks[index].time);
+      }
     } on FirebaseAuthException catch (e) {
       print(e);
 

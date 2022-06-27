@@ -45,14 +45,14 @@ class Task {
             ? null
             : EnumToString.convertToString(repetitiveType),
         'notification_id': notificationId,
-        'time': time,
+        'time': repetitiveType == null ? time : DateTime.parse(DateTime.now().toString().split(' ')[0] + ' ' + time.toString().split(' ')[1]),
       };
 
   Color get color {
     if (type == TaskType.Repetitive)
-      return MyColors().repetitiveBlue;
-    else if (type == TaskType.DueTo) return MyColors().dueToRed;
-    return MyColors().appointmentGreen;
+      return MyColors.repetitiveBlue;
+    else if (type == TaskType.DueTo) return MyColors.dueToRed;
+    return MyColors.appointmentGreen;
   }
 
   static Task fromJson(Map<String, dynamic> json) => Task(

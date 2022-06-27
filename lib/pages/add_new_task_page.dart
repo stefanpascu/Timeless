@@ -11,8 +11,11 @@ import '../styles/styles.dart';
 class NewTaskPage extends StatefulWidget {
   final Task? task;
   final String? restorationId;
+  final isDarkTheme;
 
-  NewTaskPage({Key? key, this.task, this.restorationId}) : super(key: key);
+  NewTaskPage(
+      {Key? key, this.task, this.restorationId, required this.isDarkTheme})
+      : super(key: key);
 
   @override
   State<NewTaskPage> createState() => NewTaskPageState();
@@ -22,10 +25,10 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
   @override
   String? get restorationId => widget.restorationId;
 
+  late bool isDarkTheme;
   late bool editMode;
   late Task task;
-  late bool isSwitched = false;
-  late RepetitiveType? repetitiveType = null;
+  late RepetitiveType repetitiveType;
   late String formattedTime = task.time.toString().split(" ")[1].split(":")[0] +
       ":" +
       task.time.toString().split(" ")[1].split(":")[1];
@@ -37,6 +40,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
   int selectedDailyIndex = 0;
   String repetitiveDropdownValue = 'Daily';
   bool timeError = false;
+  late var auxTime;
 
   late final RestorableRouteFuture<DateTime?> _restorableDatePickerRouteFuture =
       RestorableRouteFuture<DateTime?>(
@@ -51,10 +55,13 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
 
   @override
   void initState() {
+    auxTime = widget.task != null ? widget.task!.time : null;
+    isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
     editMode = widget.task != null;
     task = widget.task == null
         ? Task.repetitive("", RepetitiveType.Daily, DateTime.now(), null, 0)
         : widget.task!;
+    repetitiveType = widget.task != null && widget.task!.type == TaskType.Repetitive ? widget.task!.repetitiveType! : RepetitiveType.Daily;
     initWidgets(widget.task);
     super.initState();
   }
@@ -62,24 +69,30 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: MyColors().backgroundNormal,
+        backgroundColor: isDarkTheme == false
+            ? MyColors.lightThemeBackground
+            : MyColors.darkThemeBackground,
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back_ios,
-              color: MyColors().primaryTitle,
+              color: isDarkTheme == false
+                  ? MyColors.lightThemeTitle
+                  : MyColors.darkThemeTitle,
             ),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
-          backgroundColor: MyColors().backgroundNormal.withOpacity(0),
+          backgroundColor: MyColors.backgroundNormal.withOpacity(0),
           title: Align(
             alignment: Alignment.center,
             child: Text(
               editMode ? 'EDIT TASK' : 'NEW TASK',
               style: TextStyle(
-                color: MyColors().primaryTitle,
+                color: isDarkTheme == false
+                    ? MyColors.lightThemeTitle
+                    : MyColors.darkThemeTitle,
                 fontSize: 25.0,
                 fontWeight: FontWeight.w900,
               ),
@@ -92,7 +105,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                 child: IconButton(
                   icon: Icon(
                     Icons.delete,
-                    color: MyColors().primaryTitle,
+                    color: isDarkTheme == false
+                        ? MyColors.lightThemeTitle
+                        : MyColors.darkThemeTitle,
                     size: 40.0,
                   ),
                   onPressed: () async {
@@ -108,7 +123,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                 padding: const EdgeInsets.only(right: 10.0),
                 child: Icon(
                   Icons.delete,
-                  color: MyColors().backgroundNormal,
+                  color: isDarkTheme == false
+                      ? MyColors.lightThemeBackground
+                      : MyColors.darkThemeBackground,
                   size: 50.0,
                 ),
               ),
@@ -128,13 +145,13 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                     _filterWidget(
                         title: 'Repetitive',
                         index: 0,
-                        color: MyColors().repetitiveBlue),
+                        color: MyColors.repetitiveBlue),
                     _filterWidget(
-                        title: 'Due to', index: 1, color: MyColors().dueToRed),
+                        title: 'Due to', index: 1, color: MyColors.dueToRed),
                     _filterWidget(
                         title: 'Appointment',
                         index: 2,
-                        color: MyColors().appointmentGreen),
+                        color: MyColors.appointmentGreen),
                   ],
                 ),
               ),
@@ -146,21 +163,26 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                 padding: EdgeInsets.symmetric(horizontal: 40.0),
                 child: TextField(
                   controller: _controller,
-                  cursorColor: MyColors().textNormal,
-                  style: TextStyle(color: MyColors().textNormal),
+                  cursorColor: isDarkTheme == false
+                      ? MyColors.lightThemeText
+                      : MyColors.darkThemeText,
+                  style: TextStyle(
+                      color: isDarkTheme == false
+                          ? MyColors.lightThemeText
+                          : MyColors.darkThemeText),
                   onChanged: (text) => setState(() => _textName),
                   decoration: InputDecoration(
                     errorText: _submitted ? _errorNameText : null,
                     labelText: 'Name',
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: MyColors().primaryNormal.withOpacity(0.7),
+                        color: MyColors.primaryNormal.withOpacity(0.7),
                         width: 1.5,
                       ),
                     ),
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(
-                      color: MyColors().primaryNormal,
+                      color: MyColors.primaryNormal,
                     ),
                   ),
                 ),
@@ -178,7 +200,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                               Text(
                                 'Pick a Time:',
                                 style: TextStyle(
-                                  color: MyColors().textNormal,
+                                  color: isDarkTheme == false
+                                      ? MyColors.lightThemeText
+                                      : MyColors.darkThemeText,
                                   fontSize: 20.0,
                                 ),
                               ),
@@ -187,9 +211,11 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   StateSetter timePickState) {
                                 return OutlinedButton(
                                   style: OutlinedButton.styleFrom(
-                                    primary: MyColors().overBackground,
+                                    primary: isDarkTheme == false
+                                        ? MyColors.lightThemeOverBackground
+                                        : MyColors.darkThemeOverBackground,
                                     side: BorderSide(
-                                        color: MyColors().primaryNormal,
+                                        color: MyColors.primaryNormal,
                                         width: 1.2),
                                   ),
                                   onPressed: () async {
@@ -199,7 +225,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   child: Text(
                                     formattedTime,
                                     style: TextStyle(
-                                        color: MyColors().textNormal,
+                                        color: isDarkTheme == false
+                                            ? MyColors.lightThemeText
+                                            : MyColors.darkThemeText,
                                         fontSize: 20.0),
                                   ),
                                 );
@@ -220,19 +248,20 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                 alignment: Alignment.centerRight,
                                 child: DropdownButton<String>(
                                   value: repetitiveDropdownValue,
-                                  dropdownColor: MyColors().overBackground,
+                                  dropdownColor: isDarkTheme == false
+                                      ? MyColors.lightThemeOverBackground
+                                      : MyColors.darkThemeOverBackground,
                                   icon: Icon(Icons.arrow_downward),
                                   elevation: 0,
                                   style: TextStyle(
-                                      color: MyColors()
-                                          .textNormal
-                                          .withOpacity(1.0),
+                                      color: isDarkTheme == false
+                                          ? MyColors.lightThemeText
+                                          : MyColors.darkThemeText,
                                       fontSize: 20.0),
                                   underline: Container(
                                     height: 2,
-                                    color: MyColors()
-                                        .primaryNormal
-                                        .withOpacity(0.7),
+                                    color:
+                                        MyColors.primaryNormal.withOpacity(0.7),
                                   ),
                                   onChanged: (String? newRepetitiveValue) {
                                     NewTaskPageState(() {
@@ -242,11 +271,12 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                         repetitiveType = RepetitiveType.Daily;
                                         task.repetitiveType =
                                             RepetitiveType.Daily;
-                                      } else if (repetitiveDropdownValue ==
-                                          'Weekly') {
+                                        task.time = DateTime.parse(DateTime.now().toString().split(' ')[0] + ' ' + task.time.toString().split(' ')[1]);
+                                      } else if (repetitiveDropdownValue == 'Weekly') {
                                         repetitiveType = RepetitiveType.Weekly;
                                         task.repetitiveType =
                                             RepetitiveType.Weekly;
+                                        task.time = DateTime.parse(DateTime.now().toString().split(' ')[0] + ' ' + task.time.toString().split(' ')[1]);
                                       }
                                     });
                                   },
@@ -282,7 +312,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   Text(
                                     'Pick a Time:',
                                     style: TextStyle(
-                                      color: MyColors().textNormal,
+                                      color: isDarkTheme == false
+                                          ? MyColors.lightThemeText
+                                          : MyColors.darkThemeText,
                                       fontSize: 20.0,
                                     ),
                                   ),
@@ -292,9 +324,11 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                           StateSetter timePickState) {
                                     return OutlinedButton(
                                       style: OutlinedButton.styleFrom(
-                                        primary: MyColors().overBackground,
+                                        primary: isDarkTheme == false
+                                            ? MyColors.lightThemeOverBackground
+                                            : MyColors.darkThemeOverBackground,
                                         side: BorderSide(
-                                            color: MyColors().primaryNormal,
+                                            color: MyColors.primaryNormal,
                                             width: 1.2),
                                       ),
                                       onPressed: () async {
@@ -304,7 +338,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                       child: Text(
                                         formattedTime,
                                         style: TextStyle(
-                                            color: MyColors().textNormal,
+                                            color: isDarkTheme == false
+                                                ? MyColors.lightThemeText
+                                                : MyColors.darkThemeText,
                                             fontSize: 20.0),
                                       ),
                                     );
@@ -325,7 +361,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   Text(
                                     'Pick a Date:',
                                     style: TextStyle(
-                                      color: MyColors().textNormal,
+                                      color: isDarkTheme == false
+                                          ? MyColors.lightThemeText
+                                          : MyColors.darkThemeText,
                                       fontSize: 20.0,
                                     ),
                                   ),
@@ -341,13 +379,15 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                       },
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
-                                            color: MyColors().primaryNormal,
+                                            color: MyColors.primaryNormal,
                                             width: 1.0),
                                       ),
                                       child: Text(
                                         formattedDate,
                                         style: TextStyle(
-                                            color: MyColors().textNormal,
+                                            color: isDarkTheme == false
+                                                ? MyColors.lightThemeText
+                                                : MyColors.darkThemeText,
                                             fontSize: 20.0),
                                       ),
                                     ),
@@ -382,7 +422,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   Text(
                                     'Pick a Time:',
                                     style: TextStyle(
-                                      color: MyColors().textNormal,
+                                      color: isDarkTheme == false
+                                          ? MyColors.lightThemeText
+                                          : MyColors.darkThemeText,
                                       fontSize: 20.0,
                                     ),
                                   ),
@@ -392,9 +434,11 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                           StateSetter timePickState) {
                                     return OutlinedButton(
                                       style: OutlinedButton.styleFrom(
-                                        primary: MyColors().overBackground,
+                                        primary: isDarkTheme == false
+                                            ? MyColors.lightThemeOverBackground
+                                            : MyColors.darkThemeOverBackground,
                                         side: BorderSide(
-                                            color: MyColors().primaryNormal,
+                                            color: MyColors.primaryNormal,
                                             width: 1.2),
                                       ),
                                       onPressed: () async {
@@ -404,7 +448,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                       child: Text(
                                         formattedTime,
                                         style: TextStyle(
-                                            color: MyColors().textNormal,
+                                            color: isDarkTheme == false
+                                                ? MyColors.lightThemeText
+                                                : MyColors.darkThemeText,
                                             fontSize: 20.0),
                                       ),
                                     );
@@ -424,7 +470,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                   Text(
                                     'Pick a Date:',
                                     style: TextStyle(
-                                      color: MyColors().textNormal,
+                                      color: isDarkTheme == false
+                                          ? MyColors.lightThemeText
+                                          : MyColors.darkThemeText,
                                       fontSize: 20.0,
                                     ),
                                   ),
@@ -440,13 +488,15 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                                       },
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
-                                            color: MyColors().primaryNormal,
+                                            color: MyColors.primaryNormal,
                                             width: 1.0),
                                       ),
                                       child: Text(
                                         formattedDate,
                                         style: TextStyle(
-                                            color: MyColors().textNormal,
+                                            color: isDarkTheme == false
+                                                ? MyColors.lightThemeText
+                                                : MyColors.darkThemeText,
                                             fontSize: 20.0),
                                       ),
                                     ),
@@ -475,7 +525,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
               height: 45.0,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: MyColors().accentNormal,
+                  primary: MyColors.accentNormal,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -483,7 +533,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                   elevation: 2.5,
                   side: BorderSide(
                     width: 0.8,
-                    color: MyColors().lightGray,
+                    color: MyColors.lightGray,
                   ),
                 ),
                 onPressed: () => {
@@ -492,10 +542,10 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                   }),
                   if (selectedDailyIndex != 0)
                     {
-                      if (_controller.value.text
-                          .isNotEmpty) //&& compareDates(task.time, DateTime.now()))
-                        {_submit()}
-                      else if (!compareDates(task.time, DateTime.now()))
+                      if (_controller.value.text.isNotEmpty &&
+                          compareDates(task.time, DateTime.now()))
+                        {_submit()},
+                      if (!compareDates(task.time, DateTime.now()))
                         {timeError = true}
                     }
                   else if (_controller.value.text.isNotEmpty)
@@ -504,7 +554,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                 child: Text(
                   'Save',
                   style: TextStyle(
-                      fontSize: 20.0, color: MyColors().highlightedFilterText),
+                      fontSize: 20.0, color: MyColors.highlightedFilterText),
                 ),
               ),
             ),
@@ -513,7 +563,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
   }
 
   Future<void> _submit() async {
-    if (_errorNameText == null) {
+    if (_errorNameText == null && timeError == false) {
       task.name = _controller.text;
       if (editMode == false) {
         final notificationIndex = UserData.fromJson((await FirebaseService
@@ -537,8 +587,8 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                 ? (compareDates(task.time, DateTime.now())
                     ? task.time
                     : (task.repetitiveType == RepetitiveType.Daily
-                        ? task.time.add(Duration(days: 1))
-                        : task.time.add(Duration(days: 7))))
+                        ? DateTime.parse(DateTime.now().toString().split(' ')[0] + ' ' + task.time.toString().split(' ')[1]).add(Duration(days: 1))
+                        : DateTime.parse(DateTime.now().toString().split(' ')[0] + ' ' + task.time.toString().split(' ')[1]).add(Duration(days: 7))))
                 : task.time);
         await FirebaseService.firestore
             .collection('users')
@@ -547,10 +597,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           'notification_index': notificationIndex + 1,
         });
       } else {
-        FirebaseService.editExistingTask(task);
-        await NotificationService().cancelNotification(task.notificationId);
-        await NotificationService().showNotification(task.notificationId,
-            task.name, 'Your task notification body', task.time);
+          FirebaseService.editExistingTask(task);
       }
       Navigator.pop(context);
     }
@@ -632,10 +679,21 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           formattedDate =
               '${_selectedDate.value.year}-0${_selectedDate.value.month}-0${_selectedDate.value.day}';
 
-        task.time = DateTime.parse(
-            formattedDate + " " + task.time.toString().split(" ")[1]);
+        timeError = true;
 
-        timeError = false;
+        if (editMode == true) {
+          if (compareDates(
+              DateTime.parse(formattedDate),
+              DateTime.now())) {
+            task.time = DateTime.parse(
+                formattedDate + " " + task.time.toString().split(" ")[1]);
+            timeError = false;
+          }
+        } else {
+          task.time = DateTime.parse(
+              formattedDate + " " + task.time.toString().split(" ")[1]);
+          timeError = false;
+        }
       });
     }
   }
@@ -657,9 +715,36 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           string += to24hours(result)[index];
         }
         formattedTime = string;
-        DateTime time = task.time;
-        task.time =
-            DateTime.parse(time.toString().split(" ")[0] + " " + formattedTime);
+        if (editMode == true) {
+          if (compareDates(
+              DateTime.parse(DateTime.now().toString().split(' ')[0] +
+                  ' ' +
+                  formattedTime),
+              DateTime.now())) {
+            DateTime dateTime = task.time;
+            task.time = DateTime.parse(
+                dateTime.toString().split(" ")[0] + " " + formattedTime);
+          } else {
+            if (task.type == TaskType.Repetitive)
+              task.time = task.repetitiveType == RepetitiveType.Daily
+                  ? DateTime.parse(DateTime.now()
+                          .add(Duration(days: 1))
+                          .toString()
+                          .split(" ")[0] +
+                      " " +
+                      formattedTime)
+                  : DateTime.parse(DateTime.now()
+                          .add(Duration(days: 7))
+                          .toString()
+                          .split(" ")[0] +
+                      " " +
+                      formattedTime);
+          }
+        } else {
+          DateTime dateTime = task.time;
+          task.time = DateTime.parse(
+              dateTime.toString().split(" ")[0] + " " + formattedTime);
+        }
       });
     }
   }
@@ -684,13 +769,9 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           task.time.toString().split(" ")[1].split(":")[1];
 
       if (selectedDailyIndex == 0) {
-        repetitiveType = task.repetitiveType;
+        repetitiveType = task.repetitiveType!;
 
         if (task.type == TaskType.Repetitive) {
-          if (task.repetitiveType == null)
-            isSwitched = false;
-          else
-            isSwitched = true;
 
           if (repetitiveType != null) {
             repetitiveDropdownValue =
@@ -715,7 +796,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           selectedDailyIndex = index;
           if (editMode == false) {
             if (selectedDailyIndex == 0)
-              task = Task.repetitive("", null, DateTime.now(), null, 0);
+              task = Task.repetitive("", repetitiveType, DateTime.now(), null, 0);
             else if (selectedDailyIndex == 1)
               task = Task.dueTo("", DateTime.now(), null, 0);
             else if (selectedDailyIndex == 2)
@@ -725,11 +806,8 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
             DateTime dateTime = task.time;
             String? id = task.id;
             int notifId = task.notificationId;
-            if (selectedDailyIndex == 0) if (isSwitched == false)
-              task = Task.repetitive(name, null, dateTime, id, notifId);
-            else
-              task =
-                  Task.repetitive(name, repetitiveType, dateTime, id, notifId);
+            if (selectedDailyIndex == 0)
+              task = Task.repetitive(name, repetitiveType, DateTime.parse(DateTime.now().toString().split(' ')[0] + ' ' + dateTime.toString().split(' ')[1]), id, notifId);
             else if (selectedDailyIndex == 1)
               task = Task.dueTo(name, dateTime, id, notifId);
             else if (selectedDailyIndex == 2)
@@ -738,7 +816,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
         });
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
         child: Container(
           alignment: Alignment.center,
           constraints: BoxConstraints(minWidth: 35),
@@ -746,7 +824,7 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
           padding: EdgeInsets.symmetric(horizontal: 10.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(7)),
-            border: Border.all(color: MyColors().lightGray, width: 0.2),
+            border: Border.all(color: MyColors.lightGray, width: 0.2),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
@@ -756,8 +834,10 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
               ),
             ],
             color: isSelected
-                ? MyColors().primaryNormal
-                : MyColors().overBackground,
+                ? MyColors.primaryNormal
+                : isDarkTheme == false
+                    ? MyColors.lightThemeOverBackground
+                    : MyColors.darkThemeOverBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -779,8 +859,12 @@ class NewTaskPageState extends State<NewTaskPage> with RestorationMixin {
                 title,
                 style: TextStyle(
                   color: isSelected
-                      ? MyColors().highlightedFilterText
-                      : MyColors().textNormal,
+                      ? isDarkTheme
+                          ? MyColors.lightThemeBackground
+                          : MyColors.lightThemeBackground
+                      : isDarkTheme == false
+                          ? MyColors.lightThemeText
+                          : MyColors.darkThemeText,
                   fontSize: 13.0,
                   fontFamily: 'OpenSans',
                 ),

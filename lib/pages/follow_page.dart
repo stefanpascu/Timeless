@@ -5,10 +5,10 @@ import 'package:timeless/pages/newPersonProfile.dart';
 import 'package:timeless/service/firebase_service.dart';
 
 import '../styles/styles.dart';
-import 'drawer_page.dart';
 
 class FollowPage extends StatefulWidget {
-  FollowPage({Key? key, required this.selectedFriendsIndex}) : super(key: key);
+  final isDarkTheme;
+  FollowPage({Key? key, required this.selectedFriendsIndex, required this.isDarkTheme}) : super(key: key);
 
   int selectedFriendsIndex;
 
@@ -17,15 +17,22 @@ class FollowPage extends StatefulWidget {
 }
 
 class FollowPageState extends State<FollowPage> {
+  late bool isDarkTheme;
   UserData? user;
   String searchString = "";
   Future<List<UserData>>? followersList;
   Future<List<UserData>>? followingList;
 
   @override
+  void initState() {
+    isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColors().backgroundNormal,
+      backgroundColor: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
       body: FutureBuilder<UserData?>(
           future: readUser(),
           builder: (context, snapshot) {
@@ -47,21 +54,21 @@ class FollowPageState extends State<FollowPage> {
                             searchString = value.toLowerCase();
                           });
                         },
-                        cursorColor: MyColors().textNormal,
-                        style: TextStyle(color: MyColors().textNormal),
+                        cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                        style: TextStyle(color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText),
                         decoration: InputDecoration(
                           labelText: 'Search',
                           labelStyle: TextStyle(
-                            color: MyColors().textNormal,
+                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                           ),
                           suffixIcon: Icon(
                             Icons.search,
-                            color: MyColors().textNormal,
+                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                                 color:
-                                    MyColors().primaryNormal.withOpacity(0.7),
+                                    MyColors.primaryNormal.withOpacity(0.7),
                                 width: 1.5),
                           ),
                         ),
@@ -89,7 +96,7 @@ class FollowPageState extends State<FollowPage> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => NewPersonProfile(user: snapshot.data![index], followIndex: widget.selectedFriendsIndex == 0 ? 1 : isFollowing == true ? 1 : 0)),
+                                              builder: (context) => NewPersonProfile(user: snapshot.data![index], followIndex: widget.selectedFriendsIndex == 0 ? 1 : isFollowing == true ? 1 : 0, isDarkTheme: isDarkTheme,)),
                                         );
                                       },
                                       child: ListTile(
@@ -105,7 +112,7 @@ class FollowPageState extends State<FollowPage> {
                                           title: Text(
                                             '${snapshot.data?[index].email}',
                                             style: TextStyle(
-                                                color: MyColors().textNormal,
+                                                color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                                 fontSize: 17.0,
                                                 fontFamily: 'OpenSans'),
                                           ),

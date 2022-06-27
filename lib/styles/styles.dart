@@ -1,20 +1,12 @@
 import 'dart:ui';
 
-import '../pages/settings_page.dart';
-
-class MyColors {
-  bool? darkThemeStyles = false;
-  Color primaryNormal = Color(0xff465FC2),
+abstract class MyColors {
+  static Color primaryNormal = Color(0xff465FC2),
       primaryDarker = Color(0xff404E83),
       primaryDarkest = Color(0xff3D486E),
       lightGray = Color(0xffc4c4c4),
-      darkThemeTextNormal = Color(0xffEEF0F0),
       darkGray = Color(0xff3e3e3e),
-      darkThemeDivider = Color(0xff717171),
-      lightThemeDivider = Color(0xffb8b8b8),
       highlightedFilterText = Color(0xffF6F7F7),
-      darkThemeOverBackground = Color(0xff4B5052),
-      darkThemeBackgroundNormal = Color(0xff26292C),
       accentNormal = Color(0xffE18851),
       repetitiveBlue = Color(0xff667ACC),
       dueToRed = Color(0xffCC6E66),
@@ -25,25 +17,29 @@ class MyColors {
       textNormal = Color(0xffF6F7F7),
       divider = Color(0xffF6F7F7),
       backgroundNormal = Color(0xffF6F7F7),
-      overBackground = Color(0xffF6F7F7);
+      overBackground = Color(0xffF6F7F7),
 
-    MyColors() {
-      primaryTitle = (darkThemeStyles == false ? primaryDarkest : lightGray);
-      textNormal = (darkThemeStyles == false ? Color(0xff26292C) : darkThemeTextNormal);
-      divider = (darkThemeStyles == false ?  lightThemeDivider : darkThemeDivider);
-      backgroundNormal = (darkThemeStyles == false ? Color(0xffeeeeee) : darkThemeBackgroundNormal);
-      overBackground = (darkThemeStyles == false ? Color(0xffFAFCFC) : darkThemeOverBackground);
-      if (darkThemeStyles == null)
-        darkThemeStyles = SettingsStatefulWidgetState().isDarkTheme;
-    }
+  // light theme colors
+      lightThemeTitle = primaryDarkest,
+      lightThemeText = Color(0xff26292C),
+      lightThemeDivider = Color(0xffb8b8b8),
+      lightThemeBackground = Color(0xffeeeeee),
+      lightThemeOverBackground = Color(0xffFAFCFC),
 
-  void setDarkTheme(bool darkTheme) {
-      darkThemeStyles = darkTheme;
-      primaryTitle = (darkThemeStyles == false ? Color(0xff3D486E) : lightGray);
-      textNormal = (darkThemeStyles == false ? Color(0xff26292C) : darkThemeTextNormal);
-      divider = (darkThemeStyles == false ?  lightThemeDivider : darkThemeDivider);
-      backgroundNormal = (darkThemeStyles == false ? Color(0xffF6F7F7) : darkThemeBackgroundNormal);
-      overBackground = (darkThemeStyles == false ? Color(0xffFAFCFC) : darkThemeOverBackground);
-  }
+  // dark theme colors
+      darkThemeTitle = lightGray,
+      darkThemeText = Color(0xffEEF0F0),
+      darkThemeDivider = Color(0xff717171),
+      darkThemeBackground = Color(0xff26292C),
+      darkThemeOverBackground = Color(0xff4B5052);
 
+    // MyColors() {
+    //   primaryTitle = (darkThemeStyles == false ? primaryDarkest : lightGray);
+    //   textNormal = (darkThemeStyles == false ? Color(0xff26292C) : darkThemeTextNormal);
+    //   divider = (darkThemeStyles == false ?  lightThemeDivider : darkThemeDivider);
+    //   backgroundNormal = (darkThemeStyles == false ? Color(0xffeeeeee) : darkThemeBackgroundNormal);
+    //   overBackground = (darkThemeStyles == false ? Color(0xffFAFCFC) : darkThemeOverBackground);
+    //   if (darkThemeStyles == null)
+    //     darkThemeStyles = SettingsStatefulWidgetState().isDarkTheme;
+    // }
 }

@@ -19,8 +19,8 @@ class Goal{
 
   Color get color{
     if (type == GoalType.Private)
-      return MyColors().privatePurple;
-    return MyColors().publicYellow;
+      return MyColors.privatePurple;
+    return MyColors.publicYellow;
   }
 
   static Goal fromJson(Map<String, dynamic> json) => Goal(

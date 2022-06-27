@@ -12,14 +12,16 @@ import '../styles/styles.dart';
 
 class EditProfilePage extends StatefulWidget {
   final UserData userData;
+  final isDarkTheme;
 
-  EditProfilePage({Key? key, required this.userData}) : super(key: key);
+  EditProfilePage({Key? key, required this.userData, required this.isDarkTheme}) : super(key: key);
 
   @override
   State<EditProfilePage> createState() => EditProfilePageState();
 }
 
 class EditProfilePageState extends State<EditProfilePage> {
+  late bool isDarkTheme;
   late String profilePicLink;
   late String coverLink;
   bool _submitted = false;
@@ -36,6 +38,7 @@ class EditProfilePageState extends State<EditProfilePage> {
 
   @override
   void initState() {
+    isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
     profilePicLink = widget.userData.profilePicture;
     coverLink = widget.userData.cover;
 
@@ -52,24 +55,24 @@ class EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColors().backgroundNormal,
+      backgroundColor: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: MyColors().primaryTitle,
+            color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: MyColors().backgroundNormal.withOpacity(0),
+        backgroundColor: MyColors.backgroundNormal.withOpacity(0),
         title: Align(
           alignment: Alignment.center,
           child: Text(
             'EDIT',
             style: TextStyle(
-              color: MyColors().primaryTitle,
+              color: isDarkTheme == false ? MyColors.lightThemeTitle : MyColors.darkThemeTitle,
               fontSize: 25.0,
               fontWeight: FontWeight.w900,
             ),
@@ -80,7 +83,7 @@ class EditProfilePageState extends State<EditProfilePage> {
             padding: const EdgeInsets.only(right: 10.0),
             child: Icon(
               Icons.delete,
-              color: MyColors().backgroundNormal,
+              color: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
               size: 50.0,
             ),
           ),
@@ -102,9 +105,9 @@ class EditProfilePageState extends State<EditProfilePage> {
                           pickUploadProfilePic();
                         },
                         style: OutlinedButton.styleFrom(
-                          backgroundColor: MyColors().overBackground,
+                          backgroundColor: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
                           side: BorderSide(
-                              color: MyColors().primaryNormal.withOpacity(0.7),
+                              color: MyColors.primaryNormal.withOpacity(0.7),
                               width: 1.5),
                           padding: EdgeInsets.symmetric(vertical: 20.0),
                           alignment: Alignment.centerRight
@@ -112,12 +115,12 @@ class EditProfilePageState extends State<EditProfilePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.camera_alt, color: MyColors().textNormal,),
+                            Icon(Icons.camera_alt, color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,),
                             SizedBox(width: 10.0,),
                             Text('Change Profile Picture', style: TextStyle(
                               fontFamily: 'OpenSans',
                               fontSize: 20,
-                              color: MyColors().textNormal
+                              color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText
                             ),)
                           ],
                         )),
@@ -130,9 +133,9 @@ class EditProfilePageState extends State<EditProfilePage> {
                           pickUploadCoverPic();
                         },
                         style: OutlinedButton.styleFrom(
-                            backgroundColor: MyColors().overBackground,
+                            backgroundColor: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
                             side: BorderSide(
-                                color: MyColors().primaryNormal.withOpacity(0.7),
+                                color: MyColors.primaryNormal.withOpacity(0.7),
                                 width: 1.5),
                             padding: EdgeInsets.symmetric(vertical: 20.0),
                             alignment: Alignment.centerRight
@@ -140,12 +143,12 @@ class EditProfilePageState extends State<EditProfilePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.camera_alt, color: MyColors().textNormal,),
+                            Icon(Icons.camera_alt, color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,),
                             SizedBox(width: 10.0,),
                             Text('Change Cover Picture', style: TextStyle(
                                 fontFamily: 'OpenSans',
                                 fontSize: 20,
-                                color: MyColors().textNormal
+                                color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText
                             ),)
                           ],
                         )),
@@ -154,22 +157,22 @@ class EditProfilePageState extends State<EditProfilePage> {
                     padding: EdgeInsets.only(left: 40, right: 40, bottom: 16, top: 30),
                     child: TextField(
                       controller: _controllerName,
-                      cursorColor: MyColors().textNormal,
-                      style: TextStyle(color: MyColors().textNormal),
+                      cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                      style: TextStyle(color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText),
                       onChanged: (text) => setState(() => _textName),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: MyColors().overBackground,
+                        fillColor: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
                         labelText: 'Name',
                         errorText: _submitted ? _errorNameText : null,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                              color: MyColors().primaryNormal.withOpacity(0.7),
+                              color: MyColors.primaryNormal.withOpacity(0.7),
                               width: 1.5),
                         ),
                         border: OutlineInputBorder(),
                         labelStyle: TextStyle(
-                          color: MyColors().primaryNormal,
+                          color: MyColors.primaryNormal,
                         ),
                       ),
                     ),
@@ -178,21 +181,21 @@ class EditProfilePageState extends State<EditProfilePage> {
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                     child: TextField(
                       controller: _controllerCity,
-                      cursorColor: MyColors().textNormal,
-                      style: TextStyle(color: MyColors().textNormal),
+                      cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                      style: TextStyle(color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText),
                       onChanged: (text) => setState(() => _textCity),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: MyColors().overBackground,
+                        fillColor: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
                         labelText: 'City',
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                              color: MyColors().primaryNormal.withOpacity(0.7),
+                              color: MyColors.primaryNormal.withOpacity(0.7),
                               width: 1.5),
                         ),
                         border: OutlineInputBorder(),
                         labelStyle: TextStyle(
-                          color: MyColors().primaryNormal,
+                          color: MyColors.primaryNormal,
                         ),
                       ),
                     ),
@@ -201,21 +204,21 @@ class EditProfilePageState extends State<EditProfilePage> {
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                     child: TextField(
                       controller: _controllerCountry,
-                      cursorColor: MyColors().textNormal,
-                      style: TextStyle(color: MyColors().textNormal),
+                      cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                      style: TextStyle(color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText),
                       onChanged: (text) => setState(() => _textCountry),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: MyColors().overBackground,
+                        fillColor: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
                         labelText: 'Country',
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                              color: MyColors().primaryNormal.withOpacity(0.7),
+                              color: MyColors.primaryNormal.withOpacity(0.7),
                               width: 1.5),
                         ),
                         border: OutlineInputBorder(),
                         labelStyle: TextStyle(
-                          color: MyColors().primaryNormal,
+                          color: MyColors.primaryNormal,
                         ),
                       ),
                     ),
@@ -226,22 +229,22 @@ class EditProfilePageState extends State<EditProfilePage> {
                       controller: _controllerDescription,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
-                      cursorColor: MyColors().textNormal,
-                      style: TextStyle(color: MyColors().textNormal),
+                      cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
+                      style: TextStyle(color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText),
                       onChanged: (text) => setState(() => _textDescription),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: MyColors().overBackground,
+                        fillColor: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
                         labelText: 'Description',
                         errorText: _errorDescriptionText,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                              color: MyColors().primaryNormal.withOpacity(0.7),
+                              color: MyColors.primaryNormal.withOpacity(0.7),
                               width: 1.5),
                         ),
                         border: OutlineInputBorder(),
                         labelStyle: TextStyle(
-                          color: MyColors().primaryNormal,
+                          color: MyColors.primaryNormal,
                         ),
                       ),
                     ),
@@ -254,7 +257,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                     height: 45.0,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: MyColors().accentNormal,
+                        primary: MyColors.accentNormal,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -262,7 +265,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                         elevation: 2.5,
                         side: BorderSide(
                           width: 0.8,
-                          color: MyColors().lightGray,
+                          color: MyColors.lightGray,
                         ),
                       ),
                       onPressed: () => {
@@ -275,7 +278,7 @@ class EditProfilePageState extends State<EditProfilePage> {
                         'Save',
                         style: TextStyle(
                             fontSize: 20.0,
-                            color: MyColors().highlightedFilterText),
+                            color: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground),
                       ),
                     ),
                   ),

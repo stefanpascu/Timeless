@@ -11,16 +11,18 @@ import 'home_page.dart';
 class MainDrawer extends StatelessWidget {
   late UserData user;
   final int? pageId;
+  final isDarkTheme;
 
   MainDrawer({
     Key? key,
     this.pageId,
+    required this.isDarkTheme
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: MyColors().backgroundNormal,
+      backgroundColor: isDarkTheme == false ? MyColors.lightThemeBackground : MyColors.darkThemeBackground,
       child: FutureBuilder<UserData?>(
           future: readUser(),
           builder: (context, snapshot) {
@@ -33,7 +35,7 @@ class MainDrawer extends StatelessWidget {
                     padding: EdgeInsets.all(60),
                     height: 300,
                     decoration: BoxDecoration(
-                      color: MyColors().primaryDarkest, // F89D7D
+                      color: MyColors.primaryDarkest, // F89D7D
                     ),
                     child: Column(
                       children: [
@@ -43,11 +45,11 @@ class MainDrawer extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Profile()),
+                                    builder: (context) => Profile(isDarkTheme: isDarkTheme,)),
                               );
                             }, // Image tapped
                             child: CircleAvatar(
-                              backgroundColor: MyColors().accentNormal,
+                              backgroundColor: MyColors.accentNormal,
                               radius: 50.0,
                               child: CircleAvatar(
                                 radius: 48.5,
@@ -63,7 +65,7 @@ class MainDrawer extends StatelessWidget {
                             user.name,
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: MyColors().lightGray,
+                              color: MyColors.lightGray,
                               fontFamily: 'OpenSans',
                               fontSize: 25.0,
                             ),
@@ -77,7 +79,7 @@ class MainDrawer extends StatelessWidget {
                       'Tasks & Goals',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: MyColors().textNormal,
+                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                         fontSize: 20,
                         fontFamily: 'OpenSans',
                       ),
@@ -88,7 +90,7 @@ class MainDrawer extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const HomePage()),
+                              builder: (context) => HomePage()),
                         );
                       }
                     },
@@ -104,7 +106,7 @@ class MainDrawer extends StatelessWidget {
                       'Social',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: MyColors().textNormal,
+                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                         fontSize: 20,
                         fontFamily: 'OpenSans',
                       ),
@@ -115,23 +117,23 @@ class MainDrawer extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const FriendsPage()),
+                              builder: (context) => FriendsPage(isDarkTheme: isDarkTheme,)),
                         );
                       }
                     },
                   ),
                   Divider(
-                    thickness: 2,
+                    thickness: 1,
                     indent: 40,
                     endIndent: 40,
-                    color: Color(0xff4B5052).withOpacity(0.2),
+                    color: Color(0xff4B5052).withOpacity(0.5),
                   ),
                   ListTile(
                     title: Text(
                       'Settings',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: MyColors().textNormal,
+                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                         fontSize: 20,
                         fontFamily: 'OpenSans',
                       ),
@@ -142,7 +144,7 @@ class MainDrawer extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const Settings()),
+                              builder: (context) => Settings()),
                         );
                       }
                     },

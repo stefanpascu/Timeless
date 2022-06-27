@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timeless/model/gender_type.dart';
 import 'package:timeless/model/user.dart';
+import 'package:timeless/service/firebase_service.dart';
 
 import '../main.dart';
 import '../styles/styles.dart';
@@ -21,11 +21,12 @@ class Register extends StatefulWidget {
 
 class RegisterStatefulWidgetState extends State<Register>
     with RestorationMixin {
+  bool isDarkTheme = false;
   UserData? userData;
   String nullDateTime = '1800-01-01 00:00';
   bool _selectedBirthDate = false;
   bool _submitted = false;
-  Color dateBorderColor = MyColors().primaryNormal.withOpacity(0.7);
+  Color dateBorderColor = MyColors.primaryNormal.withOpacity(0.7);
   final _controllerName = TextEditingController();
   final _controllerEmail = TextEditingController();
   final _controllerPassword = TextEditingController();
@@ -63,10 +64,10 @@ class RegisterStatefulWidgetState extends State<Register>
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
             colors: [
-              MyColors().primaryNormal.withOpacity(0.2),
-              MyColors().primaryNormal.withOpacity(0.5),
-              MyColors().accentNormal.withOpacity(0.5),
-              MyColors().accentNormal.withOpacity(0.2),
+              MyColors.primaryNormal.withOpacity(0.2),
+              MyColors.primaryNormal.withOpacity(0.5),
+              MyColors.accentNormal.withOpacity(0.5),
+              MyColors.accentNormal.withOpacity(0.2),
             ],
           ),
         ),
@@ -84,29 +85,29 @@ class RegisterStatefulWidgetState extends State<Register>
                         margin: const EdgeInsets.only(top: 0.0, bottom: 0.0),
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: MyColors().backgroundNormal.withOpacity(0.5),
+                            color: isDarkTheme == false ? MyColors.lightThemeBackground.withOpacity(0.5) : MyColors.darkThemeBackground.withOpacity(0.5),
                             borderRadius: const BorderRadius.all(
                               Radius.circular(7),
                             ),
                             border: Border(
                               top: BorderSide(
                                   width: 3.0,
-                                  color: MyColors()
+                                  color: MyColors
                                       .primaryNormal
                                       .withOpacity(0.7)),
                               left: BorderSide(
                                   width: 3.0,
-                                  color: MyColors()
+                                  color: MyColors
                                       .primaryNormal
                                       .withOpacity(0.7)),
                               right: BorderSide(
                                   width: 3.0,
-                                  color: MyColors()
+                                  color: MyColors
                                       .primaryNormal
                                       .withOpacity(0.7)),
                               bottom: BorderSide(
                                   width: 3.0,
-                                  color: MyColors()
+                                  color: MyColors
                                       .primaryNormal
                                       .withOpacity(0.7)),
                             ),
@@ -125,9 +126,9 @@ class RegisterStatefulWidgetState extends State<Register>
                                   ),
                                   child: TextField(
                                     controller: _controllerName,
-                                    cursorColor: MyColors().textNormal,
+                                    cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                     style:
-                                        TextStyle(color: MyColors().textNormal),
+                                        TextStyle(color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText),
                                     onChanged: (text) =>
                                         setState(() => _textName),
                                     decoration: InputDecoration(
@@ -137,16 +138,15 @@ class RegisterStatefulWidgetState extends State<Register>
                                       enabledBorder: OutlineInputBorder(
                                         // width: 0.0 produces a thin "hairline" border
                                         borderSide: BorderSide(
-                                            color: MyColors()
+                                            color: MyColors
                                                 .primaryNormal
                                                 .withOpacity(0.7),
                                             width: 1.5),
                                       ),
                                       border: OutlineInputBorder(),
                                       labelStyle: TextStyle(
-                                        color: MyColors()
-                                            .textNormal
-                                            .withOpacity(0.7),
+                                        color:
+                                        isDarkTheme == false ? MyColors.primaryNormal : MyColors.darkThemeText.withOpacity(0.7),
                                       ),
                                     ),
                                   ),
@@ -159,9 +159,7 @@ class RegisterStatefulWidgetState extends State<Register>
                                   ),
                                   child: TextField(
                                     controller: _controllerEmail,
-                                    cursorColor: MyColors().textNormal,
-                                    style:
-                                        TextStyle(color: MyColors().textNormal),
+                                    cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                     onChanged: (text) =>
                                         setState(() => _textEmail),
                                     decoration: InputDecoration(
@@ -171,16 +169,15 @@ class RegisterStatefulWidgetState extends State<Register>
                                       enabledBorder: OutlineInputBorder(
                                         // width: 0.0 produces a thin "hairline" border
                                         borderSide: BorderSide(
-                                            color: MyColors()
+                                            color: MyColors
                                                 .primaryNormal
                                                 .withOpacity(0.7),
                                             width: 1.5),
                                       ),
                                       border: OutlineInputBorder(),
                                       labelStyle: TextStyle(
-                                        color: MyColors()
-                                            .textNormal
-                                            .withOpacity(0.7),
+                                        color:
+                                        isDarkTheme == false ? MyColors.primaryNormal : MyColors.darkThemeText.withOpacity(0.7),
                                       ),
                                     ),
                                   ),
@@ -193,9 +190,7 @@ class RegisterStatefulWidgetState extends State<Register>
                                     enableSuggestions: false,
                                     autocorrect: false,
                                     controller: _controllerPassword,
-                                    cursorColor: MyColors().textNormal,
-                                    style:
-                                        TextStyle(color: MyColors().textNormal),
+                                    cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                     onChanged: (text) =>
                                         setState(() => _textPassword),
                                     decoration: InputDecoration(
@@ -205,16 +200,15 @@ class RegisterStatefulWidgetState extends State<Register>
                                           : null,
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: MyColors()
+                                            color: MyColors
                                                 .primaryNormal
                                                 .withOpacity(0.7),
                                             width: 1.5),
                                       ),
                                       border: OutlineInputBorder(),
                                       labelStyle: TextStyle(
-                                        color: MyColors()
-                                            .textNormal
-                                            .withOpacity(0.7),
+                                        color:
+                                        isDarkTheme == false ? MyColors.primaryNormal : MyColors.darkThemeText.withOpacity(0.7),
                                       ),
                                     ),
                                   ),
@@ -224,7 +218,7 @@ class RegisterStatefulWidgetState extends State<Register>
                                     _restorableDatePickerRouteFuture.present();
                                   },
                                   style: OutlinedButton.styleFrom(
-                                    primary: MyColors().overBackground,
+                                    primary: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
                                     side: BorderSide(
                                         color: dateBorderColor, width: 1.5),
                                   ),
@@ -234,9 +228,7 @@ class RegisterStatefulWidgetState extends State<Register>
                                     child: Text(
                                       formattedDate,
                                       style: TextStyle(
-                                        color: MyColors()
-                                            .textNormal
-                                            .withOpacity(0.7),
+                                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                       ),
                                     ),
                                   ),
@@ -260,16 +252,15 @@ class RegisterStatefulWidgetState extends State<Register>
                                   padding: const EdgeInsets.only(top: 10.0),
                                   child: DropdownButton<String>(
                                     value: dropdownValue,
-                                    dropdownColor: MyColors().overBackground,
+                                    dropdownColor: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
                                     icon: const Icon(Icons.arrow_downward),
                                     elevation: 0,
                                     style: TextStyle(
-                                        color: MyColors()
-                                            .textNormal
-                                            .withOpacity(1.0)),
+                                        color: MyColors
+                                            .primaryNormal),
                                     underline: Container(
                                       height: 2,
-                                      color: MyColors()
+                                      color: MyColors
                                           .primaryNormal
                                           .withOpacity(0.7),
                                     ),
@@ -301,7 +292,7 @@ class RegisterStatefulWidgetState extends State<Register>
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(12.0)),
                                       ),
-                                      backgroundColor: MyColors().accentNormal,
+                                      backgroundColor: MyColors.accentNormal,
                                       onPressed: () => {
                                         setState(() {
                                           _submitted = true;
@@ -337,12 +328,12 @@ class RegisterStatefulWidgetState extends State<Register>
                                       'Already have an account?',
                                       style: TextStyle(
                                         fontWeight: FontWeight.normal,
-                                        color: MyColors().textNormal,
+                                        color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                       ),
                                     ),
                                     TextButton(
                                       style: TextButton.styleFrom(
-                                        primary: MyColors().primaryNormal,
+                                        primary: MyColors.primaryNormal,
                                       ),
                                       onPressed: () {
                                         Navigator.pop(context);
@@ -384,11 +375,11 @@ class RegisterStatefulWidgetState extends State<Register>
                             height: 100,
                             width: 100,
                             child: CircleAvatar(
-                              backgroundColor: MyColors().primaryNormal,
+                              backgroundColor: MyColors.primaryNormal,
                               radius: 50,
                               child: CircleAvatar(
                                 radius: 48.0,
-                                backgroundColor: MyColors().primaryNormal,
+                                backgroundColor: MyColors.primaryNormal,
                                 child: ClipRect(
                                   child: SvgPicture.asset(
                                       'assets/profile_icon.svg'),
@@ -431,12 +422,12 @@ class RegisterStatefulWidgetState extends State<Register>
             ));
 
     try {
-      final data = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final data = await FirebaseService.auth.createUserWithEmailAndPassword(
           email: _controllerEmail.text.trim(),
           password: _controllerPassword.text.trim());
 
       final docUser =
-      FirebaseFirestore.instance.collection('users').doc(data.user!.uid);
+      FirebaseService.firestore.collection('users').doc(data.user!.uid);
 
       final user = UserData(
         id: docUser.id,
@@ -462,7 +453,7 @@ class RegisterStatefulWidgetState extends State<Register>
           birthDate: DateTime.parse(formattedDate),
           gender: gender);
 
-      final docUserEmails = FirebaseFirestore.instance.collection('emails').doc(
+      final docUserEmails = FirebaseService.firestore.collection('emails').doc(
           data.user!.email);
       await docUserEmails.set({'id': data.user!.uid});
 
@@ -564,7 +555,7 @@ class RegisterStatefulWidgetState extends State<Register>
               '${_selectedDate.value.year}-0${_selectedDate.value.month}-0${_selectedDate.value.day}';
         _controllerBirthDate = DateTime.parse(formattedDate + " 00:00");
         _selectedBirthDate = false;
-        dateBorderColor = MyColors().primaryNormal.withOpacity(0.7);
+        dateBorderColor = MyColors.primaryNormal.withOpacity(0.7);
       });
     }
   }

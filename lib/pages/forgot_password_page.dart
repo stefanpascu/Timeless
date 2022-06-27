@@ -10,6 +10,7 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  bool isDarkTheme = false;
   final formKey = GlobalKey<FormState>();
   final _controllerEmail = TextEditingController();
   bool _submitted = false;
@@ -30,19 +31,19 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: MyColors().primaryNormal,
+            color: MyColors.primaryNormal,
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: MyColors().backgroundNormal.withOpacity(0),
+        backgroundColor: MyColors.backgroundNormal.withOpacity(0),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10.0),
             child: Icon(
               Icons.delete,
-              color: MyColors().backgroundNormal.withOpacity(0.0),
+              color: MyColors.backgroundNormal.withOpacity(0.0),
               size: 50.0,
             ),
           ),
@@ -55,10 +56,10 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
             colors: [
-              MyColors().primaryNormal.withOpacity(0.2),
-              MyColors().primaryNormal.withOpacity(0.5),
-              MyColors().accentNormal.withOpacity(0.5),
-              MyColors().accentNormal.withOpacity(0.2),
+              MyColors.primaryNormal.withOpacity(0.2),
+              MyColors.primaryNormal.withOpacity(0.5),
+              MyColors.accentNormal.withOpacity(0.5),
+              MyColors.accentNormal.withOpacity(0.2),
             ],
           ),
         ),
@@ -72,26 +73,26 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   alignment: Alignment.center,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: MyColors().overBackground.withOpacity(0.5),
+                      color: MyColors.overBackground.withOpacity(0.5),
                       borderRadius: const BorderRadius.all(
                         Radius.circular(7),
                       ),
                       border: Border(
                         top: BorderSide(
                             width: 3.0,
-                            color: MyColors().primaryNormal.withOpacity(0.7)),
+                            color: MyColors.primaryNormal.withOpacity(0.7)),
                         left: BorderSide(
                             width: 3.0,
-                            color: MyColors().primaryNormal.withOpacity(0.7)),
+                            color: MyColors.primaryNormal.withOpacity(0.7)),
                         right: BorderSide(
                             width: 3.0,
-                            color: MyColors().primaryNormal.withOpacity(0.7)),
+                            color: MyColors.primaryNormal.withOpacity(0.7)),
                         bottom: BorderSide(
                             width: 3.0,
-                            color: MyColors().primaryNormal.withOpacity(0.7)),
+                            color: MyColors.primaryNormal.withOpacity(0.7)),
                       ),
                     ),
-                    child: Expanded(
+                    child: Container(
                       child: Container(
                         width: 350,
                         margin: const EdgeInsets.only(top: 0.0, bottom: 0.0),
@@ -105,8 +106,8 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   bottom: 16.0),
                               child: TextField(
                                 controller: _controllerEmail,
-                                style: TextStyle(color: MyColors().textNormal),
-                                cursorColor: MyColors().textNormal,
+                                style: TextStyle(color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText),
+                                cursorColor: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                 onChanged: (text) => setState(() => _textEmail),
                                 decoration: InputDecoration(
                                   labelText: 'Email',
@@ -115,7 +116,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   enabledBorder: OutlineInputBorder(
                                     // width: 0.0 produces a thin "hairline" border
                                     borderSide: BorderSide(
-                                        color: MyColors()
+                                        color: MyColors
                                             .primaryNormal
                                             .withOpacity(0.7),
                                         width: 1.5),
@@ -123,7 +124,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   border: OutlineInputBorder(),
                                   labelStyle: TextStyle(
                                     color:
-                                        MyColors().textNormal.withOpacity(0.7),
+                                        isDarkTheme == false ? MyColors.primaryNormal : MyColors.darkThemeText.withOpacity(0.7),
                                   ),
                                 ),
                               ),
@@ -138,7 +139,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(12.0)),
                                   ),
-                                  backgroundColor: MyColors().accentNormal,
+                                  backgroundColor: MyColors.accentNormal,
                                   onPressed: () => {
                                     setState(() {
                                       _submitted = true;

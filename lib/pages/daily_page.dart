@@ -14,13 +14,15 @@ import '../styles/styles.dart';
 import 'add_new_task_page.dart';
 
 class DailyPage extends StatefulWidget {
-  const DailyPage({Key? key}) : super(key: key);
+  final isDarkTheme;
+  const DailyPage({Key? key, required this.isDarkTheme}) : super(key: key);
 
   @override
   State<DailyPage> createState() => _DailyPageState();
 }
 
 class _DailyPageState extends State<DailyPage> {
+  late bool isDarkTheme;
   int selectedDailyIndex = 0;
   static List<Task> tasks = [];
   List<Task> filteredTasks = tasks;
@@ -29,6 +31,7 @@ class _DailyPageState extends State<DailyPage> {
 
   @override
   void initState() {
+    isDarkTheme = widget.isDarkTheme == null ? false : widget.isDarkTheme;
     super.initState();
   }
 
@@ -50,27 +53,27 @@ class _DailyPageState extends State<DailyPage> {
           // print(tasks.toString());
 
           myTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-            for (int i = 0; i < tasks.length; i++) {
-              if (!compareDates(tasks[i].time, DateTime.now())) {
-                if (tasks[i].type == TaskType.Repetitive) {
-                  if (tasks[i].repetitiveType == RepetitiveType.Daily) {
-                    Task auxTask = tasks[i];
+            for (int index = 0; index < tasks.length; index++) {
+              if (!compareDates(tasks[index].time, DateTime.now())) {
+                if (tasks[index].type == TaskType.Repetitive) {
+                  if (tasks[index].repetitiveType == RepetitiveType.Daily) {
+                    Task auxTask = tasks[index];
                     auxTask.time = auxTask.time.add(Duration(days: 1));
                     FirebaseService.editExistingTask(auxTask);
                   } else {
-                    Task auxTask = tasks[i];
+                    Task auxTask = tasks[index];
                     auxTask.time = auxTask.time.add(Duration(days: 7));
                     FirebaseService.editExistingTask(auxTask);
                   }
                 } else {
-                  Task auxTask = tasks[i];
-                  tasks.remove(tasks[i]);
+                  Task auxTask = tasks[index];
+                  tasks.remove(tasks[index]);
                   FirebaseService.deleteTask(auxTask.id!);
                 }
               }
             }
-            // myTimer.cancel() //to terminate this timer
           });
+
           filteredTasks = tasks;
           _filterTasks();
           return Column(mainAxisSize: MainAxisSize.min, children: [
@@ -85,13 +88,13 @@ class _DailyPageState extends State<DailyPage> {
                     _filterWidget(
                         title: 'Repetitive',
                         index: 1,
-                        color: MyColors().repetitiveBlue),
+                        color: MyColors.repetitiveBlue),
                     _filterWidget(
-                        title: 'Due to', index: 2, color: MyColors().dueToRed),
+                        title: 'Due to', index: 2, color: MyColors.dueToRed),
                     _filterWidget(
                         title: 'Appointment',
                         index: 3,
-                        color: MyColors().appointmentGreen),
+                        color: MyColors.appointmentGreen),
                   ],
                 ),
               ),
@@ -109,7 +112,7 @@ class _DailyPageState extends State<DailyPage> {
                       child: Text(
                         groupByValue,
                         style: TextStyle(
-                            color: MyColors().textNormal,
+                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                             fontSize: 15.0,
                             fontFamily: 'OpenSans',
                             fontWeight: FontWeight.w500),
@@ -120,6 +123,9 @@ class _DailyPageState extends State<DailyPage> {
                   ),
                 ),
               ),
+            ),
+            SizedBox(
+              height: 30,
             )
           ]);
         }
@@ -182,7 +188,7 @@ class _DailyPageState extends State<DailyPage> {
       onLongPress: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => NewTaskPage(task: task)),
+          MaterialPageRoute(builder: (context) => NewTaskPage(task: task, isDarkTheme: isDarkTheme,)),
         );
       },
       child: Padding(
@@ -190,8 +196,8 @@ class _DailyPageState extends State<DailyPage> {
         child: DecoratedBox(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: MyColors().lightGray, width: 0.2),
-              color: MyColors().overBackground,
+              border: Border.all(color: MyColors.lightGray, width: 0.2),
+              color: isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey,
@@ -226,7 +232,7 @@ class _DailyPageState extends State<DailyPage> {
                             task.name,
                             style: TextStyle(
                                 fontSize: 20.0,
-                                color: MyColors().textNormal,
+                                color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                 fontFamily: 'OpenSans',
                                 fontWeight: FontWeight.w600),
                           ),
@@ -234,7 +240,7 @@ class _DailyPageState extends State<DailyPage> {
                             EnumToString.convertToString(task.type),
                             style: TextStyle(
                                 fontSize: 13.0,
-                                color: MyColors().textNormal,
+                                color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                                 fontFamily: 'OpenSans',
                                 fontWeight: FontWeight.normal),
                           )
@@ -251,7 +257,7 @@ class _DailyPageState extends State<DailyPage> {
                         Text(
                           task.repetitiveType.toString().split('.')[1],
                           style: TextStyle(
-                              color: MyColors().textNormal,
+                              color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                               fontSize: 15.0,
                               fontFamily: 'OpenSans',
                               fontWeight: FontWeight.w600),
@@ -260,7 +266,7 @@ class _DailyPageState extends State<DailyPage> {
                       Text(
                         DateFormat('kk:mm').format(task.time),
                         style: TextStyle(
-                            color: MyColors().textNormal,
+                            color: isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                             fontSize: 15.0,
                             fontFamily: 'OpenSans',
                             fontWeight: FontWeight.w600),
@@ -298,7 +304,7 @@ class _DailyPageState extends State<DailyPage> {
           padding: EdgeInsets.symmetric(horizontal: 10.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(7)),
-            border: Border.all(color: MyColors().lightGray, width: 0.2),
+            border: Border.all(color: MyColors.lightGray, width: 0.2),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
@@ -308,8 +314,8 @@ class _DailyPageState extends State<DailyPage> {
               ),
             ],
             color: isSelected
-                ? MyColors().primaryNormal
-                : MyColors().overBackground,
+                ? MyColors.primaryNormal
+                : isDarkTheme == false ? MyColors.lightThemeOverBackground : MyColors.darkThemeOverBackground,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -331,8 +337,8 @@ class _DailyPageState extends State<DailyPage> {
                 title,
                 style: TextStyle(
                   color: isSelected
-                      ? MyColors().highlightedFilterText
-                      : MyColors().textNormal,
+                      ? isDarkTheme ? MyColors.lightThemeBackground : MyColors.lightThemeBackground
+                      : isDarkTheme == false ? MyColors.lightThemeText : MyColors.darkThemeText,
                   fontSize: 13.0,
                   fontFamily: 'OpenSans',
                 ),
